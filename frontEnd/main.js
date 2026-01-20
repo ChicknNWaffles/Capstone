@@ -9,7 +9,7 @@ function createWindow() {
     });
     mainWindow.maximize();
     mainWindow.setMenu(null);
-    mainWindow.loadFile("templates/temp.html");
+    mainWindow.loadFile("frontEnd/templates/temp.html");
 }
 
 
