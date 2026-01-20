@@ -9,7 +9,9 @@ function createWindow() {
     });
     mainWindow.maximize();
     mainWindow.setMenu(null);
-    mainWindow.loadFile("frontEnd/templates/temp.html");
+    mainWindow.loadFile("frontEnd/templates/editor.html");
+
+    mainWindow.webContents.openDevTools();
 }
 
 
