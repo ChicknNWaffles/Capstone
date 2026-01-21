@@ -13,9 +13,17 @@
                 <h1 id="projectName">Project: {{projectName}}</h1>
                 <button class="btn"> < </button>
             </div>
-            <button class="btn"><img id="settingsIcon" src="{{url_for('static', filename='settingsIcon.png')}}"></button>
+            <button class="btn"><img class="btnImg" src="{{url_for('static', filename='settingsIcon.png')}}"></button>
         </div>
-        <div class="bgColorMain" id="mainEditorBlock"></div>
+        <div class="bgColorMain" id="mainEditorBlock">
+            <div id="filesBlock">
+                <div id="commitTitle">
+                    <h3 id="commitName">{{commitName}}</h3>
+                    <button class="btn"><img class="btnImg" src="{{url_for('static', filename='saveIcon.png')}}"></button>
+                </div>
+            </div>
+            <div id="openTabs"></div>
+        </div>
     </body>
 
 </html>
