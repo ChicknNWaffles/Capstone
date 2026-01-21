@@ -3,7 +3,7 @@
 import sqlite3
 import math
 
-sqlite = sqlite3.connect('../capstone.db')
+sqlite = sqlite3.connect('capstone.db')
 sqlite.execute("Pragma foreign_keys = 1")
 sql = sqlite.cursor()
 
