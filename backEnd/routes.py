@@ -8,8 +8,9 @@ app.secret_key = 'asdfasldgkjadkljaklsdjkljskldajksdjfkajsdkjafsdfasdf'
 @app.route('/', methods = ['POST', 'GET'])
 def editorPage():
     if request.method == "GET":
-        projName = session.get("projName", "unknown")
-        return render_template("editor.html", projectName = projName)
+        projName = session.get("projName", "unknownProject")
+        commitNm = session.get("commitName", "unknownCommit")
+        return render_template("editor.html", projectName = projName, commitName = commitNm)
     
 
 
