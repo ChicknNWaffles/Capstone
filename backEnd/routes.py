@@ -27,7 +27,14 @@ def editorPage():
         projName = session.get("projName", "unknownProject")
         commitNm = session.get("commitName", "unknownCommit")
         return render_template("editor.html", projectName = projName, commitName = commitNm)
-    
+
+@app.route('/login', methods = ['POST', 'GET'])
+def loginPage():
+    return render_template("login.html")
+
+@app.route('/signup', methods = ['POST', 'GET'])
+def signupPage():
+    return render_template("signup.html")
 
 # testing for adding database
 # @app.route('/', methods = ['GET'])
