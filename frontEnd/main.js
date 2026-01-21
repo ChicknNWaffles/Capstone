@@ -12,7 +12,9 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadFile(path.join(__dirname, "templates", "login.html"));
+  //mainWindow.loadURL("http://127.0.0.1:5000");
+  mainWindow.loadURL("http://127.0.0.1:5000/login");
+  //mainWindow.loadURL("http://127.0.0.1:5000/signup");
   mainWindow.webContents.openDevTools();
 }
 
