@@ -9,7 +9,8 @@ function createWindow() {
     });
     mainWindow.maximize();
     mainWindow.setMenu(null);
-    mainWindow.loadFile("frontEnd/templates/editor.html");
+    //mainWindow.loadFile("frontEnd/templates/editor.html");
+    mainWindow.loadURL("http://127.0.0.1:5000");
 
     mainWindow.webContents.openDevTools();
 }

@@ -1,14 +1,17 @@
-from flask import Flask, render_template
+from asyncio.windows_events import NULL
+from flask import Flask, render_template, request, session
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../frontEnd/templates", static_folder="../frontEnd/static")
 
-# this route is a placeholder for boilerplate.
-# replace with whatever routes we need for our
-# functionality to communicate properly
+app.secret_key = 'asdfasldgkjadkljaklsdjkljskldajksdjfkajsdkjafsdfasdf'
+
 @app.route('/', methods = ['POST', 'GET'])
-def root():
-    return render_template("temp.html")
+def editorPage():
+    if request.method == "GET":
+        projName = session.get("projName", "unknown")
+        return render_template("editor.html", projectName = projName)
+    
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='127.0.0.1', port='5000')
