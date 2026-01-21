@@ -8,9 +8,14 @@
     </head>
 
     <body>
-        <div id="projectBar">
-            <h1>Project: {{projectName}}</h1>
+        <div class="bgColorContrast" id="projectBar">
+            <div id="projectBarLeft">
+                <h1 id="projectName">Project: {{projectName}}</h1>
+                <button class="btn"> < </button>
+            </div>
+            <button class="btn"><img id="settingsIcon" src="{{url_for('static', filename='settingsIcon.png')}}"></button>
         </div>
+        <div class="bgColorMain" id="mainEditorBlock"></div>
     </body>
 
 </html>

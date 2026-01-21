@@ -1,8 +1,9 @@
 :root {
     --bg_color_main-opaque: rgba(102, 73, 49, 1);
-    --bg_color_main-transparent: rgba(102, 73, 49, 0.5);
+    --bg_color_main-transparent: rgba(102, 73, 49, 0.6);
     --bg_color_contrast-opaque: rgba(224, 199, 177, 1);
     --bg_color_contrast-transparent: rgba(224, 199, 177, 0.5);
+    --iconColor: rgba(255, 250, 235, 1);
     --bg_image_main: url("./hotcocoa.jpg");
 }
 
@@ -20,9 +21,70 @@ body {
     background-size: cover;
 }
 
-#projectBar{
-    width: 100%;
-    height: 10%;
+h1{
+    margin:0px;
+}
+
+.bgColorContrast {
     background-color: var(--bg_color_contrast-transparent);
     backdrop-filter: blur(5px);
+}
+
+.bgColorMain{
+    background-color: var(--bg_color_main-transparent);
+    backdrop-filter: blur(5px);
+}
+
+#projectBar {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#projectBarLeft {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    height: 100%;
+    align-items:center;
+}
+
+#projectName {
+    padding-left:1%;
+    padding-right:1%;
+}
+
+.btn{
+    height:70%;
+    aspect-ratio:1/1;
+    border-radius:50%;
+    background-color: var(--bg_color_main-opaque);
+    color: var(--iconColor);
+    font-size: large;
+    border-style:solid;
+    border-color:var(--iconColor);
+    border-width:3px;
+}
+
+.btn:active{
+    background-color: var(--bg_color_contrast-opaque);
+    color: var(--bg_color_main-opaque);
+    border-color: var(--bg_color_main-opaque);
+    height:65%
+}
+
+#settingsIcon{
+    height:40px;
+    filter: invert(100%);
+}
+
+#mainEditorBlock{
+    height: 73%;
+    width: 93%;
+    margin:auto;
+    margin-top:5%;
+    border-radius:70px;
 }
