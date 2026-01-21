@@ -12,8 +12,8 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadURL("http://127.0.0.1:5000");
-  //mainWindow.loadURL("http://127.0.0.1:5000/login");
+  //mainWindow.loadURL("http://127.0.0.1:5000");
+  mainWindow.loadURL("http://127.0.0.1:5000/login");
   //mainWindow.loadURL("http://127.0.0.1:5000/signup");
   mainWindow.webContents.openDevTools();
 }
