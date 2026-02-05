@@ -13,7 +13,9 @@ function createWindow() {
   mainWindow.setMenu(null);
 
   //mainWindow.loadURL("http://127.0.0.1:8000");
-  mainWindow.loadFile("frontEnd/templates/signup.html");
+  //mainWindow.loadFile("frontEnd/templates/signup.html");
+  //mainWindow.loadURL("http://127.0.0.1:5000");
+  mainWindow.loadURL("http://127.0.0.1:5000/login");
   //mainWindow.loadURL("http://127.0.0.1:5000/signup");
   mainWindow.webContents.openDevTools();
 }
