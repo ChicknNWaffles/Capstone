@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>CoCodingStudio | editor</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+    </head>
+
+    <body>
+        <div class="bgColorContrast" id="projectBar">
+            <div id="projectBarLeft">
+                <h1 id="projectName">Project: {{projectName}}</h1>
+                <button class="btnCircle"> < </button>
+            </div>
+            <button class="btnCircle"><img class="btnImg" src="{{url_for('static', filename='settingsIcon.png')}}"></button>
+        </div>
+        <div class="bgColorMain" id="mainEditorBlock">
+            <div id="filesBlock">
+                <div id="commitTitle">
+                    <h3 id="commitName">{{commitName}}</h3>
+                    <button class="btnCircle"><img class="btnImg" src="{{url_for('static', filename='saveIcon.png')}}"></button>
+                </div>
+            </div>
+            <div id="openTabs"></div>
+        </div>
+    </body>
+
+</html>

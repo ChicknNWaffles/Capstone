@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+</head>
+<body>
+  <h1>Home</h1>
+  <p>Logged in successfully.</p>
+
+  <script>
+    // Optional: just LOG auth state, don't redirect
+    fetch("http://localhost:8000/api/me/", { credentials: "include" })
+      .then(async (r) => {
+        const t = await r.text();
+        console.log("ME status:", r.status, "body:", t);
+      })
+      .catch((e) => console.log("ME error:", e));
+  </script>
+</body>
+</html>

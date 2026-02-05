@@ -1,0 +1,24 @@
+{
+  "name": "capstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "frontEnd/main.js",
+  "devDependencies": {
+    "electron": "^40.0.0"
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChicknNWaffles/Capstone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ChicknNWaffles/Capstone/issues"
+  },
+  "homepage": "https://github.com/ChicknNWaffles/Capstone#readme"
+}
