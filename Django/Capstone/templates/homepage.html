@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to CoCoding Studio</title>
+
+  <style>
+    /* =========================
+       Reset + Base
+    ========================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    :root {
+      --glass-bg: rgba(18, 25, 55, 0.28);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --glass-blur: blur(22px) saturate(140%);
+    }
+
+    body {
+      font-family: "Consolas", "Monaco", "Courier New", monospace;
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(88, 120, 255, 0.25), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(168, 85, 247, 0.22), transparent 55%),
+        linear-gradient(180deg, #0b1224, #060914);
+      color: rgba(230, 235, 255, 0.9);
+      overflow-x: hidden;
+    }
+
+    /* =========================
+       Layout & Typography
+    ========================= */
+    .home {
+      min-height: 100vh;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.5px;
+    }
+
+    .brand-large {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    /* =========================
+       User Profile Menu
+    ========================= */
+    .user-profile {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      z-index: 500;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(88, 120, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .avatar:hover {
+      background: rgba(88, 120, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 54px;
+      right: 0;
+      width: 180px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 8px;
+
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .dropdown-menu.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .menu-item {
+      display: block;
+      padding: 10px 16px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .menu-item.danger {
+      color: #ff6b6b;
+    }
+
+    .menu-item.danger:hover {
+      background: rgba(255, 107, 107, 0.15);
+    }
+
+    /* =========================
+       View: Center (Empty State)
+    ========================= */
+    .center-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .sub {
+      font-size: 1.1rem;
+      color: rgba(232, 238, 252, 0.6);
+      max-width: 400px;
+    }
+
+    /* =========================
+       View: Dashboard (Populated)
+    ========================= */
+    #view-dashboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding-top: 2rem;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* Search Bar */
+    .search-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 20px 12px 40px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(88, 120, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(88, 120, 255, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+    }
+
+    /* Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 3rem;
+    }
+
+    /* Card Styling Updates */
+    .card {
+      position: relative;
+      /* removed min-height to let content dictate size, but added padding */
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 140px;
+
+      text-decoration: none;
+      color: white;
+
+      border-radius: 16px;
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), var(--glass-inner);
+      transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: rgba(18, 25, 55, 0.45);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.95);
+      display: block;
+    }
+
+    .card-date {
+      font-size: 0.85rem;
+      color: rgba(232, 238, 252, 0.5);
+      font-weight: 400;
+      display: block;
+    }
+
+    /* Card Actions (Meatball Menu) */
+    .card-actions {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .btn-action {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .btn-action:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Action Dropdown */
+    .action-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #0f1322;
+      /* Solid bg for visibility */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 4px;
+      min-width: 120px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      display: none;
+    }
+
+    .action-dropdown.show {
+      display: block;
+    }
+
+    .action-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .action-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .action-item.danger {
+      color: #ff6b6b;
+    }
+
+    .action-item.danger:hover {
+      background: rgba(255, 107, 107, 0.15);
+    }
+
+    /* =========================
+       Components
+    ========================= */
+    .btn-create-large {
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      background: rgba(88, 120, 255, 0.2);
+      border: 1px solid rgba(88, 120, 255, 0.3);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-create-large:hover {
+      background: rgba(88, 120, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* =========================
+       Visual Helpers
+    ========================= */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      width: min(480px, 90%);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), var(--glass-inner);
+      border-radius: 18px;
+      padding: 32px;
+
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    /* Modal Form Styles matched to style.css */
+    .modal-title {
+      font-size: 1.75rem;
+      color: rgba(255, 255, 255, 0.95);
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-sub {
+      font-size: 1rem;
+      color: rgba(232, 238, 252, 0.7);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .input:focus {
+      border-color: rgba(88, 120, 255, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .btn-primary {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(88, 120, 255, 0.9);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: rgba(88, 120, 255, 1);
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: rgba(230, 235, 255, 0.5);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-link:hover {
+      color: rgba(230, 235, 255, 0.8);
+    }
+
+    /* =========================
+       Responsive
+    ========================= */
+    @media (max-width: 720px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Main Container -->
+  <main class="home">
+
+    <!-- User Profile (Always Visible) -->
+    <div class="user-profile">
+      <div class="avatar" id="userAvatar">FA</div>
+      <div class="dropdown-menu" id="userDropdown">
+        <div class="menu-item">Settings</div>
+        <div class="menu-item danger" id="logoutBtn">Log Out</div>
+      </div>
+    </div>
+
+    <!-- this is the view for when the user has no projects -->
+    <div id="view-empty" class="center-view hidden">
+      <h1 class="brand-large">CoCoding Studio</h1>
+      <p class="sub">Your workspace is empty.</p>
+      <button class="btn-create-large action-create">+ Create First Project</button>
+    </div>
+
+    <!-- this is the view for when the user has projects (the dashboard) -->
+    <div id="view-dashboard" class="hidden">
+
+      <!-- header section with the title and search bar -->
+      <header class="dashboard-header">
+        <div class="brand">CoCoding Studio</div>
+
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="projectSearch" class="search-input" placeholder="Search projects...">
+        </div>
+      </header>
+
+      <!-- Grid -->
+      <section class="projects-grid" id="projectsGrid">
+        <!-- Cards go here -->
+      </section>
+
+      <!-- Footer Action -->
+      <button class="btn-create-large action-create">+ Create New Project</button>
+
+    </div>
+
+  </main>
+
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal-content">
+      <h2 class="modal-title">Create Project</h2>
+      <p class="modal-sub">Start something new.</p>
+
+      <form id="createProjectForm">
+        <div class="input-group">
+          <input type="text" id="projectName" class="input" placeholder="Project Name" required autocomplete="off">
+        </div>
+
+        <div class="input-group">
+          <label
+            style="color: rgba(230,235,255,0.7); display: block; margin-bottom: 8px; font-size: 0.9rem;">Visibility</label>
+          <select id="projectVisibility" class="input"
+            style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+            <option value="private">Private (Only you)</option>
+            <option value="public">Public (Everyone)</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Create Project</button>
+          <button type="button" class="btn-link" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // this is just mock data so i can test how it looks without the backend
+    const projects = [
+      { name: "My First Project", href: "#", lastEdited: "Edited 2 hours ago" },
+      { name: "Django Capstone", href: "#", lastEdited: "Edited 1 day ago" },
+      { name: "Personal Portfolio", href: "#", lastEdited: "Edited 3 days ago" },
+      { name: "React Experiment", href: "#", lastEdited: "Edited 1 week ago" },
+    ];
+
+    const viewEmpty = document.getElementById("view-empty");
+    const viewDashboard = document.getElementById("view-dashboard");
+    const projectsGrid = document.getElementById("projectsGrid");
+    const searchInput = document.getElementById("projectSearch");
+
+    function renderView(filterText = "") {
+      const hasProjects = projects.length > 0;
+
+      if (!hasProjects) {
+        // if there are no projects, show the empty state screen
+        viewEmpty.classList.remove("hidden");
+        viewDashboard.classList.add("hidden");
+      } else {
+        // otherwise, show the main dashboard
+        viewEmpty.classList.add("hidden");
+        viewDashboard.classList.remove("hidden");
+
+        // filter the project list based on the search text
+        const filtered = projects.filter(p => p.name.toLowerCase().includes(filterText.toLowerCase()));
+
+        // clear the current grid and show the filtered projects
+        projectsGrid.innerHTML = "";
+        filtered.forEach((p, index) => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          // Card HTML structure
+          card.innerHTML = `
+                    <a href="${p.href}" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
+                        <span class="card-title">${p.name}</span>
+                        <span class="card-date">${p.lastEdited || 'Just now'}</span>
+                    </a>
+                    
+                    <div class="card-actions">
+                        <button class="btn-action" onclick="toggleMenu(event, ${index})">⋮</button>
+                        <div class="action-dropdown" id="menu-${index}">
+                            <button class="action-item">Rename</button>
+                            <button class="action-item danger">Delete</button>
+                        </div>
+                    </div>
+                `;
+          projectsGrid.appendChild(card);
+        });
+      }
+    }
+
+    // run the render function once when the page loads
+    renderView();
+
+    // listen for typing in the search bar
+    searchInput.addEventListener("input", (e) => {
+      renderView(e.target.value);
+    });
+
+    // logic for the user profile dropdown menu
+    const avatar = document.getElementById("userAvatar");
+    const dropdown = document.getElementById("userDropdown");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    avatar.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("active");
+    });
+
+    // show or hide the menu for a specific project card
+    window.toggleMenu = function (e, index) {
+      e.stopPropagation();
+      // Close all others
+      document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+      // Toggle current
+      const menu = document.getElementById(`menu-${index}`);
+      if (menu) menu.classList.toggle('show');
+    };
+
+    // if the user clicks anywhere else, close the open menus
+    document.addEventListener("click", () => {
+      dropdown.classList.remove("active");
+      document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+    });
+
+    // handle the logout button click
+    logoutBtn.addEventListener("click", () => {
+      // Clear any local state if needed
+      window.location.href = "/login/";
+    });
+
+    // logic to make the create project modal work
+    const modal = document.getElementById("createModal");
+    const form = document.getElementById("createProjectForm");
+
+    // make sure all the create buttons open the modal
+    document.querySelectorAll(".action-create").forEach(btn => {
+      btn.addEventListener("click", () => {
+        modal.classList.add("active");
+        document.getElementById("projectName").focus();
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove("active");
+      form.reset();
+    }
+
+    document.getElementById("cancelBtn").addEventListener("click", closeModal);
+
+    // close the modal if the user clicks on the background overlay
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("projectName").value;
+      const visibility = document.getElementById("projectVisibility").value;
+
+      // just logging since we don't have a real backend yet
+      console.log("Creating project:", { name, visibility });
+
+      // add the new project to our list and update the screen
+      projects.unshift({ name: name, href: "#", lastEdited: "Just now" });
+      renderView(searchInput.value);
+
+      closeModal();
+    });
+  </script>
+</body>
+
+</html>
