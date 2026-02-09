@@ -2,7 +2,7 @@
   "name": "capstone",
   "version": "1.0.0",
   "description": "",
-  "main": "frontEnd/main.js",
+  "main": "Electron/main.js",
   "devDependencies": {
     "electron": "^40.0.0"
   },

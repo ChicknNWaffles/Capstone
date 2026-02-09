@@ -1,0 +1,255 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Cocoding Studio</title>
+
+    <style>
+            /* =========================
+           Reset + Base
+        ========================= */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html, body {
+                height: 100%;
+            }
+
+            :root {
+                --glass-bg: rgba(18, 25, 55, 0.28);
+                --glass-border: rgba(255, 255, 255, 0.08);
+                --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+                --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                --glass-blur: blur(22px) saturate(140%);
+            }
+
+            body {
+                font-family: "Consolas", "Monaco", "Courier New", monospace;
+                background: radial-gradient(1200px 600px at 15% 10%, rgba(88,120,255,0.25), transparent 60%), radial-gradient(900px 600px at 80% 30%, rgba(168,85,247,0.22), transparent 55%), linear-gradient(180deg, #0b1224, #060914);
+                color: rgba(230,235,255,0.9);
+                overflow-x: hidden;
+            }
+
+            /* =========================
+           Layout
+        ========================= */
+            .home {
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                padding: 40px 20px;
+            }
+
+            .wrap {
+                width: min(980px, 100%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 18px;
+            }
+
+            .title {
+                font-size: clamp(36px, 5vw, 58px);
+                line-height: 1.06;
+                color: rgba(255, 255, 255, 0.95);
+                letter-spacing: 0.4px;
+            }
+
+            .sub {
+                font-size: 16px;
+                color: rgba(232, 238, 252, 0.7);
+                margin-top: 2px;
+            }
+
+            /* =========================
+           Projects Grid
+        ========================= */
+            .projects {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+
+            .card {
+                position: relative;
+                min-height: 92px;
+                padding: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                color: rgba(255,255,255,0.92);
+                font-weight: 800;
+                font-size: 1.05rem;
+                border-radius: 14px;
+                background: var(--glass-bg);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                border: 1px solid var(--glass-border);
+                box-shadow: var(--glass-shadow), var(--glass-inner);
+                transition: transform 0.15s, background-color 0.2s, border-color 0.2s;
+            }
+
+                .card::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    border-radius: inherit;
+                    background: linear-gradient( to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 40%, transparent 60% );
+                }
+
+                .card:hover {
+                    transform: translateY(-2px);
+                    background: rgba(18,25,55,0.34);
+                    border-color: rgba(255,255,255,0.12);
+                }
+
+                .card:focus-visible {
+                    outline: none;
+                    box-shadow: 0 0 0 4px rgba(88,120,255,0.22), var(--glass-shadow), var(--glass-inner);
+                }
+
+            /* =========================
+           Empty State
+        ========================= */
+            .empty {
+                width: 100%;
+                padding: 28px 18px;
+                border-radius: 14px;
+                background: rgba(255,255,255,0.05);
+                border: 1px dashed rgba(255,255,255,0.14);
+                color: rgba(232,238,252,0.72);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .empty strong {
+                    color: rgba(255,255,255,0.92);
+                    font-weight: 800;
+                }
+
+            /* =========================
+           Create Button
+        ========================= */
+            .actions {
+                margin-top: 10px;
+            }
+
+            .btn {
+                padding: 14px 28px;
+                border-radius: 999px;
+                border: 1px solid rgba(255,255,255,0.14);
+                background: rgba(88,120,255,0.22);
+                color: #e8eefc;
+                font: inherit;
+                font-weight: 800;
+                cursor: pointer;
+                transition: transform 0.15s, background-color 0.2s;
+            }
+
+                .btn:hover {
+                    transform: translateY(-1px);
+                    background: rgba(88,120,255,0.32);
+                }
+
+                .btn:active {
+                    transform: translateY(0px);
+                }
+
+            /* =========================
+           Responsive
+        ========================= */
+            @media (max-width: 720px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <main class="home">
+        <div class="wrap">
+            <div>
+                <h1 class="title">Welcome to Cocoding Studio</h1>
+                <p class="sub">Choose a project or create a new one to start coding.</p>
+            </div>
+
+            <section class="projects" id="projectsSection">
+                <!-- JS will render either cards or empty state here -->
+            </section>
+
+            <div class="actions">
+                <button class="btn" id="createBtn">+ Create New Project</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // FRONTEND ONLY: toggle this to test
+        // If empty array => new user experience (no cards)
+        // If has items => show cards
+        const projects = [
+            // { name: "project 1", href: "/editor?project=1" },
+            // { name: "project 2", href: "/editor?project=2" },
+            // { name: "project 3", href: "/editor?project=3" },
+            // { name: "project 4", href: "/editor?project=4" },
+        ];
+
+        const projectsSection = document.getElementById("projectsSection");
+
+        function renderProjects(list) {
+            projectsSection.innerHTML = "";
+
+            if (!list || list.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "empty";
+                empty.innerHTML = `
+              <strong>No projects yet.</strong>
+              <div>Create your first project to start live coding.</div>
+            `;
+                projectsSection.appendChild(empty);
+                return;
+            }
+
+            const grid = document.createElement("div");
+            grid.className = "grid";
+
+            list.forEach(p => {
+                const a = document.createElement("a");
+                a.className = "card";
+                a.href = p.href || "#";
+                a.textContent = p.name || "Untitled Project";
+                grid.appendChild(a);
+            });
+
+            projectsSection.appendChild(grid);
+        }
+
+        renderProjects(projects);
+
+        document.getElementById("createBtn").addEventListener("click", () => {
+            // frontend-only: redirect wherever your create page/modal will be
+            window.location.href = "/projects/new";
+        });
+    </script>
+</body>
+</html>
+
+<!-- finale -->

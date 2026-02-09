@@ -16,9 +16,39 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse, HttpResponse
+from django.template import loader
+
+def homePage(request):
+    template = loader.get_template("homepage.html")
+    return HttpResponse(template.render())
+
+def loginPage(request):
+    template = loader.get_template("login.html")
+    return HttpResponse(template.render())
+
+def signupPage(request):
+    template = loader.get_template("signup.html")
+    return HttpResponse(template.render())
+
+def editorPage(request):
+    template = loader.get_template("editor.html")
+    return HttpResponse(template.render())
+
 
 urlpatterns = [
+    # render pages
+    path("", homePage),
+    path("login/", loginPage),
+    path("signup/", signupPage),
+    path("editor/", editorPage),
+
+    # admin pages
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('project/', include('project.urls'))
+    path('project/', include('project.urls')),
+    path('api/', include('api.urls')),
+
+
+
 ]
