@@ -25,6 +25,7 @@ class getProjects(View):
             html += f"<h1>{project.name}</h1>"
             html += f"<p>{project.visibility}</p>"
             html += f"<p>{project.file_path}</p>"
+            html += f"<p>{project.repo_link}</p>"
         response = HttpResponse(html)
 
         # if doing templates use:
@@ -38,6 +39,7 @@ class CreateProject(APIView):
         name = request.data.get("name")
         filepath = request.data.get("filepath")
         visibility = request.data.get("visibility")
+        repoLink = request.data.get("repoLink")
 
 
         # example of a guard
@@ -70,6 +72,7 @@ class CreateProject(APIView):
             visibility=visibility,
             file_path=filepath,
             owner=user,
+            repo_link=repoLink,
         )
         project.save()
 
@@ -77,7 +80,8 @@ class CreateProject(APIView):
             "success": True,
             "name": project.name,
             "filepath": project.file_path,
-            "visibility": project.visibility
+            "visibility": project.visibility,
+            "repoLink":project.repo_link,
         }
 
         return Response(response)
@@ -97,7 +101,7 @@ class CreateProjectButWithSerializers(APIView):
             visibility=data.get("visibility"),
             file_path=data.get("file_path"),
             owner=user,
-
+            repo_link=data.get("repo_link"),
         )
         project.save()
 
@@ -105,7 +109,8 @@ class CreateProjectButWithSerializers(APIView):
             "success": True,
             "name": project.name,
             "filepath": project.file_path,
-            "visibility": project.visibility
+            "visibility": project.visibility,
+            "repoLink":project.repo_link,
         }
 
         return Response(response)
