@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'project',
     'collaborator',
-    'commit',
+    'projectfiles',
+    'projectbranch',
 ]
 
 MIDDLEWARE = [
