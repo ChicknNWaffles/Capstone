@@ -45,9 +45,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'project',
     'collaborator',
-    'commit',
     'api',
-    'Capstone'
+    'Capstone',
+    'projectbrach',
+    # 'projectfiles',
 ]
 
 MIDDLEWARE = [
