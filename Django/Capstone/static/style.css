@@ -178,11 +178,19 @@ body {
     align-items: flex-start;
     padding-left: 0.5rem;
     flex-direction: row;
+    height:5%;
 }
 
-.fileDirectoryBar{
-    height:100%;
-    width:10%;
+.notTheTopBar{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    height:95%
+}
+
+.fileDirectoryBar {
+    height: 100%;
+    width: 10%;
 }
 
 /* VS Code-ish active indicator */
@@ -443,13 +451,19 @@ body {
   overflow-y: auto;
   background: transparent;
   /* IMPORTANT: don't block blur */
-  padding: 2rem;
   min-height: 0;
   min-width: 0;
 }
 
+#tabHeaders {
+    flex: 0 0 48px;
+    display: flex;
+    padding: 0.5rem 0;
+    gap: 1rem;
+}
+
 .welcome-container {
-  max-width: 980px;
+    max-width: 980px;
 }
 
 .welcome-title {
