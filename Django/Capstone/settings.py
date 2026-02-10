@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-#^6ip%nhft!=b8!h70c3em-7#xk-b5k78n6tu$!z-pxv$w^l7@
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000"
+]
 
 
 # Application definition
@@ -38,9 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'project',
     'collaborator',
-    'commit',
+    'api',
+    'Capstone',
+    'projectbrach',
+    # 'projectfiles',
 ]
 
 MIDDLEWARE = [
@@ -118,9 +126,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/Capstone/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_DIRS = [f"{BASE_DIR}/Capstone/static/"]
