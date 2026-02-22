@@ -3,6 +3,7 @@ from django.views import View
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView, Response
+from . import serializers
 from . import models
 
 
@@ -21,13 +22,34 @@ class getProjectFiles(View):
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
-        for project in projectFiles:
-            html += f"<h1>{project.name}</h1>"
-            html += f"<p>{project.visibility}</p>"
-            html += f"<p>{project.file_path}</p>"
-            html += f"<p>{project.repo_link}</p>"
+        for files in projectFiles:
+            html += f"<h1>{files.name}</h1>"
+            html += f"<p>{files.visibility}</p>"
+            html += f"<p>{files.file_path}</p>"
+            html += f"<p>{files.repo_link}</p>"
         response = HttpResponse(html)
 
         # if doing templates use:
         # response = render()
         return response
+    
+class CreateBranch(APIView):
+
+    serializer_class = serializers.ProjectSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+        data = serializer.validated_data
+
+        project = models.Project(
+            name=data.get("name"),
+        )
+        project.save()
+
+        response = {
+            "success": True,
+            "name": project.name,
+        }
+
+        return Response(response)
