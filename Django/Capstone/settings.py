@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'api',
     'Capstone',
     'projectbrach',
-    # 'projectfiles',
+    'projectfiles',
 ]
 
 MIDDLEWARE = [
