@@ -9,4 +9,3 @@ class projectBranchAdmin(admin.ModelAdmin):
     search_fields = ('id', 'project', 'name')
 
 admin.site.register(models.Branch, projectBranchAdmin)
-
