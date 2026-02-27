@@ -3,12 +3,13 @@ from django.views import View
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView, Response
+from . import serializers
 from . import models
 from . import serializers
 
 
 # Create your views here.
-class getProjectFiles(View):
+class getFiles(View):
     
     def get(self, request):
 
@@ -24,16 +25,14 @@ class getProjectFiles(View):
         # Project.objects.filter(id__lt = 7)
         for files in projectFiles:
             html += f"<h1>{files.name}</h1>"
-            html += f"<p>{files.visibility}</p>"
-            html += f"<p>{files.file_path}</p>"
-            html += f"<p>{files.repo_link}</p>"
         response = HttpResponse(html)
 
         # if doing templates use:
         # response = render()
         return response
     
-class CreateBranch(APIView):
+
+class CreateFiles(APIView):
 
     serializer_class = serializers.ProjectSerializer
     
@@ -42,14 +41,14 @@ class CreateBranch(APIView):
         serializer.is_valid()
         data = serializer.validated_data
 
-        project = models.Project(
+        file = models.ProjectFile(
             name=data.get("name"),
         )
-        project.save()
+        file.save()
 
         response = {
             "success": True,
-            "name": project.name,
+            "name": file.name,
         }
 
         return Response(response)

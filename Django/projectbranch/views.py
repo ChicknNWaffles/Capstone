@@ -35,14 +35,14 @@ class CreateBranch(APIView):
         serializer.is_valid()
         data = serializer.validated_data
 
-        project = models.Project(
+        branch = models.Branch(
             name=data.get("name"),
         )
-        project.save()
+        branch.save()
 
         response = {
             "success": True,
-            "name": project.name,
+            "name": branch.name,
         }
 
         return Response(response)
