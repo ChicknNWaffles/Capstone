@@ -31,7 +31,6 @@ class getFiles(View):
         # response = render()
         return response
     
-
 class CreateFiles(APIView):
 
     serializer_class = serializers.ProjectSerializer
