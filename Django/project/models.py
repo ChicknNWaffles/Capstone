@@ -11,6 +11,7 @@ class Project(models.Model):
     visibility = models.BooleanField(default=False)
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE)
     repo_link = models.CharField(max_length=255, default="")
+    last_edited = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name

@@ -6,6 +6,7 @@ class Branch(models.Model):
     
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, default="")
+    isMain = models.BooleanField(default=False)
 
     #pk = models.CompositePrimaryKey("name", "project_id")
 

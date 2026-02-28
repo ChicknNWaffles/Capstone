@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.template import loader
 
+
+@ensure_csrf_cookie
 def homePage(request):
     template = loader.get_template("homepage.html")
     return HttpResponse(template.render())
@@ -50,7 +53,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('collaborator/', include('collaborator.urls')),
     path('branch/', include('projectbrach.urls')),
-    # path('files/', include('projectfiles.urls')),
+    path('files/', include('projectfiles.urls')),
 
 
 

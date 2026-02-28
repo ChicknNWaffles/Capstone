@@ -5,7 +5,7 @@ from . import models
 # admin.site.register(models.Project)
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'file_path', 'visibility')
+    list_display = ('id', 'name', 'owner', 'file_path', 'visibility')
     list_filter = ('name',)
     search_fields = ('name', 'visibility')
 

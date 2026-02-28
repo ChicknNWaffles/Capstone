@@ -67,7 +67,12 @@
 
     // gets the directories of all of the files in the current commit
     async function getFileDirectories() {
-        const URL = Host + "/api/getFileDirs"
+        const URL = Host + "/files/getProjectFiles"
+        const result = await fetch(URL)
+        result.json().then(data => {
+            
+        })
+
     }
     getFileDirectories
 
