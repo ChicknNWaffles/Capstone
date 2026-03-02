@@ -3,21 +3,26 @@ from django.views import View
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView, Response
-from . import models
+from django.shortcuts import render, get_object_or_404
+from project.models import Project
+from collaborator.models import Collaborator
 from . import serializers
 
 # Create your views here.
 class getCollaborators(View):
     
-    def get(self, request):
-
+    def get(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+        
+        collaborators = Collaborator.objects.filter(project=project)
+        
         # this one is getProjects(APIView)
         # projects = models.Project.objects.all().values()
         # response = Response(projects)
 
         # this one is getProjects(View)
         html = ""
-        collaborators = models.Collaborator.objects.all()
+        collaborators = Collaborator.objects.all()
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)

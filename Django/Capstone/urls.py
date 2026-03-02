@@ -48,7 +48,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('project/', include('project.urls')),
-    path('project/<int:project_id>/collaborator/', ProjectCollaboratorsListCreate.as_view(), name='projectCollaborators'),
     path('api/', include('api.urls')),
     path('collaborator/', include('collaborator.urls')),
     path('branch/', include('projectbranch.urls')),
