@@ -67,14 +67,47 @@
 
     // gets the directories of all of the files in the current commit
     async function getFileDirectories() {
-        const URL = Host + "/files/getProjectFiles"
+        const URL = Host + "/files/get/"
         const result = await fetch(URL)
         result.json().then(data => {
-            
+            var files = data.files
+            console.log(files)
+            var sorted = sortDirectories(files)
+            console.log(sorted)
         })
 
     }
-    getFileDirectories
+    getFileDirectories()
+
+    // sorts the files into directories
+    function sortDirectories(files) {
+        topLevel = {"/": {}}
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i]
+            var relPath = file.name
+            var prevLevels = []
+            var at = "/"
+            var bottomFolder = topLevel[at]
+            while (relPath.includes("/")) {
+                var before = relPath.substr(0, relPath.indexOf("/"))
+                var curFolder = topLevel
+                for (var j = 0; j < prevLevels.length; j++) {
+                    curFolder = curFolder[prevLevels[j]]
+                }
+                curFolder = curFolder[at]
+                if (Object.hasOwn(curFolder, before) == false) {
+                    curFolder[before] = {}
+                }
+                curFolder = curFolder[before]
+                prevLevels.push(at)
+                at = before
+                relPath = relPath.substr(relPath.indexOf("/") + 1)
+                bottomFolder = curFolder
+            }
+            bottomFolder[relPath] = "file"
+        }
+        return topLevel
+    }
 
 </script>
 

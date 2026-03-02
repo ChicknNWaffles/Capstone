@@ -45,8 +45,8 @@ class getProjectFiles(APIView):
 
         # this one is getProjects(View)
         fileList = []
-        curProj = request.session.get("curProjName", "")
-        curBranch = request.session.get("curBranchName", "")
+        curProj = request.session.get("curProj", "")
+        curBranch = request.session.get("curCom", "")
         projectFiles = models.ProjectFile.objects.filter(project=curProj).filter(branch=curBranch)
         # Project.objects.filter()
         # Project.objects.get()
