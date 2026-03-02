@@ -689,7 +689,26 @@
                   credentials: "include"
               });
               if (response.ok) {
-                  window.location.href = Host + "/editor/"
+                  try {
+                      const response2 = await fetch(Host + "/api/setCurBranch/", {
+                          method: "POST",
+                          headers: {
+                              "Content-Type": "application/json",
+                              'X-CSRFToken': csrftoken,
+                          },
+                          body: JSON.stringify({ com: "" }),
+                          credentials: "include"
+                      });
+                      if (response2.ok) {
+                          window.location.href = Host + "/editor/"
+                      } else {
+                          const data2 = await resposne.json();
+                          alert(data2.error || "Invalid Branch")
+                      }
+                  } catch(err) {
+                      alert("Backend not running");
+                      console.error(err);
+                  }
               } else {
                   const data = await response.json();
                   alert(data.error || "Invalid Project");

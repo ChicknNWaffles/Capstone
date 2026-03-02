@@ -10,4 +10,5 @@ urlpatterns = [
     path("getProjName", views.getProjName),
     path("getComName", views.getComName),
     path("setCurProj/", views.setCurProj),
+    path("setCurBranch/", views.setCurBranch),
 ]
