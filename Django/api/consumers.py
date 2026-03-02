@@ -33,6 +33,7 @@ class TerminalConsumer(AsyncWebsocketConsumer):
         and format prompt output cleanly for the frontend client.
         """
         bashrc_content = """
+export BASH_SILENCE_DEPRECATION_WARNING=1
 ESC=$(printf "\033")
 # Fake the prompt directory to look like a friendly project path instead of /tmp/...
 # Calculate the real path length to strip it from the PS1 prompt
