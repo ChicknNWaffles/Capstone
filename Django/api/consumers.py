@@ -2,13 +2,18 @@ import json
 import asyncio
 import subprocess
 import os
-import pty
-import fcntl
-import termios
 import struct
 import shlex
 import tempfile
 import shutil
+import sys
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+# Conditionally import Unix-only PTY modules
+if sys.platform != 'win32':
+    import pty
+    import fcntl
+    import termios
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 class TerminalConsumer(AsyncWebsocketConsumer):
@@ -70,30 +75,48 @@ cd() {
             f.write(bashrc_content)
 
         # Create an isolated temporary directory for the workspace session
-        self.workspace_dir = tempfile.mkdtemp(prefix="project_", dir="/tmp")
+        self.workspace_dir = tempfile.mkdtemp(prefix="project_", dir=tempfile.gettempdir())
 
-        # Fork a new pseudo-terminal simulating an interactive terminal device
-       
-        pid, self.fd = pty.fork()
+        env = os.environ.copy()
         
-        if pid == 0:
-            # Child process: configure environment and initialize shell
-            env = os.environ.copy()
-            env["TERM"] = "xterm-256color"
+        if sys.platform == 'win32':
+            # WINDOWS FALLBACK: Use a standard subprocess instead of a full PTY
+            # Windows users won't get full interactive terminal features, but it won't crash!
+            self.process = subprocess.Popen(
+                ["cmd.exe"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=self.workspace_dir,
+                env=env,
+                bufsize=0,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            # Use the subprocess pipes for I/O instead of a raw file descriptor
+            self.fd = None
+            self.read_task = asyncio.create_task(self.read_windows_output())
             
-            # Start the shell isolated within the temporary workspace
-            os.chdir(self.workspace_dir)
-            os.execvpe("bash", ["bash", "--init-file", self.bashrc_path], env)
         else:
-            # Parent process: monitor the child process asynchronously
-            self.process = pid
+            # UNIX/MAC: Fork a new pseudo-terminal simulating an interactive terminal device
+            pid, self.fd = pty.fork()
             
-            # Switch PTY file descriptor to non-blocking mode
-            flags = fcntl.fcntl(self.fd, fcntl.F_GETFL)
-            fcntl.fcntl(self.fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-            
-            # Initialize the background output polling loop
-            self.read_task = asyncio.create_task(self.read_output())
+            if pid == 0:
+                # Child process: configure environment and initialize shell
+                env["TERM"] = "xterm-256color"
+                
+                # Start the shell isolated within the temporary workspace
+                os.chdir(self.workspace_dir)
+                os.execvpe("bash", ["bash", "--init-file", self.bashrc_path], env)
+            else:
+                # Parent process: monitor the child process asynchronously
+                self.process = pid
+                
+                # Switch PTY file descriptor to non-blocking mode
+                flags = fcntl.fcntl(self.fd, fcntl.F_GETFL)
+                fcntl.fcntl(self.fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+                
+                # Initialize the background output polling loop
+                self.read_task = asyncio.create_task(self.read_output())
 
     async def disconnect(self, close_code):
         """Handles WebSocket disconnect events and ensures resources are freed."""
@@ -102,13 +125,19 @@ cd() {
     def cleanup_process(self):
         """Terminates the shell process and purges temporary files/directories."""
         if hasattr(self, 'process') and self.process:
-            try:
-                os.kill(self.process, 9)
-            except OSError:
-                pass
+            if sys.platform == 'win32':
+                try:
+                    self.process.terminate()
+                except Exception:
+                    pass
+            else:
+                try:
+                    os.kill(self.process, 9)
+                except OSError:
+                    pass
             self.process = None
 
-        if hasattr(self, 'fd') and self.fd:
+        if hasattr(self, 'fd') and self.fd is not None:
             try:
                 os.close(self.fd)
             except OSError:
@@ -139,7 +168,7 @@ cd() {
         Parses resize/kill JSON control commands from the frontend or
         forwards raw keystroke input directly to the bash process.
         """
-        if not self.fd:
+        if not hasattr(self, 'process') or not self.process:
             return
             
         if text_data and text_data.startswith('{'):
@@ -147,11 +176,12 @@ cd() {
                 data = json.loads(text_data)
                 
                 if data.get('type') == 'resize':
-            # Synchronize the pseudo-terminal window dimensions
-                    cols = data.get('cols', 80)
-                    rows = data.get('rows', 24)
-                    winsize = struct.pack("HHHH", rows, cols, 0, 0)
-                    fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsize)
+                    # Windows doesn't support PTY resizing naturally through termios
+                    if sys.platform != 'win32' and self.fd:
+                        cols = data.get('cols', 80)
+                        rows = data.get('rows', 24)
+                        winsize = struct.pack("HHHH", rows, cols, 0, 0)
+                        fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsize)
                     return
                     
                 elif data.get('type') == 'kill':
@@ -166,12 +196,30 @@ cd() {
                 
         # Forward direct terminal keystrokes to the underlying process
         try:
-            if text_data:
-                os.write(self.fd, text_data.encode('utf-8'))
-            elif bytes_data:
-                os.write(self.fd, bytes_data)
-        except OSError:
+            input_data = text_data.encode('utf-8') if text_data else bytes_data
+            
+            if sys.platform == 'win32':
+                if self.process and self.process.stdin:
+                    self.process.stdin.write(input_data)
+                    self.process.stdin.flush()
+            else:
+                if self.fd is not None:
+                    os.write(self.fd, input_data)
+        except (OSError, BrokenPipeError):
             pass
+
+    async def read_windows_output(self):
+        """Fallback background loop to read standard Windows subprocess stdout."""
+        while hasattr(self, 'process') and self.process:
+            try:
+                await asyncio.sleep(0.01)
+                if self.process.stdout:
+                    # Non-blocking read trick for Windows PIPE
+                    output = self.process.stdout.read1(1024)
+                    if output:
+                        await self.send(text_data=output.decode('utf-8', errors='replace'))
+            except Exception:
+                break
 
     async def read_output(self):
         """Asynchronously polls the pseudo-terminal output and pushes to WebSocket."""
