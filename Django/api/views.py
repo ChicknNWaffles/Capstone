@@ -4,6 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
+import sys
+import io
+import traceback
 
 from .models import Project
 
@@ -86,21 +89,32 @@ def getComName(request):
     # send to front end
     return Response({"name":comName})
 
-# this function opens a project
-# it saves the project info so the editor knows what to load
 @csrf_exempt
 @api_view(["POST"])
-def open_project(request, project_id):
+def execute_code(request):
+    code = request.data.get("code")
+    if not code:
+        return Response({"output": "", "error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    sys.stdout = io.StringIO()
+    sys.stderr = io.StringIO()
+    
+    error_msg = ""
     try:
-        # find the project in the database
-        project = Project.objects.get(pk=project_id)
+        exec(code, {})
+    except Exception as e:
+        error_msg = traceback.format_exc()
+    finally:
+        output = sys.stdout.getvalue()
+        if not error_msg:
+            error_msg = sys.stderr.getvalue()
         
-        # save the project name and ID in the "session" (like a temporary memory)
-        request.session['curProjName'] = project.name
-        request.session['curProjID'] = project.id 
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
         
-        # tell the frontend everything is okay
-        return Response({"ok": True, "name": project.name})
-    except Project.DoesNotExist:
-        # if we can't find the project, tell the frontend
-        return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+    return Response({
+        "output": output,
+        "error": error_msg
+    })

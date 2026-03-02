@@ -16,23 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# we need render so it passes the request info (like the csrf token) to the html
-from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.template import loader
 
 def homePage(request):
-    # render the homepage
-    return render(request, "homepage.html")
+    template = loader.get_template("homepage.html")
+    return HttpResponse(template.render())
 
 def loginPage(request):
-    # use render to make sure the csrf token gets sent to the template
-    return render(request, "login.html")
+    template = loader.get_template("login.html")
+    return HttpResponse(template.render())
 
 def signupPage(request):
-    # same here, need render for the form security
-    return render(request, "signup.html")
+    template = loader.get_template("signup.html")
+    return HttpResponse(template.render())
 
 def editorPage(request):
-    return render(request, "editor.html")
+    template = loader.get_template("editor.html")
+    return HttpResponse(template.render())
 
 
 urlpatterns = [

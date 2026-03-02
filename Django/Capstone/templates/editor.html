@@ -6,6 +6,17 @@
 <head>
     <title>CoCodingStudio | editor</title>
     <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <!-- Xterm.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm/css/xterm.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Give the xterm container a specific height so it fits */
+        #terminal {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,16 +24,44 @@
         <h3>Project: </h3>
         <h3 id="projectName"></h3>
     </div>
-    <div class="sidebar fileDirectoryBar">
-        <div class="top-bar activity-bar">
-            <h3>Commit: </h3>
-            <h3 id="commitName"></h3>
+    <div class="notTheTopBar">
+        <div class="sidebar fileDirectoryBar">
+            <div class="top-bar activity-bar">
+                <h3>Commit: </h3>
+                <h3 id="commitName"></h3>
+            </div>
+        </div>
+        <div class="editor-content">
+            <div id="tabHeaders" class="top-bar"></div>
+            <div id="workspace">
+                <div class="openFiles"></div>
+                <div class="terminal-panel" style="display: flex; flex-direction: column;">
+                    <div class="terminal-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="terminal-tab">Command Terminal</div>
+                        <div class="terminal-actions" style="padding-right: 15px; cursor: pointer; color: #d4d4d4;"
+                            onclick="killTerminal()" title="Kill Terminal">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                    <div class="terminal-content"
+                        style="height: 150px; padding: 10px; background-color: #1e1e1e; flex-grow: 1;">
+                        <div id="terminal"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
 
 
 </body>
+
+<!-- Xterm.js Scripts from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-attach/lib/addon-attach.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit/lib/addon-fit.js"></script>
+
 <script>
     // API Calls to the backend:------------
     const Host = "http://127.0.0.1:8000"
@@ -40,7 +79,7 @@
     getProjectName()
 
     // gets the name of the current commit
-    async function getCommitName(){
+    async function getCommitName() {
         const URL = Host + "/api/getComName"
         const result = await fetch(URL)
         result.json().then(data => {
@@ -50,6 +89,80 @@
         })
     }
     getCommitName()
+
+    // gets the directories of all of the files in the current commit
+    async function getFileDirectories() {
+        const URL = Host + "/api/getFileDirs"
+    }
+    getFileDirectories
+
+
+
+
+    // Terminal / WebSocket logic - edited
+
+    // 1. Create the Xterm.js Terminal object
+    const term = new Terminal({
+        cursorBlink: true,
+        fontFamily: 'monospace',
+        theme: {
+            background: '#1e1e1e'
+        }
+    });
+
+    // 2. Load the FitAddon so it resizes properly
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+
+    // 3. Mount it to the UI
+    const terminalElement = document.getElementById("terminal");
+    term.open(terminalElement);
+    fitAddon.fit(); // Automatically calculate rows and columns
+
+    // 4. Connect to WebSocket
+    const wsProt = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const wsURL = "ws://127.0.0.1:8000/ws/terminal/";
+    let terminalSocket = new WebSocket(wsURL);
+
+    // 5. Connect the WebSocket directly to the terminal
+    // The AttachAddon handles EVERYTHING: Keystrokes -> Socket, Socket output -> Terminal UI
+    terminalSocket.onopen = function () {
+        const attachAddon = new AttachAddon.AttachAddon(terminalSocket);
+        term.loadAddon(attachAddon);
+
+        // Let the backend know our terminal size
+        terminalSocket.send(JSON.stringify({
+            "type": "resize",
+            "cols": term.cols,
+            "rows": term.rows
+        }));
+    };
+
+    // Kill switch function to terminate the backend process
+    function killTerminal() {
+        if (terminalSocket.readyState === WebSocket.OPEN) {
+            terminalSocket.send(JSON.stringify({
+                "type": "kill"
+            }));
+            term.writeln("\r\n\x1b[33m--- Command sent to forcefully terminate process ---\x1b[0m\r\n");
+        }
+    }
+
+    terminalSocket.onclose = function (e) {
+        term.writeln("\r\n\x1b[31mConsole connection lost. Please refresh.\x1b[0m");
+    };
+
+    // Resize the terminal backend process if the browser window resizes
+    window.addEventListener('resize', () => {
+        fitAddon.fit();
+        if (terminalSocket.readyState === WebSocket.OPEN) {
+            terminalSocket.send(JSON.stringify({
+                "type": "resize",
+                "cols": term.cols,
+                "rows": term.rows
+            }));
+        }
+    });
 
 </script>
 

@@ -7,7 +7,7 @@ class Collaborator(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    pk = models.CompositePrimaryKey("user_id", "project_id")
+    #pk = models.CompositePrimaryKey("user_id", "project_id")
 
     admin_perms = models.BooleanField(default=False)
     edit_perms = models.BooleanField(default=False)

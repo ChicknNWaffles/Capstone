@@ -17,7 +17,6 @@
       <p class="sub">Sign up to get started</p>
 
       <form class="form" onsubmit="return false;">
-        {% csrf_token %} <!-- CSRF token for security -->
         <label class="field">
           <input class="input" type="text" id="username" placeholder="Username" autocomplete="username" />
         </label>
@@ -51,15 +50,10 @@
         return;
       }
 
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // get csrftoken
-
       try {
-        const response = await fetch("/api/signup/", { // connecting to backend
+        const response = await fetch("http://localhost:8000/api/signup/", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken // send csrftoken
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
           credentials: "include"
         });

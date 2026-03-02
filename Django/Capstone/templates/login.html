@@ -17,7 +17,6 @@
       <p class="sub">Log in to your account</p>
 
       <form class="form" onsubmit="return false;">
-        {% csrf_token %} <!-- CSRF token for security -->
         <label class="field">
           <input class="input" type="text" id="username" placeholder="Username" autocomplete="username" />
         </label>
@@ -48,14 +47,11 @@
         return;
       }
 
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // get csrftoken
-
       try {
-        const response = await fetch("/api/login/", { // connecting to backend
+        const response = await fetch("http://localhost:8000/api/login/", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken // send csrftoken
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({ username, password }),
           credentials: "include"
@@ -64,9 +60,8 @@
         if (response.ok) {
           window.location.href = "/";
         } else {
-          const text = await response.text(); // get the error message from backend
-          console.error("Login failed:", response.status, text); // log error to console for debugging
-          alert(`Login failed (${response.status}): ${text}`); // show specific error to user
+          const data = await response.json();
+          alert(data.error || "Login failed");
         }
       } catch (err) {
         alert("Backend not running");

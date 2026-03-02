@@ -3,8 +3,8 @@ from django.views import View
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView, Response
-from . import serializers
 from . import models
+from . import serializers
 
 
 # Create your views here.

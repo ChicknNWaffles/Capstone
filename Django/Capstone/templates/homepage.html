@@ -308,13 +308,10 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       padding: 4px;
-      min-width: 160px;
-      /* Increased to fit longer text */
+      min-width: 120px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
       z-index: 10;
       display: none;
-      white-space: nowrap;
-      /* Prevent text wrapping */
     }
 
     .action-dropdown.show {
@@ -605,7 +602,6 @@
           card.className = "card";
 
           // Card HTML structure
-          // Note: added make sure to use href="#" back
           card.innerHTML = `
                     <a href="${p.href}" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
                         <span class="card-title">${p.name}</span>
@@ -616,8 +612,6 @@
                         <button class="btn-action" onclick="toggleMenu(event, ${index})">⋮</button>
                         <div class="action-dropdown" id="menu-${index}">
                             <button class="action-item">Rename</button>
-                            <!-- button to add a collaborator to the project -->
-                            <button class="action-item" onclick="addCollaborator('${p.name}')">Add Collaborator</button>
                             <button class="action-item danger">Delete</button>
                         </div>
                     </div>
@@ -629,25 +623,6 @@
 
     // run the render function once when the page loads
     renderView();
-
-    // Fetch user info to update avatar
-    async function updateAvatar() {
-      try {
-        const response = await fetch("/api/me/");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.authenticated && data.username) {
-            const username = data.username.toUpperCase();
-            // Get initials (first 2 chars of username for simplicity, or just first char)
-            const initials = username.substring(0, 2);
-            document.getElementById("userAvatar").innerText = initials;
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch user info:", err);
-      }
-    }
-    updateAvatar();
 
     // listen for typing in the search bar
     searchInput.addEventListener("input", (e) => {
@@ -672,11 +647,6 @@
       // Toggle current
       const menu = document.getElementById(`menu-${index}`);
       if (menu) menu.classList.toggle('show');
-    };
-
-    // Placeholder for Add Collaborator feature
-    window.addCollaborator = function (projectName) {
-      //alert(`Add Collaborator feature for "${projectName}" coming soon!`);
     };
 
     // if the user clicks anywhere else, close the open menus
@@ -733,5 +703,5 @@
 </body>
 
 </html>
-
+ 
 <!--ENDDD-->

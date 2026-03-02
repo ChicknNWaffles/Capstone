@@ -178,11 +178,19 @@ body {
     align-items: flex-start;
     padding-left: 0.5rem;
     flex-direction: row;
+    height:6.5%;
 }
 
-.fileDirectoryBar{
-    height:100%;
-    width:10%;
+.notTheTopBar{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    height:93.5%
+}
+
+.fileDirectoryBar {
+    height: 100%;
+    width: 10%;
 }
 
 /* VS Code-ish active indicator */
@@ -443,13 +451,19 @@ body {
   overflow-y: auto;
   background: transparent;
   /* IMPORTANT: don't block blur */
-  padding: 2rem;
   min-height: 0;
   min-width: 0;
 }
 
+#tabHeaders {
+    flex: 0 0 48px;
+    display: flex;
+    padding: 0.5rem 0;
+    gap: 1rem;
+}
+
 .welcome-container {
-  max-width: 980px;
+    max-width: 980px;
 }
 
 .welcome-title {
@@ -637,10 +651,11 @@ body {
   height: 36px;
   flex: 0 0 36px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   padding: 0 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom-width: 0px;
 }
 
 .terminal-tabs {
@@ -649,14 +664,19 @@ body {
 }
 
 .terminal-tab {
-  background: none;
+  background: rgba(0, 0, 0, 0.45);
   border: none;
   color: rgba(230, 235, 255, 0.65);
   font-size: 0.875rem;
   cursor: pointer;
-  padding-bottom: 0.5rem;
   border-bottom: 2px solid transparent;
   transition: color 0.2s, border-color 0.2s;
+  padding-bottom: 0px;
+  height: 85%;
+  padding-top: 0.6%;
+  padding-left: 1%;
+  padding-right: 1%;
+  border-radius: 5px 5px 0px 0px;
 }
 
 .terminal-tab:hover {
@@ -679,6 +699,14 @@ body {
 
 .terminal-line {
   line-height: 1.5;
+}
+
+#workspace {
+    display: flex;
+    width: 100%;
+    height: 93.5%;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* =========================
@@ -742,10 +770,6 @@ body {
   .sidebar {
     width: 200px;
     flex: 0 0 200px;
-  }
-
-  .editor-content {
-    padding: 1rem;
   }
 
   .quick-actions {

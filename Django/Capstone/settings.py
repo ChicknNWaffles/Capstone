@@ -35,6 +35,8 @@ CORS_ALLOWED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne', # WEBSOCKETS! This gives us the ASGI server needed to keep persistent connections open.
+    'channels', # WEBSOCKETS! This connects Daphne to Django, letting us use WebSockets directly in Django.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +50,7 @@ INSTALLED_APPS = [
     'api',
     'Capstone',
     'projectbrach',
-    # 'projectfiles',
+    'projectfiles',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +80,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Capstone.wsgi.application'
+WSGI_APPLICATION = 'Capstone.wsgi.application' # Default synchronous Django 
+ASGI_APPLICATION = 'Capstone.asgi.application' # WEBSOCKETS! Points to the ASGI file which handles both HTTP and WebSocket traffic.
 
 
 # Database

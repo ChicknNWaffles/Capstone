@@ -7,10 +7,7 @@ urlpatterns = [
     path("signup/", views.signup_api),
     path("me/", views.me),
 
-    # access project variable
     path("getProjName", views.getProjName),
     path("getComName", views.getComName),
-    
-    # URL to open a project
-    path("open-project/<int:project_id>/", views.open_project), 
+    path("execute", views.execute_code),
 ]
