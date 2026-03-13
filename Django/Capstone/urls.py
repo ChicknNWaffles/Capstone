@@ -49,9 +49,6 @@ urlpatterns = [
     path('project/', include('project.urls')),
     path('api/', include('api.urls')),
     path('collaborator/', include('collaborator.urls')),
-    path('branch/', include('projectbrach.urls')),
-    # path('files/', include('projectfiles.urls')),
-
-
-
+    path('branch/', include('projectbranch.urls')),
+    path('files/', include('projectfiles.urls')),
 ]

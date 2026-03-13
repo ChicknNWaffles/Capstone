@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'collaborator',
     'api',
     'Capstone',
-    'projectbrach',
-    # 'projectfiles',
+    'projectbranch',
+    'projectfiles',
 ]
 
 MIDDLEWARE = [
