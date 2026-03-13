@@ -1,6 +1,6 @@
 from django.db import models
 from project.models import Project
-from projectbrach.models import Branch
+from projectbranch.models import Branch
 
 
 # Create your models here.

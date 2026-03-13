@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'collaborator',
     'api',
     'Capstone',
-    'projectbrach',
+    'projectbranch',
     'projectfiles',
 ]
 

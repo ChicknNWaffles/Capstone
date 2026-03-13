@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from rest_framework import status
 import rest_framework
 from rest_framework.views import APIView, Response
-from . import models
 from . import serializers
+from . import models
 
 
 # Create your views here.
@@ -59,7 +59,7 @@ class getProjectFiles(APIView):
             fileList.append(file)
         return Response({"files":fileList})
     
-class CreateBranch(APIView):
+class CreateFiles(APIView):
 
     serializer_class = serializers.ProjectSerializer
     
@@ -68,14 +68,14 @@ class CreateBranch(APIView):
         serializer.is_valid()
         data = serializer.validated_data
 
-        project = models.Project(
+        file = models.ProjectFile(
             name=data.get("name"),
         )
-        project.save()
+        file.save()
 
         response = {
             "success": True,
-            "name": project.name,
+            "name": file.name,
         }
 
         return Response(response)

@@ -8,7 +8,6 @@ class Branch(models.Model):
     name = models.CharField(max_length=255, default="")
     isMain = models.BooleanField(default=False)
 
-    #pk = models.CompositePrimaryKey("name", "project_id")
 
     def __str__(self):
         return self.name
