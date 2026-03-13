@@ -1,0 +1,398 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>S3 File Upload Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: linear-gradient(180deg, #0b1224, #1a1d2e);
+            color: #e6ebff;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .subtitle {
+            color: rgba(230, 235, 255, 0.6);
+            margin-bottom: 30px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card h2 {
+            font-size: 16px;
+            color: rgba(230, 235, 255, 0.8);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        input[type="file"] {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #e6ebff;
+            cursor: pointer;
+        }
+        
+        input[type="number"] {
+            width: 120px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #e6ebff;
+            font-family: inherit;
+        }
+        
+        label {
+            color: rgba(230, 235, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: rgba(88, 120, 255, 0.3);
+            border: 1px solid rgba(88, 120, 255, 0.5);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: rgba(88, 120, 255, 0.5);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status.success {
+            display: block;
+            background: rgba(92, 184, 92, 0.2);
+            border: 1px solid rgba(92, 184, 92, 0.4);
+            color: #5cb85c;
+        }
+        
+        .status.error {
+            display: block;
+            background: rgba(217, 83, 79, 0.2);
+            border: 1px solid rgba(217, 83, 79, 0.4);
+            color: #d9534f;
+        }
+        
+        .status.loading {
+            display: block;
+            background: rgba(240, 173, 78, 0.2);
+            border: 1px solid rgba(240, 173, 78, 0.4);
+            color: #f0ad4e;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .file-meta {
+            font-size: 12px;
+            color: rgba(230, 235, 255, 0.5);
+            margin-top: 4px;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .file-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-download {
+            background: rgba(92, 184, 92, 0.3);
+            border-color: rgba(92, 184, 92, 0.5);
+        }
+        
+        .btn-delete {
+            background: rgba(217, 83, 79, 0.3);
+            border-color: rgba(217, 83, 79, 0.5);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: rgba(230, 235, 255, 0.4);
+        }
+        
+        .refresh-btn {
+            margin-left: auto;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-header h2 {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> S3 File Upload Test</h1>
+        <p class="subtitle">Test uploading files to AWS S3 cloud storage</p>
+        
+        <!-- Upload Section -->
+        <div class="card">
+            <h2>Upload File</h2>
+            <form class="upload-form" id="uploadForm">
+                <div class="form-row">
+                    <input type="file" id="fileInput" required>
+                    <label>Project ID:</label>
+                    <input type="number" id="projectId" value="1" min="1">
+                </div>
+                <div class="form-row">
+                    <button type="submit" id="uploadBtn"> Upload to S3</button>
+                </div>
+            </form>
+            <div class="status" id="uploadStatus"></div>
+        </div>
+        
+        <!-- Files List Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Files in S3</h2>
+                <button class="refresh-btn" onclick="loadFiles()">Refresh</button>
+            </div>
+            <ul class="file-list" id="fileList">
+                <li class="empty-state">Loading files...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const API_HOST = "http://127.0.0.1:8000";
+        
+        // Load files on page load
+        document.addEventListener('DOMContentLoaded', loadFiles);
+        
+        // Handle form submission
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const projectId = document.getElementById('projectId').value;
+            const uploadBtn = document.getElementById('uploadBtn');
+            const status = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files[0]) {
+                showStatus(status, 'Please select a file', 'error');
+                return;
+            }
+            
+            // Show loading
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            showStatus(status, 'Uploading to S3...', 'loading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('project_id', projectId);
+                
+                const response = await fetch(`${API_HOST}/files/upload/`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showStatus(status, `Uploaded: ${result.filename} (${formatSize(result.size)})`, 'success');
+                    fileInput.value = '';  // Clear the input
+                    loadFiles();  // Refresh the list
+                } else {
+                    showStatus(status, `Error: ${result.error || 'Upload failed'}`, 'error');
+                }
+            } catch (error) {
+                showStatus(status, `Error: ${error.message}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload to S3';
+            }
+        });
+        
+        async function loadFiles() {
+            const projectId = document.getElementById('projectId').value;
+            const fileList = document.getElementById('fileList');
+            
+            fileList.innerHTML = '<li class="empty-state">Loading...</li>';
+            
+            try {
+                const response = await fetch(`${API_HOST}/files/list/${projectId}/`, {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.files.length > 0) {
+                    fileList.innerHTML = result.files.map(file => `
+                        <li class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">${file.filename}</div>
+                                <div class="file-meta">
+                                    ${formatSize(file.size)} • ${file.content_type} • ${formatDate(file.last_modified)}
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn-download" onclick="downloadFile('${file.file_key}')">
+                                    Download
+                                </button>
+                                <button class="btn-delete" onclick="deleteFile('${file.file_key}', '${file.filename}')">
+                                    Delete
+                                </button>
+                            </div>
+                        </li>
+                    `).join('');
+                } else {
+                    fileList.innerHTML = '<li class="empty-state">No files found. Upload one above!</li>';
+                }
+            } catch (error) {
+                fileList.innerHTML = `<li class="empty-state">Error loading files: ${error.message}</li>`;
+            }
+        }
+        
+        async function downloadFile(fileKey) {
+            try {
+                const response = await fetch(`${API_HOST}/files/download/${encodeURIComponent(fileKey)}/`, {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Open the pre-signed URL in a new tab
+                    window.open(result.download_url, '_blank');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function deleteFile(fileKey, filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_HOST}/files/delete/${encodeURIComponent(fileKey)}/`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    loadFiles();  // Refresh the list
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.className = 'status ' + type;
+        }
+        
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        function formatDate(isoString) {
+            return new Date(isoString).toLocaleString();
+        }
+    </script>
+</body>
+</html>
