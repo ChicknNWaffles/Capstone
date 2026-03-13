@@ -4,9 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
-
-from .models import Project
-
+from project.models import Project
+from projectbrach.models import Branch
 
 
 
@@ -85,3 +84,22 @@ def getComName(request):
     comName = request.session.get("curComName", "unknownCommit")
     # send to front end
     return Response({"name":comName})
+
+# sets the current project
+@api_view(["POST"])
+def setCurProj(request):
+    project = Project.objects.get(id = request.data.get("project"))
+    request.session["curProj"] = project.id
+    request.session["curProjName"] = project.name
+    return Response({"ok":True})
+
+# sets the current branch
+@api_view(["POST"])
+def setCurBranch(request):
+    proj = request.session.get("curProj")
+    main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
+    print(main)
+    branch = Branch.objects.get(id = request.data.get("com") or main.id)
+    request. session["curCom"] = branch.id
+    request.session["curComName"] = branch.name
+    return Response({"ok":True})

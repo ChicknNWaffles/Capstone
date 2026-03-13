@@ -567,21 +567,59 @@
   </div>
 
   <script>
+    const Host = "http://127.0.0.1:8000"
+
+    //const csrftoken = document.querySelector('[name=csrf-token]').value;
+
     // this is just mock data so i can test how it looks without the backend
-    const projects = [
-      { name: "My First Project", href: "#", lastEdited: "Edited 2 hours ago" },
-      { name: "Django Capstone", href: "#", lastEdited: "Edited 1 day ago" },
-      { name: "Personal Portfolio", href: "#", lastEdited: "Edited 3 days ago" },
-      { name: "React Experiment", href: "#", lastEdited: "Edited 1 week ago" },
-    ];
+    const projects = [];
 
     const viewEmpty = document.getElementById("view-empty");
     const viewDashboard = document.getElementById("view-dashboard");
     const projectsGrid = document.getElementById("projectsGrid");
     const searchInput = document.getElementById("projectSearch");
 
-    function renderView(filterText = "") {
-      const hasProjects = projects.length > 0;
+    // a function to get the project data from the backend
+    async function getProjectData() {
+        const URL = Host + "/project/getUserProjects"
+        const result = await fetch(URL)
+        result.json().then(data => {
+            projs = data.projects
+            for (const proj of projs) {
+                date = Date.parse(proj.last_edited)
+                today = Date.now()
+                diffTime = Math.abs(today - date)
+                diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+                if (diffDays == 0) {
+                    since = "today"
+                } else if (diffDays == 1) {
+                    since = String(diffDays).concat(" ", "days ago")
+                } else if (diffDays < 7) {
+                    since = String(diffDays).concat(" ", "day ago")
+                } else if (diffDays = 7) {
+                    since = "1 week ago"
+                } else if (diffDays < 365) {
+                    since = String(diffDays % 7).concat(" ", "weeks ago")
+                } else if (diffDays % 365 == 1) {
+                    since = "1 year ago"
+                } else {
+                    since = String(diffDays % 365).concat(" ", "years ago")
+                }
+
+                edited = `Edited ${since}`
+                projectData = { name: proj.name, lastEdited: edited, id:proj.id }
+                projects.push(projectData)
+            }
+            renderView();
+        })
+      }
+      getProjectData()
+     
+
+    async function renderView(filterText = "") {
+
+      var hasProjects = projects.length > 0;
 
       if (!hasProjects) {
         // if there are no projects, show the empty state screen
@@ -603,7 +641,7 @@
 
           // Card HTML structure
           card.innerHTML = `
-                    <a href="${p.href}" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
+                    <a onclick="setProjectAndRedirect(${p.id})" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
                         <span class="card-title">${p.name}</span>
                         <span class="card-date">${p.lastEdited || 'Just now'}</span>
                     </a>
@@ -621,8 +659,66 @@
       }
     }
 
-    // run the render function once when the page loads
-    renderView();
+    // a helper function provided in Django's official documentation
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+      }
+
+      async function setProjectAndRedirect(projectObject) {
+          const csrftoken = getCookie('csrftoken')
+          try {
+              const response = await fetch(Host + "/api/setCurProj/", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      'X-CSRFToken': csrftoken,
+                  },
+                  body: JSON.stringify({ project: projectObject }),
+                  credentials: "include"
+              });
+              if (response.ok) {
+                  try {
+                      const response2 = await fetch(Host + "/api/setCurBranch/", {
+                          method: "POST",
+                          headers: {
+                              "Content-Type": "application/json",
+                              'X-CSRFToken': csrftoken,
+                          },
+                          body: JSON.stringify({ com: "" }),
+                          credentials: "include"
+                      });
+                      if (response2.ok) {
+                          window.location.href = Host + "/editor/"
+                      } else {
+                          const data2 = await resposne.json();
+                          alert(data2.error || "Invalid Branch")
+                      }
+                  } catch(err) {
+                      alert("Backend not running");
+                      console.error(err);
+                  }
+              } else {
+                  const data = await response.json();
+                  alert(data.error || "Invalid Project");
+              }
+          } catch (err) {
+              alert("Backend not running");
+              console.error(err);
+          }
+    }
+
 
     // listen for typing in the search bar
     searchInput.addEventListener("input", (e) => {

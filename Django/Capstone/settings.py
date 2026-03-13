@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+#CSRF_USE_SESSIONS = True
 
 ROOT_URLCONF = 'Capstone.urls'
 

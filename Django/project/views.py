@@ -26,10 +26,31 @@ class getProjects(View):
             html += f"<p>{project.visibility}</p>"
             html += f"<p>{project.file_path}</p>"
             html += f"<p>{project.repo_link}</p>"
+            html += f"<p>{project.last_edited}</p>"
         response = HttpResponse(html)
 
         # if doing templates use:
         # response = render()
+        return response
+
+
+class getUserProjects(APIView):
+    def get(self,request):
+        user = request.user
+        projects = models.Project.objects.filter(owner__username=user.username)
+        projects = models.Project.objects.all()
+        objs = []
+        for project in projects:
+            jsonObj = {}
+            jsonObj["id"] = project.id
+            jsonObj["name"] = project.name
+            jsonObj["visibility"] = project.visibility
+            jsonObj["path"] = project.file_path
+            jsonObj["link"] = project.repo_link
+            jsonObj["last_edited"] = project.last_edited
+            objs.append(jsonObj)
+        response = Response({"projects":objs})
+
         return response
     
 class CreateProject(APIView):
@@ -82,6 +103,7 @@ class CreateProject(APIView):
             "filepath": project.file_path,
             "visibility": project.visibility,
             "repoLink":project.repo_link,
+            "last_edited":project.last_edited,
         }
 
         return Response(response)
@@ -111,6 +133,12 @@ class CreateProjectButWithSerializers(APIView):
             "filepath": project.file_path,
             "visibility": project.visibility,
             "repoLink":project.repo_link,
+            "last_edited":project.last_edited,
         }
 
         return Response(response)
+
+class GetMainBranch(APIView):
+
+    def get(self, request):
+        pass
