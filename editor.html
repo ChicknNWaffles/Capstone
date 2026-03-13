@@ -1,0 +1,172 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CoCodingStudio | editor</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+</head>
+
+<body>
+    <div class="top-bar activity-bar">
+        <h3>Project: </h3>
+        <h3 id="projectName"></h3>
+    </div>
+    <div class="notTheTopBar">
+        <div class="sidebar fileDirectoryBar">
+            <div class="top-bar activity-bar">
+                <h3>Commit: </h3>
+                <h3 id="commitName"></h3>
+            </div>
+        </div>
+        <div class="editor-content">
+            <div id="tabHeaders" class="top-bar"></div>
+            <div id="workspace">
+                <div class="openFiles"></div>
+                <div class="terminal-panel">
+                    <div class="terminal-header"
+                        style="display: flex; justify-content: space-between; align-items: center; padding-right: 15px;">
+                        <div class="terminal-tab">Command Terminal</div>
+                        <!-- ADDED: Trash icon button to kill the terminal -->
+                        <button id="kill-terminal-btn"
+                            style="background: none; border: none; cursor: pointer; color: #ff6b6b; display: flex;"
+                            title="Kill Terminal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- CHANGED: Add an ID so xterm knows where to put the terminal -->
+                    <div class="terminal-content" id="terminal-container"
+                        style="height: 300px; width: 100%; padding: 10px; background: #000;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+    // API Calls to the backend:------------
+    const Host = "http://127.0.0.1:8000"
+
+    // gets the name of the current project
+    async function getProjectName() {
+        const URL = Host + "/api/getProjName"
+        const result = await fetch(URL)
+        result.json().then(data => {
+            const name = data.name
+            var projNameSpot = document.getElementById("projectName")
+            projNameSpot.innerHTML = name
+        })
+    }
+    getProjectName()
+
+    // gets the name of the current commit
+    async function getCommitName() {
+        const URL = Host + "/api/getComName"
+        const result = await fetch(URL)
+        result.json().then(data => {
+            const name = data.name
+            var comNameSpot = document.getElementById("commitName")
+            comNameSpot.innerHTML = name
+        })
+    }
+    getCommitName()
+
+    // gets the directories of all of the files in the current commit
+    async function getFileDirectories() {
+        const URL = Host + "/files/get/"
+        const result = await fetch(URL)
+        result.json().then(data => {
+            var files = data.files
+            console.log(files)
+            var sorted = sortDirectories(files)
+            console.log(sorted)
+        })
+
+    }
+    getFileDirectories()
+
+    // sorts the files into directories
+    function sortDirectories(files) {
+        topLevel = { "/": {} }
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i]
+            var relPath = file.name
+            var prevLevels = []
+            var at = "/"
+            var bottomFolder = topLevel[at]
+            while (relPath.includes("/")) {
+                var before = relPath.substr(0, relPath.indexOf("/"))
+                var curFolder = topLevel
+                for (var j = 0; j < prevLevels.length; j++) {
+                    curFolder = curFolder[prevLevels[j]]
+                }
+                curFolder = curFolder[at]
+                if (Object.hasOwn(curFolder, before) == false) {
+                    curFolder[before] = {}
+                }
+                curFolder = curFolder[before]
+                prevLevels.push(at)
+                at = before
+                relPath = relPath.substr(relPath.indexOf("/") + 1)
+                bottomFolder = curFolder
+            }
+            bottomFolder[relPath] = "file"
+        }
+        return topLevel
+    }
+</script>
+
+
+<!-- TERMINAL CODE (modified by fariza) -->
+
+<!-- ADDED: xterm.js creates the black terminal box so we don't have to code it ourselves -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+
+<script>
+    // -- TERMINAL SCRIPT -- 
+
+    // Create the visual terminal window
+    const term = new Terminal({
+        cursorBlink: true,
+        theme: {
+            background: '#000000'
+        }
+    });
+
+    // Attach it to the page
+    term.open(document.getElementById('terminal-container'));
+
+    // Open a WebSocket connection to Django
+    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const terminalSocket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/terminal/');
+
+    // Display incoming messages on the screen
+    terminalSocket.onmessage = function (e) {
+        term.write(e.data);
+    };
+
+    // Send keystrokes to the backend server
+    term.onData(data => {
+        terminalSocket.send(data);
+    });
+
+    // Restart the connection when the trash icon is clicked
+    document.getElementById('kill-terminal-btn').addEventListener('click', () => {
+        terminalSocket.send(JSON.stringify({ type: 'kill' }));
+        term.clear();
+    });
+</script>
+
+</html>
