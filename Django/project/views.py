@@ -3,8 +3,16 @@ from django.views import View
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView, Response
-from . import models
-from . import serializers
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+
+from project.models import Project
+from project.serializers import ProjectSerializer
+
+from collaborator.models import Collaborator
+from collaborator.serializers import CollaboratorSerializer
+
+
 
 # Create your views here.
 class getProjects(View):
@@ -17,7 +25,7 @@ class getProjects(View):
 
         # this one is getProjects(View)
         html = ""
-        projects = models.Project.objects.all()
+        projects = Project.objects.all()
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
@@ -32,13 +40,12 @@ class getProjects(View):
         # if doing templates use:
         # response = render()
         return response
-
-
+    
 class getUserProjects(APIView):
     def get(self,request):
         user = request.user
-        projects = models.Project.objects.filter(owner__username=user.username)
-        projects = models.Project.objects.all()
+        projects = Project.objects.filter(owner__username=user.username)
+        projects = Project.objects.all()
         objs = []
         for project in projects:
             jsonObj = {}
@@ -52,6 +59,7 @@ class getUserProjects(APIView):
         response = Response({"projects":objs})
 
         return response
+
     
 class CreateProject(APIView):
         
@@ -61,6 +69,7 @@ class CreateProject(APIView):
         filepath = request.data.get("filepath")
         visibility = request.data.get("visibility")
         repoLink = request.data.get("repoLink")
+        
 
 
         # example of a guard
@@ -88,7 +97,7 @@ class CreateProject(APIView):
             }
             return Response(response, status=status.HTTP_204_NO_CONTENT)
         
-        project = models.Project(
+        project = Project(
             name=name,
             visibility=visibility,
             file_path=filepath,
@@ -104,13 +113,14 @@ class CreateProject(APIView):
             "visibility": project.visibility,
             "repoLink":project.repo_link,
             "last_edited":project.last_edited,
+
         }
 
         return Response(response)
     
 class CreateProjectButWithSerializers(APIView):
 
-    serializer_class = serializers.ProjectSerializer
+    serializer_class = ProjectSerializer
     
     def post(self, request):
         user = request.user
@@ -118,7 +128,7 @@ class CreateProjectButWithSerializers(APIView):
         serializer.is_valid()
         data = serializer.validated_data
 
-        project = models.Project(
+        project = Project(
             name=data.get("name"),
             visibility=data.get("visibility"),
             file_path=data.get("file_path"),
@@ -134,11 +144,64 @@ class CreateProjectButWithSerializers(APIView):
             "visibility": project.visibility,
             "repoLink":project.repo_link,
             "last_edited":project.last_edited,
+
         }
 
         return Response(response)
 
 class GetMainBranch(APIView):
-
     def get(self, request):
         pass
+
+class ProjectCollaboratorsListCreate(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CollaboratorSerializer
+
+    def get(self, request, project_id):
+        collaborators = Collaborator.objects.filter(project_id=project_id)
+        serializer = self.serializer_class(collaborators, many=True)
+        
+        return Response({
+            "collaborators": serializer.data,
+            "project_id": project_id,
+        })
+
+    def post(self, request, project_id):
+        user = request.user
+        
+        # Get the project from URL
+        project = get_object_or_404(Project, id=project_id)
+        
+        # Permission check
+        if project.owner != user:
+            return Response(
+                {"detail": "Only the project owner can add collaborators."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        data = serializer.validated_data
+
+        # Create the collaborator 
+        collaborator = Collaborator(
+            project=project,
+            user=data.get('user'),
+            admin_perms=data.get('admin_perms', False),
+            edit_perms=data.get('edit_perms', False),
+            hours=data.get('hours', 0),
+        )
+        collaborator.save()
+
+        # Success response
+        response = {
+            "success": True,
+            "user": collaborator.user.username,
+            "project": project.name,
+            "admin_perms": collaborator.admin_perms,
+            "edit_perms": collaborator.edit_perms,
+            "hours": collaborator.hours,
+        }
+
+        return Response(response)
