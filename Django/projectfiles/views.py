@@ -41,19 +41,15 @@ class getAllProjectFiles(View):
 class getProjectFiles(APIView):
     
     def get(self, request):
-
-        # this one is getProjects(APIView)
-        # projects = models.Project.objects.all().values()
-        # response = Response(projects)
-
-        # this one is getProjects(View)
         fileList = []
         curProj = request.session.get("curProj", "")
         curBranch = request.session.get("curCom", "")
+
+        # Guard: if no project/branch selected yet, return empty list instead of crashing
+        if not curProj or not curBranch:
+            return Response({"files": fileList})
+
         projectFiles = models.ProjectFile.objects.filter(project=curProj).filter(branch=curBranch)
-        # Project.objects.filter()
-        # Project.objects.get()
-        # Project.objects.filter(id__lt = 7)
         for files in projectFiles:
             file_path = "" + str(files.project.file_path) + "/" + str(files.branch.name) + "/" + str(files.name)
             file = {}

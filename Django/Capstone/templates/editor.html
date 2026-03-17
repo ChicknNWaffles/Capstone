@@ -6,6 +6,11 @@
 <head>
     <title>CoCodingStudio | editor</title>
     <link rel="stylesheet" href="{% static 'style.css' %}" />
+    
+    <!-- xterm.js dependencies -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
 </head>
 
 <body>
@@ -27,6 +32,15 @@
                 <div class="terminal-panel">
                     <div class="terminal-header">
                         <div class="terminal-tab">Command Terminal</div>
+                        <button id="killTerminalBtn" title="Kill Terminal" onclick="killTerminal()" style="background:none;border:none;cursor:pointer;margin-left:auto;padding:4px 6px;color:#cccccc;display:flex;align-items:center;border-radius:4px;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='rgba(229,83,75,0.15)';this.style.color='#e5534b'" onmouseout="this.style.background='none';this.style.color='#cccccc'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
+                        </button>
                     </div>
                     <div class="terminal-content"></div>
                 </div>
@@ -108,6 +122,78 @@
         }
         return topLevel
     }
+
+    // Kill/restart the terminal session
+    let _terminalSocket = null;
+    function killTerminal() {
+        if (_terminalSocket && _terminalSocket.readyState === WebSocket.OPEN) {
+            _terminalSocket.send(JSON.stringify({ 'type': 'kill' }));
+        }
+    }
+
+    // Terminal Setup using xterm.js and WebSocket
+    function initializeTerminal() {
+        const terminalContainer = document.querySelector('.terminal-content');
+        if (!terminalContainer) return;
+
+        // Initialize xterm.js
+        const term = new Terminal({
+            cursorBlink: true,
+            theme: {
+                background: '#1e1e1e',
+                foreground: '#cccccc'
+            }
+        });
+
+        // Initialize fit addon
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+
+        // Open terminal in the container
+        term.open(terminalContainer);
+        fitAddon.fit();
+
+        // Connect WebSocket to Django backend
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsUrl = `${wsScheme}://${window.location.host}/ws/terminal/`;
+        const socket = new WebSocket(wsUrl);
+        _terminalSocket = socket;  // expose for killTerminal()
+
+        socket.onopen = () => {
+            console.log("Terminal WebSocket connected.");
+        };
+
+        socket.onmessage = (event) => {
+            // Write output from the backend to the terminal
+            term.write(event.data);
+        };
+
+        socket.onclose = () => {
+            term.write('\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n');
+        };
+
+        // Send frontend keystrokes to the backend websocket
+        term.onData((data) => {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(data);
+            }
+        });
+
+        // Handle terminal resizing
+        window.addEventListener('resize', () => {
+            fitAddon.fit();
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    'type': 'resize',
+                    'cols': term.cols,
+                    'rows': term.rows
+                }));
+            }
+        });
+    }
+
+    // Initialize the terminal when the script runs
+    initializeTerminal();
 
 </script>
 
