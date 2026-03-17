@@ -38,11 +38,11 @@ INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
-    'channels',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'corsheaders',
     'project',
@@ -81,6 +81,7 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'Capstone.wsgi.application'
 ASGI_APPLICATION = 'Capstone.asgi.application'
 
 
