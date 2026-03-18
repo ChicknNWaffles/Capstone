@@ -35,6 +35,7 @@ CORS_ALLOWED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'channels',
     'project',
     'collaborator',
     'api',
@@ -80,6 +82,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Capstone.wsgi.application'
+ASGI_APPLICATION = 'Capstone.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 
 # Database

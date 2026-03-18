@@ -1,803 +1,800 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoCoding Studio</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to CoCoding Studio</title>
-
-  <style>
-    /* =========================
-       Reset + Base
-    ========================= */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
-
-    :root {
-      --glass-bg: rgba(18, 25, 55, 0.28);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-      --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      --glass-blur: blur(22px) saturate(140%);
-    }
-
-    body {
-      font-family: "Consolas", "Monaco", "Courier New", monospace;
-      background:
-        radial-gradient(1200px 600px at 15% 10%, rgba(88, 120, 255, 0.25), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, rgba(168, 85, 247, 0.22), transparent 55%),
-        linear-gradient(180deg, #0b1224, #060914);
-      color: rgba(230, 235, 255, 0.9);
-      overflow-x: hidden;
-    }
-
-    /* =========================
-       Layout & Typography
-    ========================= */
-    .home {
-      min-height: 100vh;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.9);
-      letter-spacing: 0.5px;
-    }
-
-    .brand-large {
-      font-size: 3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    /* =========================
-       User Profile Menu
-    ========================= */
-    .user-profile {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      z-index: 500;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(88, 120, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .avatar:hover {
-      background: rgba(88, 120, 255, 0.4);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: 54px;
-      right: 0;
-      width: 180px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      padding: 8px;
-
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .dropdown-menu.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .menu-item {
-      display: block;
-      padding: 10px 16px;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      font-size: 0.9rem;
-      border-radius: 8px;
-      transition: background 0.2s, color 0.2s;
-      cursor: pointer;
-    }
-
-    .menu-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-
-    .menu-item.danger {
-      color: #ff6b6b;
-    }
-
-    .menu-item.danger:hover {
-      background: rgba(255, 107, 107, 0.15);
-    }
-
-    /* =========================
-       View: Center (Empty State)
-    ========================= */
-    .center-view {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2rem;
-      text-align: center;
-    }
-
-    .sub {
-      font-size: 1.1rem;
-      color: rgba(232, 238, 252, 0.6);
-      max-width: 400px;
-    }
-
-    /* =========================
-       View: Dashboard (Populated)
-    ========================= */
-    #view-dashboard {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding-top: 2rem;
-    }
-
-    .dashboard-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    /* Search Bar */
-    .search-container {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 12px 20px 12px 40px;
-      border-radius: 99px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: white;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .search-input:focus {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(88, 120, 255, 0.5);
-      box-shadow: 0 0 0 3px rgba(88, 120, 255, 0.1);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: rgba(255, 255, 255, 0.4);
-      pointer-events: none;
-    }
-
-    /* Grid */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-      width: 100%;
-      margin-bottom: 3rem;
-    }
-
-    /* Card Styling Updates */
-    .card {
-      position: relative;
-      /* removed min-height to let content dictate size, but added padding */
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 140px;
-
-      text-decoration: none;
-      color: white;
-
-      border-radius: 16px;
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), var(--glass-inner);
-      transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      background: rgba(18, 25, 55, 0.45);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .card-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: rgba(255, 255, 255, 0.95);
-      display: block;
-    }
-
-    .card-date {
-      font-size: 0.85rem;
-      color: rgba(232, 238, 252, 0.5);
-      font-weight: 400;
-      display: block;
-    }
-
-    /* Card Actions (Meatball Menu) */
-    .card-actions {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-    }
-
-    .btn-action {
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      line-height: 1;
-      transition: color 0.2s, background 0.2s;
-    }
-
-    .btn-action:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Action Dropdown */
-    .action-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: #0f1322;
-      /* Solid bg for visibility */
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 4px;
-      min-width: 120px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-      z-index: 10;
-      display: none;
-    }
-
-    .action-dropdown.show {
-      display: block;
-    }
-
-    .action-item {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 8px 12px;
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.85rem;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .action-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-
-    .action-item.danger {
-      color: #ff6b6b;
-    }
-
-    .action-item.danger:hover {
-      background: rgba(255, 107, 107, 0.15);
-    }
-
-    /* =========================
-       Components
-    ========================= */
-    .btn-create-large {
-      padding: 16px 32px;
-      font-size: 1.1rem;
-      background: rgba(88, 120, 255, 0.2);
-      border: 1px solid rgba(88, 120, 255, 0.3);
-      color: white;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-create-large:hover {
-      background: rgba(88, 120, 255, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    /* =========================
-       Visual Helpers
-    ========================= */
-    .hidden {
-      display: none !important;
-    }
-
-    /* Modal Overlay */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.2s, visibility 0.2s;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal-content {
-      width: min(480px, 90%);
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), var(--glass-inner);
-      border-radius: 18px;
-      padding: 32px;
-
-      transform: scale(0.95);
-      transition: transform 0.2s;
-    }
-
-    .modal-overlay.active .modal-content {
-      transform: scale(1);
-    }
-
-    /* Modal Form Styles matched to style.css */
-    .modal-title {
-      font-size: 1.75rem;
-      color: rgba(255, 255, 255, 0.95);
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .modal-sub {
-      font-size: 1rem;
-      color: rgba(232, 238, 252, 0.7);
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .input-group {
-      margin-bottom: 1.25rem;
-    }
-
-    .input {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s, background-color 0.2s;
-    }
-
-    .input:focus {
-      border-color: rgba(88, 120, 255, 0.5);
-      background: rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-actions {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .btn-primary {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: rgba(88, 120, 255, 0.9);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn-primary:hover {
-      background: rgba(88, 120, 255, 1);
-    }
-
-    .btn-link {
-      background: none;
-      border: none;
-      color: rgba(230, 235, 255, 0.5);
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .btn-link:hover {
-      color: rgba(230, 235, 255, 0.8);
-    }
-
-    /* =========================
-       Responsive
-    ========================= */
-    @media (max-width: 720px) {
-      .projects-grid {
-        grid-template-columns: 1fr;
+      :root {
+        --glass-bg: rgba(18, 25, 55, 0.3);
+        --glass-border: rgba(255, 255, 255, 0.07);
+        --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+        --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        --glass-blur: blur(20px) saturate(140%);
+        --accent: #5878ff;
+        --text-primary: rgba(230, 235, 255, 0.88);
+        --text-muted: rgba(230, 235, 255, 0.4);
+        --border: rgba(255, 255, 255, 0.07);
       }
-    }
-  </style>
-</head>
 
-<body>
-  <!-- Main Container -->
-  <main class="home">
+      body {
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        background:
+          radial-gradient(1000px 500px at 10% 5%, rgba(88, 120, 255, 0.18), transparent 60%),
+          radial-gradient(800px 500px at 85% 25%, rgba(168, 85, 247, 0.14), transparent 55%),
+          linear-gradient(180deg, #0b1224, #060914);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    <!-- User Profile (Always Visible) -->
-    <div class="user-profile">
-      <div class="avatar" id="userAvatar">FA</div>
-      <div class="dropdown-menu" id="userDropdown">
-        <div class="menu-item">Settings</div>
-        <div class="menu-item danger" id="logoutBtn">Log Out</div>
+      /* ── Nav ── */
+      .top-nav {
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(10, 16, 34, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-shrink: 0;
+      }
+
+      .nav-brand {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .user-profile { position: relative; }
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(88, 120, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255,255,255,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.65rem;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s;
+      }
+
+      .avatar:hover { background: rgba(88, 120, 255, 0.32); }
+
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 148px;
+        background: #0c1428;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        border-radius: 8px;
+        padding: 4px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-5px);
+        transition: all 0.15s cubic-bezier(0.16,1,0.3,1);
+      }
+
+      .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+      .menu-item {
+        display: block;
+        padding: 7px 10px;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.78rem;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: inherit;
+        transition: background 0.12s, color 0.12s;
+      }
+
+      .menu-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+      .menu-item.danger { color: rgba(255,100,100,0.8); }
+      .menu-item.danger:hover { background: rgba(255,100,100,0.08); color: #ff6b6b; }
+
+      /* ── Page ── */
+      .home {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 2rem;
+      }
+
+      .page-body {
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.75rem;
+      }
+
+      /* ── Welcome ── */
+      .welcome {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .welcome-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      .welcome-sub {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* ── Search ── */
+      .search-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 420px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px 16px 10px 36px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.83rem;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .search-input::placeholder { color: var(--text-muted); }
+
+      .search-input:focus {
+        background: rgba(255,255,255,0.07);
+        border-color: rgba(88,120,255,0.35);
+        box-shadow: 0 0 0 3px rgba(88,120,255,0.08);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        display: flex;
+      }
+
+      /* ── Grid ── */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        width: 100%;
+      }
+
+      /* Skeleton */
+      .skeleton-card {
+        height: 78px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.025);
+        border: 1px solid var(--border);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50%       { opacity: 0.55; }
+      }
+
+      /* Empty state */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 3rem 0 1rem;
+        text-align: center;
+        grid-column: 1/-1;
+      }
+
+      .empty-icon {
+        width: 38px;
+        height: 38px;
+        border: 1px dashed rgba(255,255,255,0.1);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,0.16);
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+
+      .empty-label {
+        font-size: 0.78rem;
+        color: rgba(230,235,255,0.32);
+      }
+
+      .btn-create-first {
+        margin-top: 6px;
+        padding: 8px 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(88,120,255,0.15);
+        border: 1px solid rgba(88,120,255,0.28);
+        color: rgba(255,255,255,0.75);
+        border-radius: 7px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+      }
+
+      .btn-create-first:hover {
+        background: rgba(88,120,255,0.25);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      /* No results */
+      .no-results {
+        grid-column: 1/-1;
+        text-align: center;
+        padding: 2.5rem 0;
+        color: var(--text-muted);
+        font-size: 0.78rem;
+      }
+
+      /* ── Card ── */
+      .card {
+        position: relative;
+        padding: 13px 14px 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border-radius: 8px;
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--border);
+        box-shadow: var(--glass-shadow), var(--glass-inner);
+        cursor: pointer;
+        transition: transform 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255,255,255,0.12);
+        background: rgba(22, 32, 68, 0.5);
+      }
+
+      .card-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+
+      .card-name {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.88);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+
+      .card-menu-wrap { position: relative; flex-shrink: 0; }
+
+      .btn-card-menu {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.2);
+        font-size: 0.9rem;
+        cursor: pointer;
+        padding: 2px 5px;
+        border-radius: 4px;
+        line-height: 1;
+        transition: color 0.12s, background 0.12s;
+      }
+
+      .btn-card-menu:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); }
+
+      .card-dropdown {
+        position: absolute;
+        top: calc(100% + 3px);
+        right: 0;
+        background: #0c1428;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 3px;
+        min-width: 105px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        z-index: 50;
+        display: none;
+      }
+
+      .card-dropdown.show { display: block; }
+
+      .card-action {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 6px 10px;
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.65);
+        font-size: 0.75rem;
+        cursor: pointer;
+        border-radius: 4px;
+        font-family: inherit;
+        transition: background 0.12s, color 0.12s;
+      }
+
+      .card-action:hover { background: rgba(255,255,255,0.06); color: white; }
+      .card-action.danger { color: rgba(255,100,100,0.8); }
+      .card-action.danger:hover { background: rgba(255,100,100,0.08); color: #ff6b6b; }
+
+      .card-meta { display: flex; align-items: center; justify-content: space-between; }
+      .card-date { font-size: 0.68rem; color: var(--text-muted); }
+
+      .card-badge {
+        font-size: 0.6rem;
+        padding: 1px 7px;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        background: rgba(255,255,255,0.03);
+        text-transform: capitalize;
+        letter-spacing: 0.02em;
+      }
+
+      .card-badge.public {
+        color: rgba(74,210,120,0.75);
+        border-color: rgba(74,210,120,0.18);
+        background: rgba(74,210,120,0.05);
+      }
+
+      /* ── New project button — only when projects exist ── */
+      .btn-new-float {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 9px 18px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(88,120,255,0.2);
+        border: 1px solid rgba(88,120,255,0.35);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+        backdrop-filter: blur(10px);
+        display: none;
+      }
+
+      .btn-new-float:hover {
+        background: rgba(88,120,255,0.32);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(88,120,255,0.25);
+      }
+
+      .btn-new-float.visible { display: block; }
+
+      /* ── Modal ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.18s, visibility 0.18s;
+      }
+
+      .modal-overlay.active { opacity: 1; visibility: visible; }
+
+      .modal-box {
+        width: min(290px, 92%);
+        background: #0c1428;
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        border-radius: 10px;
+        padding: 20px 18px 16px;
+        transform: translateY(8px);
+        transition: transform 0.18s;
+      }
+
+      .modal-overlay.active .modal-box { transform: translateY(0); }
+
+      .modal-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.88);
+        margin-bottom: 1.2rem;
+      }
+
+      .field { margin-bottom: 13px; }
+
+      .field-label {
+        display: block;
+        font-size: 0.63rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        margin-bottom: 5px;
+      }
+
+      .field-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.12);
+        padding: 6px 0;
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        outline: none;
+        font-family: inherit;
+        transition: border-color 0.15s;
+        border-radius: 0;
+      }
+
+      .field-input:focus { border-bottom-color: var(--accent); }
+      .field-input::placeholder { color: var(--text-muted); }
+      select.field-input { appearance: none; cursor: pointer; }
+      select.field-input option { background: #0c1428; color: white; }
+
+      .modal-footer {
+        margin-top: 16px;
+        display: flex;
+        gap: 7px;
+        justify-content: flex-end;
+      }
+
+      .btn-confirm {
+        padding: 6px 14px;
+        border-radius: 5px;
+        border: none;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.78rem;
+        transition: background 0.15s;
+      }
+
+      .btn-confirm:hover { background: #4a67e0; }
+
+      .btn-dismiss {
+        padding: 6px 11px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.78rem;
+        transition: all 0.12s;
+      }
+
+      .btn-dismiss:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.16); }
+
+      @media (max-width: 520px) {
+        .projects-grid { grid-template-columns: 1fr; }
+        .home { padding: 2rem 1rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Nav -->
+    <nav class="top-nav">
+      <span class="nav-brand">CoCoding Studio</span>
+      <div class="user-profile">
+        <div class="avatar" id="userAvatar">ME</div>
+        <div class="dropdown-menu" id="userDropdown">
+          <button class="menu-item">Settings</button>
+          <button class="menu-item danger" id="logoutBtn">Log Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page -->
+    <main class="home">
+      <div class="page-body">
+
+        <!-- Welcome -->
+        <div class="welcome">
+          <div class="welcome-title" id="welcomeTitle">Good evening!</div>
+          <div class="welcome-sub">What are you working on today?</div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+          <span class="search-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" id="projectSearch" class="search-input" placeholder="Search projects..." />
+        </div>
+
+        <!-- Grid -->
+        <div class="projects-grid" id="projectsGrid">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Floating New button — only shows when projects exist -->
+    <button class="btn-new-float" id="btnNewFloat">+ New Project</button>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="createModal">
+      <div class="modal-box">
+        <h2 class="modal-title">New project</h2>
+        <form id="createProjectForm">
+          <div class="field">
+            <label class="field-label" for="projectName">Name</label>
+            <input type="text" id="projectName" class="field-input"
+              placeholder="e.g. my-app" required autocomplete="off" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="projectVisibility">Visibility</label>
+            <select id="projectVisibility" class="field-input">
+              <option value="private">Private</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-dismiss" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn-confirm">Create</button>
+          </div>
+        </form>
       </div>
     </div>
 
-    <!-- this is the view for when the user has no projects -->
-    <div id="view-empty" class="center-view hidden">
-      <h1 class="brand-large">CoCoding Studio</h1>
-      <p class="sub">Your workspace is empty.</p>
-      <button class="btn-create-large action-create">+ Create First Project</button>
-    </div>
+    <script>
+      const Host = "http://127.0.0.1:8000";
+      const projects = [];
 
-    <!-- this is the view for when the user has projects (the dashboard) -->
-    <div id="view-dashboard" class="hidden">
+      const grid        = document.getElementById("projectsGrid");
+      const searchInput = document.getElementById("projectSearch");
+      const btnFloat    = document.getElementById("btnNewFloat");
 
-      <!-- header section with the title and search bar -->
-      <header class="dashboard-header">
-        <div class="brand">CoCoding Studio</div>
+      /* Welcome + avatar */
+      (function () {
+        const name = sessionStorage.getItem("currentUserName") || "";
+        const first = name.split(" ")[0];
+        const h = new Date().getHours();
+        const time = h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
+        const greeting = first ? `Good ${time}, ${first}!` : `Good ${time}!`;
+        document.getElementById("welcomeTitle").textContent = greeting;
+        const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "ME";
+        document.getElementById("userAvatar").textContent = initials;
+      })();
 
-        <div class="search-container">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="projectSearch" class="search-input" placeholder="Search projects...">
-        </div>
-      </header>
+      /* Fetch */
+      async function loadProjects() {
+        try {
+          const res  = await fetch(Host + "/project/getUserProjects");
+          const data = await res.json();
 
-      <!-- Grid -->
-      <section class="projects-grid" id="projectsGrid">
-        <!-- Cards go here -->
-      </section>
+          for (const proj of data.projects) {
+            const days = Math.floor(Math.abs(Date.now() - Date.parse(proj.last_edited)) / 86400000);
+            const since =
+              days === 0 ? "today" :
+              days === 1 ? "1 day ago" :
+              days < 7   ? `${days} days ago` :
+              days < 14  ? "1 week ago" :
+              days < 365 ? `${Math.floor(days / 7)} weeks ago` :
+              days < 730 ? "1 year ago" :
+                           `${Math.floor(days / 365)} years ago`;
 
-      <!-- Footer Action -->
-      <button class="btn-create-large action-create">+ Create New Project</button>
-
-    </div>
-
-  </main>
-
-  <!-- Create Project Modal -->
-  <div class="modal-overlay" id="createModal">
-    <div class="modal-content">
-      <h2 class="modal-title">Create Project</h2>
-      <p class="modal-sub">Start something new.</p>
-
-      <form id="createProjectForm">
-        <div class="input-group">
-          <input type="text" id="projectName" class="input" placeholder="Project Name" required autocomplete="off">
-        </div>
-
-        <div class="input-group">
-          <label
-            style="color: rgba(230,235,255,0.7); display: block; margin-bottom: 8px; font-size: 0.9rem;">Visibility</label>
-          <select id="projectVisibility" class="input"
-            style="appearance: none; -webkit-appearance: none; cursor: pointer;">
-            <option value="private">Private (Only you)</option>
-            <option value="public">Public (Everyone)</option>
-          </select>
-        </div>
-
-        <div class="modal-actions">
-          <button type="submit" class="btn-primary">Create Project</button>
-          <button type="button" class="btn-link" id="cancelBtn">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const Host = "http://127.0.0.1:8000"
-
-    //const csrftoken = document.querySelector('[name=csrf-token]').value;
-
-    // this is just mock data so i can test how it looks without the backend
-    const projects = [];
-
-    const viewEmpty = document.getElementById("view-empty");
-    const viewDashboard = document.getElementById("view-dashboard");
-    const projectsGrid = document.getElementById("projectsGrid");
-    const searchInput = document.getElementById("projectSearch");
-
-    // a function to get the project data from the backend
-    async function getProjectData() {
-        const URL = Host + "/project/getUserProjects"
-        const result = await fetch(URL)
-        result.json().then(data => {
-            projs = data.projects
-            for (const proj of projs) {
-                date = Date.parse(proj.last_edited)
-                today = Date.now()
-                diffTime = Math.abs(today - date)
-                diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-                if (diffDays == 0) {
-                    since = "today"
-                } else if (diffDays == 1) {
-                    since = String(diffDays).concat(" ", "days ago")
-                } else if (diffDays < 7) {
-                    since = String(diffDays).concat(" ", "day ago")
-                } else if (diffDays = 7) {
-                    since = "1 week ago"
-                } else if (diffDays < 365) {
-                    since = String(diffDays % 7).concat(" ", "weeks ago")
-                } else if (diffDays % 365 == 1) {
-                    since = "1 year ago"
-                } else {
-                    since = String(diffDays % 365).concat(" ", "years ago")
-                }
-
-                edited = `Edited ${since}`
-                projectData = { name: proj.name, lastEdited: edited, id:proj.id }
-                projects.push(projectData)
-            }
-            renderView();
-        })
+            projects.push({
+              id: proj.id,
+              name: proj.name,
+              lastEdited: `Edited ${since}`,
+              visibility: proj.visibility || "private",
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          render();
+        }
       }
-      getProjectData()
-     
+      loadProjects();
 
-    async function renderView(filterText = "") {
+      /* Render */
+      function render(filter = "") {
+        const filtered = projects.filter(p =>
+          p.name.toLowerCase().includes(filter.toLowerCase())
+        );
 
-      var hasProjects = projects.length > 0;
+        grid.innerHTML = "";
 
-      if (!hasProjects) {
-        // if there are no projects, show the empty state screen
-        viewEmpty.classList.remove("hidden");
-        viewDashboard.classList.add("hidden");
-      } else {
-        // otherwise, show the main dashboard
-        viewEmpty.classList.add("hidden");
-        viewDashboard.classList.remove("hidden");
+        // Show float button only when there are projects
+        btnFloat.classList.toggle("visible", projects.length > 0);
 
-        // filter the project list based on the search text
-        const filtered = projects.filter(p => p.name.toLowerCase().includes(filterText.toLowerCase()));
+        if (projects.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">+</div>
+              <p class="empty-label">No projects yet</p>
+              <button class="btn-create-first" id="btnCreateFirst">Create your first project</button>
+            </div>`;
+          document.getElementById("btnCreateFirst").addEventListener("click", openModal);
+          return;
+        }
 
-        // clear the current grid and show the filtered projects
-        projectsGrid.innerHTML = "";
-        filtered.forEach((p, index) => {
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="no-results">No results for "<strong>${filter}</strong>"</div>`;
+          return;
+        }
+
+        filtered.forEach((p, i) => {
           const card = document.createElement("div");
           card.className = "card";
-
-          // Card HTML structure
           card.innerHTML = `
-                    <a onclick="setProjectAndRedirect(${p.id})" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
-                        <span class="card-title">${p.name}</span>
-                        <span class="card-date">${p.lastEdited || 'Just now'}</span>
-                    </a>
-                    
-                    <div class="card-actions">
-                        <button class="btn-action" onclick="toggleMenu(event, ${index})">⋮</button>
-                        <div class="action-dropdown" id="menu-${index}">
-                            <button class="action-item">Rename</button>
-                            <button class="action-item danger">Delete</button>
-                        </div>
-                    </div>
-                `;
-          projectsGrid.appendChild(card);
+            <div class="card-row">
+              <span class="card-name">${p.name}</span>
+              <div class="card-menu-wrap">
+                <button class="btn-card-menu">⋮</button>
+                <div class="card-dropdown" id="cdrop-${i}">
+                  <button class="card-action">Rename</button>
+                  <button class="card-action danger">Delete</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-meta">
+              <span class="card-date">${p.lastEdited}</span>
+              <span class="card-badge ${p.visibility}">${p.visibility}</span>
+            </div>`;
+
+          card.querySelector(".btn-card-menu").addEventListener("click", e => {
+            e.stopPropagation();
+            document.querySelectorAll(".card-dropdown").forEach(d => d.classList.remove("show"));
+            document.getElementById(`cdrop-${i}`)?.classList.toggle("show");
+          });
+
+          card.addEventListener("click", e => {
+            if (!e.target.closest(".card-menu-wrap")) redirect(p.id);
+          });
+
+          grid.appendChild(card);
         });
       }
-    }
 
-    // a helper function provided in Django's official documentation
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+      searchInput.addEventListener("input", e => render(e.target.value));
+
+      /* CSRF */
+      function getCookie(name) {
+        for (const c of document.cookie.split(";")) {
+          const t = c.trim();
+          if (t.startsWith(name + "=")) return decodeURIComponent(t.slice(name.length + 1));
         }
-        return cookieValue;
+        return null;
       }
 
-      async function setProjectAndRedirect(projectObject) {
-          const csrftoken = getCookie('csrftoken')
-          try {
-              const response = await fetch(Host + "/api/setCurProj/", {
-                  method: "POST",
-                  headers: {
-                      "Content-Type": "application/json",
-                      'X-CSRFToken': csrftoken,
-                  },
-                  body: JSON.stringify({ project: projectObject }),
-                  credentials: "include"
-              });
-              if (response.ok) {
-                  try {
-                      const response2 = await fetch(Host + "/api/setCurBranch/", {
-                          method: "POST",
-                          headers: {
-                              "Content-Type": "application/json",
-                              'X-CSRFToken': csrftoken,
-                          },
-                          body: JSON.stringify({ com: "" }),
-                          credentials: "include"
-                      });
-                      if (response2.ok) {
-                          window.location.href = Host + "/editor/"
-                      } else {
-                          const data2 = await resposne.json();
-                          alert(data2.error || "Invalid Branch")
-                      }
-                  } catch(err) {
-                      alert("Backend not running");
-                      console.error(err);
-                  }
-              } else {
-                  const data = await response.json();
-                  alert(data.error || "Invalid Project");
-              }
-          } catch (err) {
-              alert("Backend not running");
-              console.error(err);
+      /* Redirect */
+      async function redirect(id) {
+        const csrf = getCookie("csrftoken");
+        try {
+          const r1 = await fetch(Host + "/api/setCurProj/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+            body: JSON.stringify({ project: id }), credentials: "include",
+          });
+          if (!r1.ok) { alert((await r1.json()).error || "Error"); return; }
+
+          const r2 = await fetch(Host + "/api/setCurBranch/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+            body: JSON.stringify({ com: "" }), credentials: "include",
+          });
+          if (!r2.ok) { alert((await r2.json()).error || "Error"); return; }
+
+          const p = projects.find(p => p.id === id);
+          if (p) {
+            sessionStorage.setItem("currentProjectName", p.name);
+            sessionStorage.setItem("currentProjectId", p.id);
           }
-    }
+          window.location.href = Host + "/editor/";
+        } catch (e) {
+          alert("Backend not running");
+          console.error(e);
+        }
+      }
 
+      /* Nav dropdown */
+      const avatar   = document.getElementById("userAvatar");
+      const dropdown = document.getElementById("userDropdown");
+      avatar.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.toggle("active"); });
+      document.addEventListener("click", () => {
+        dropdown.classList.remove("active");
+        document.querySelectorAll(".card-dropdown").forEach(d => d.classList.remove("show"));
+      });
+      document.getElementById("logoutBtn").addEventListener("click", () => { window.location.href = "/login/"; });
 
-    // listen for typing in the search bar
-    searchInput.addEventListener("input", (e) => {
-      renderView(e.target.value);
-    });
+      /* Modal */
+      const modal = document.getElementById("createModal");
+      const form  = document.getElementById("createProjectForm");
 
-    // logic for the user profile dropdown menu
-    const avatar = document.getElementById("userAvatar");
-    const dropdown = document.getElementById("userDropdown");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    avatar.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle("active");
-    });
-
-    // show or hide the menu for a specific project card
-    window.toggleMenu = function (e, index) {
-      e.stopPropagation();
-      // Close all others
-      document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
-      // Toggle current
-      const menu = document.getElementById(`menu-${index}`);
-      if (menu) menu.classList.toggle('show');
-    };
-
-    // if the user clicks anywhere else, close the open menus
-    document.addEventListener("click", () => {
-      dropdown.classList.remove("active");
-      document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
-    });
-
-    // handle the logout button click
-    logoutBtn.addEventListener("click", () => {
-      // Clear any local state if needed
-      window.location.href = "/login/";
-    });
-
-    // logic to make the create project modal work
-    const modal = document.getElementById("createModal");
-    const form = document.getElementById("createProjectForm");
-
-    // make sure all the create buttons open the modal
-    document.querySelectorAll(".action-create").forEach(btn => {
-      btn.addEventListener("click", () => {
+      function openModal() {
         modal.classList.add("active");
         document.getElementById("projectName").focus();
+      }
+
+      btnFloat.addEventListener("click", openModal);
+
+      function closeModal() { modal.classList.remove("active"); form.reset(); }
+      document.getElementById("cancelBtn").addEventListener("click", closeModal);
+      modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+      form.addEventListener("submit", async e => {
+        e.preventDefault();
+        const name       = document.getElementById("projectName").value.trim();
+        const visibility = document.getElementById("projectVisibility").value;
+        if (!name) return;
+
+        try {
+          const csrf = getCookie("csrftoken");
+          const res  = await fetch(Host + "/project/createProject/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+            body: JSON.stringify({ name, visibility }),
+            credentials: "include",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            sessionStorage.setItem("currentProjectName", name);
+            sessionStorage.setItem("currentProjectId", data.id);
+            await redirect(data.id);
+          } else {
+            alert((await res.json()).error || "Failed");
+          }
+        } catch (e) {
+          alert("Backend not running");
+          console.error(e);
+        }
       });
-    });
-
-    function closeModal() {
-      modal.classList.remove("active");
-      form.reset();
-    }
-
-    document.getElementById("cancelBtn").addEventListener("click", closeModal);
-
-    // close the modal if the user clicks on the background overlay
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
-    });
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("projectName").value;
-      const visibility = document.getElementById("projectVisibility").value;
-
-      // just logging since we don't have a real backend yet
-      console.log("Creating project:", { name, visibility });
-
-      // add the new project to our list and update the screen
-      projects.unshift({ name: name, href: "#", lastEdited: "Just now" });
-      renderView(searchInput.value);
-
-      closeModal();
-    });
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
- 
-<!--ENDDD-->
