@@ -107,36 +107,7 @@
           <h4>Files</h4>
         </div>
         <div class="sidebar-content">
-          <div class="file-tree">
-            <div class="file-item">
-              <span class="file-icon">📁</span>
-              <span class="file-name">src</span>
-            </div>
-            <div class="file-item file-subitem">
-              <span class="file-icon">📄</span>
-              <span class="file-name">main.py</span>
-            </div>
-            <div class="file-item file-subitem">
-              <span class="file-icon">📄</span>
-              <span class="file-name">utils.py</span>
-            </div>
-            <div class="file-item">
-              <span class="file-icon">📁</span>
-              <span class="file-name">tests</span>
-            </div>
-            <div class="file-item file-subitem">
-              <span class="file-icon">📄</span>
-              <span class="file-name">test_main.py</span>
-            </div>
-            <div class="file-item">
-              <span class="file-icon">📄</span>
-              <span class="file-name">README.md</span>
-            </div>
-            <div class="file-item">
-              <span class="file-icon">📄</span>
-              <span class="file-name">requirements.txt</span>
-            </div>
-          </div>
+          <div id="file-tree"></div>
         </div>
       </div>
 
@@ -252,6 +223,7 @@
         var files = data.files;
         var sorted = sortDirectories(files);
         console.log(sorted);
+        populateFileTree(sorted["/"]);
       });
     }
     getFileDirectories();
@@ -283,6 +255,38 @@
         bottomFolder[relPath] = "file";
       }
       return topLevel;
+    }
+
+    function generateFileTreeHTML(files, levels = 0) {
+        html = "";
+        for (step in files) {
+            // start a file-item tag
+            html = html + "<div class='file-item'>";
+            // put the correct number of buffers in it
+            for (var i = 0; i < levels; i += 1) {
+                html = html + "<div class='file-subitem-buffer'></div>"
+            }
+            // determine if it is a folder or a file
+            if (typeof files[step] === "string" || files[step] instanceof String) {
+                // for now, just set the icon to blank page, later will add function to
+                // determine file type
+                html = html + "<span class='file-icon' >📄</span>";
+                html = html + "<span class='file-name' >" + step + "</span>";
+                html = html + "</div>"
+            } else {
+                html = html + "<span class='file-icon'>📁</span >"
+                html = html + "<span class='file-name' >" + step + "</span>";
+                html = html + "</div>";
+                html = html + generateFileTreeHTML(files[step], levels + 1);
+            }
+        }
+        return html
+    }
+
+    function populateFileTree(files){
+        html = generateFileTreeHTML(files);
+        tree = document.getElementById("file-tree");
+        tree.innerHTML = html
     }
 
     let _terminalSocket = null;
