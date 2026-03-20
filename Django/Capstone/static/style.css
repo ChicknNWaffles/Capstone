@@ -379,7 +379,7 @@ select.settings-input option {
 }
 
 /* File Tree */
-.file-tree {
+#file-tree {
   display: flex;
   flex-direction: column;
 }
@@ -408,10 +408,29 @@ select.settings-input option {
   color: #fff;
 }
 
-.file-subitem {
-  padding-left: 2.2rem;
-  font-size: 0.82rem;
-  color: rgba(230, 235, 255, 0.6);
+.file-subitem-buffer {
+    width: 1.2rem;
+    font-size: 0.85rem;
+}
+
+.folder-contents-with-offset {
+    display: flex;
+    flex:1;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    color: rgba(230, 235, 255, 0.7);
+    font-size: 0.85rem;
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.folder-contents{
+    display:flex;
+    flex-direction:column;
+    flex:1;
 }
 
 .file-name {
@@ -419,6 +438,11 @@ select.settings-input option {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.vertLine{
+    height:100%;
+    border-left:2px solid var(--border-color);
 }
 
 /* =========================
