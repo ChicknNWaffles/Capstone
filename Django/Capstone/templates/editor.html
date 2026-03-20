@@ -260,24 +260,28 @@
     function generateFileTreeHTML(files, levels = 0) {
         html = "";
         for (step in files) {
-            // start a file-item tag
-            html = html + "<div class='file-item'>";
-            // put the correct number of buffers in it
-            for (var i = 0; i < levels; i += 1) {
-                html = html + "<div class='file-subitem-buffer'></div>"
-            }
             // determine if it is a folder or a file
             if (typeof files[step] === "string" || files[step] instanceof String) {
+                // start a file-item tag
+                html = html + "<div class='file-item lvl" + levels + "'>";
                 // for now, just set the icon to blank page, later will add function to
                 // determine file type
                 html = html + "<span class='file-icon' >📄</span>";
                 html = html + "<span class='file-name' >" + step + "</span>";
                 html = html + "</div>"
             } else {
-                html = html + "<span class='file-icon'>📁</span >"
-                html = html + "<span class='file-name' >" + step + "</span>";
+                // start a file-item tag
+                html = html + "<div class='file-item folder-item lvl" + levels + `' onclick = "toggleFolder(this)">`;
+                html = html + "<span class='file-icon'>📁</span>";
+                html = html + "<span class='file-name'>" + step + "</span>";
+                html = html + "<span class='toggle-arrow'>▽</span>";
                 html = html + "</div>";
+                html = html + "<div class='folder-contents-with-offset'>";
+                html = html + "<div class='file-subitem-buffer'></div>";
+                html = html + "<div class='folder-contents vertLine'>";
                 html = html + generateFileTreeHTML(files[step], levels + 1);
+                html = html + "</div>"
+                html = html + "</div>"
             }
         }
         return html
@@ -287,6 +291,20 @@
         html = generateFileTreeHTML(files);
         tree = document.getElementById("file-tree");
         tree.innerHTML = html
+    }
+
+    function toggleFolder(folder) {
+        folderContents = folder.nextElementSibling;
+        arrow = folder.getElementsByClassName("toggle-arrow")[0];
+        if (folderContents.hidden == true) {
+            folderContents.hidden = false;
+            folderContents.style.display = 'flex';
+            arrow.innerHTML = "▽"
+        } else {
+            folderContents.hidden = true;
+            folderContents.style.display = 'none';
+            arrow.innerHTML = "◁"
+        }
     }
 
     let _terminalSocket = null;
