@@ -10,7 +10,7 @@ class Project(models.Model):
     file_path = models.CharField(max_length=255, default="")
     visibility = models.BooleanField(default=False)
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    repo_link = models.CharField(max_length=255, default="")
+    repo_link = models.CharField(max_length=255, default="", blank=True, null=True)
     last_edited = models.DateField(auto_now=True)
 
     def __str__(self):
