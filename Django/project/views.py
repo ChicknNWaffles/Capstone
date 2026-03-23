@@ -59,7 +59,7 @@ class CreateProject(APIView):
     def post(self, request):
         user = request.user
         name = request.data.get("name")
-        visibility = request.data.get("visibility")
+        visibility = request.data.get("visibility") == "public"
         repoLink = request.data.get("repoLink")
 
 
