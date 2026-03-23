@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView, Response
 from . import models
 from . import serializers
+from api.file_service import file_service
 
 # Create your views here.
 class getProjects(View):
@@ -58,7 +59,6 @@ class CreateProject(APIView):
     def post(self, request):
         user = request.user
         name = request.data.get("name")
-        filepath = request.data.get("filepath")
         visibility = request.data.get("visibility")
         repoLink = request.data.get("repoLink")
 
@@ -72,14 +72,6 @@ class CreateProject(APIView):
             }
             return Response(response, status=status.HTTP_204_NO_CONTENT)
 
-        # check for filespath
-        if filepath is None:
-            response = {
-                "success": False,
-                "message": "User must provide info about filepath"
-            }
-            return Response(response, status=status.HTTP_204_NO_CONTENT)
-        
         # check for visibility
         if visibility is None:
             response = {
@@ -91,14 +83,20 @@ class CreateProject(APIView):
         project = models.Project(
             name=name,
             visibility=visibility,
-            file_path=filepath,
+            file_path="",
             owner=user,
             repo_link=repoLink,
         )
         project.save()
 
+        # Set S3 path and create the folder in the bucket
+        project.file_path = f"projects/{project.id}/"
+        project.save()
+        file_service.create_project_folder(project.id)
+
         response = {
             "success": True,
+            "id": project.id,
             "name": project.name,
             "filepath": project.file_path,
             "visibility": project.visibility,

@@ -179,6 +179,18 @@ class S3FileService:
                 'error': str(e)
             }
     
+    def create_project_folder(self, project_id: int) -> dict:
+        """Create an empty folder in S3 for a new project"""
+        try:
+            self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=f"projects/{project_id}/"
+            )
+            return {'success': True}
+        except ClientError as e:
+            logger.error(f"Error creating project folder: {e}")
+            return {'success': False, 'error': str(e)}
+
     def list_files(self, project_id: int) -> dict:
         """
         List all files for a specific project
