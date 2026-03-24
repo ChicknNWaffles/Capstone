@@ -3,237 +3,311 @@ import asyncio
 import subprocess
 import os
 import struct
-import shlex
 import tempfile
 import shutil
 import sys
-from channels.generic.websocket import AsyncWebsocketConsumer
 
-# Conditionally import Unix-only PTY modules
-if sys.platform != 'win32':
+if sys.platform != "win32":
     import pty
     import fcntl
     import termios
+
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+# Global session store: maps session_key -> TerminalSession
+_sessions: dict = {}
+
+
+class TerminalSession:
+    """
+    Holds the state of a single persistent terminal session.
+    Survives WebSocket disconnects and can be reattached.
+    """
+
+    def __init__(self):
+        self.fd = None
+        self.process = None
+        self.workspace_dir = None
+        self.bashrc_path = None
+        self.read_task = None
+        self.consumer = None  # currently attached WebSocket consumer
+
+    def is_alive(self) -> bool:
+        if sys.platform == "win32":
+            return self.process is not None and self.process.poll() is None
+        return self.process is not None and self.fd is not None
+
+    def detach(self):
+        """Detach the consumer without killing the process."""
+        self.consumer = None
+
+    def attach(self, consumer: "TerminalConsumer"):
+        """Attach a new consumer to this session."""
+        self.consumer = consumer
+
 
 class TerminalConsumer(AsyncWebsocketConsumer):
     """
-    WebSocket consumer that handles full pseudo-terminal interactions.
-    This consumer maintains a persistent WebSocket connection with the frontend
-    and translates messages to an isolated background Bash process.
-    """
-    
-    async def connect(self):
-        """
-        Triggered when a new WebSocket connection is established.
-        Accepts the connection and spawns the isolated bash process.
-        """
-        await self.accept()
-        self.spawn_process()
+    WebSocket consumer that proxies a persistent PTY session.
 
-    def spawn_process(self):
-        """
-        Initializes a new pseudo-terminal (PTY) in a temporary directory.
-        Creates a custom `.bashrc` profile to sandbox directory navigation
-        and format prompt output cleanly for the frontend client.
-        """
-        bashrc_content = """
+    Sessions are keyed by Django session key so the same user
+    can reconnect and continue where they left off.
+    """
+
+    # ------------------------------------------------------------------ #
+    #  Connection lifecycle                                                #
+    # ------------------------------------------------------------------ #
+
+    async def connect(self):
+        await self.accept()
+
+        session_key = self.scope["session"].session_key or "anonymous"
+
+        if session_key in _sessions and _sessions[session_key].is_alive():
+            # Reattach to the existing session
+            self.session = _sessions[session_key]
+            self.session.attach(self)
+            await self.send(text_data="\r\n\x1b[33m[Reconnected to existing session]\x1b[0m\r\n")
+        else:
+            # Spin up a brand-new session
+            self.session = TerminalSession()
+            self.session.attach(self)
+            _sessions[session_key] = self.session
+            await asyncio.get_event_loop().run_in_executor(None, self._spawn_process)
+
+        # Start (or restart) the read loop for this consumer
+        if self.session.read_task is None or self.session.read_task.done():
+            self.session.read_task = asyncio.create_task(self._read_output())
+
+    async def disconnect(self, close_code):
+        """Detach consumer but keep the process alive for future reconnects."""
+        if hasattr(self, "session"):
+            self.session.detach()
+
+    # ------------------------------------------------------------------ #
+    #  Process spawning                                                    #
+    # ------------------------------------------------------------------ #
+
+    def _spawn_process(self):
+        """Create a sandboxed PTY/subprocess. Called in a thread executor."""
+        bashrc_content = r"""
 export BASH_SILENCE_DEPRECATION_WARNING=1
 ESC=$(printf "\033")
-# Fake the prompt directory to look like a friendly project path instead of /tmp/...
-# Calculate the real path length to strip it from the PS1 prompt
 export REAL_WORKSPACE="$PWD"
 export PS1="\[${ESC}[36m\]~/workspace\${PWD#$REAL_WORKSPACE}$\[${ESC}[97m\] "
 trap 'printf "${ESC}[32m"' DEBUG
 
-# Override pwd to strip the ugly /tmp/project_... prefix
 pwd() {
-    local fake_path="~/workspace${PWD#$REAL_WORKSPACE}"
-    echo "$fake_path"
+    echo "~/workspace${PWD#$REAL_WORKSPACE}"
 }
 
-# Override cd to prevent users from leaving the workspace directory!
 cd() {
-    # If no arguments or just `cd ~`, go to the workspace root
     if [ -z "$1" ] || [ "$1" = "~" ]; then
         builtin cd "$REAL_WORKSPACE"
         return
     fi
-    
-    # Try to change directory normally
     builtin cd "$@" >/dev/null 2>&1
-    
-    # If we escaped the designated workspace, force us back in!
     if [[ "$PWD" != "$REAL_WORKSPACE"* ]]; then
         builtin cd "$REAL_WORKSPACE"
     fi
 }
 """
-        # Write bash profile to a temporary file
-        fd, self.bashrc_path = tempfile.mkstemp(suffix=".bashrc")
-        with os.fdopen(fd, 'w') as f:
+        fd, self.session.bashrc_path = tempfile.mkstemp(suffix=".bashrc")
+        with os.fdopen(fd, "w") as f:
             f.write(bashrc_content)
 
-        # Create an isolated temporary directory for the workspace session
-        self.workspace_dir = tempfile.mkdtemp(prefix="project_", dir=tempfile.gettempdir())
+        self.session.workspace_dir = tempfile.mkdtemp(
+            prefix="project_", dir=tempfile.gettempdir()
+        )
 
         env = os.environ.copy()
-        
-        if sys.platform == 'win32':
-            # WINDOWS FALLBACK: Use a standard subprocess instead of a full PTY
-            # Windows users won't get full interactive terminal features, but it won't crash!
-            self.process = subprocess.Popen(
-                ["cmd.exe"],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd=self.workspace_dir,
-                env=env,
-                bufsize=0,
-                creationflags=subprocess.CREATE_NO_WINDOW
-            )
-            # Use the subprocess pipes for I/O instead of a raw file descriptor
-            self.fd = None
-            self.read_task = asyncio.create_task(self.read_windows_output())
-            
+
+        if sys.platform == "win32":
+            self._spawn_windows(env)
         else:
-            # UNIX/MAC: Fork a new pseudo-terminal simulating an interactive terminal device
-            pid, self.fd = pty.fork()
-            
-            if pid == 0:
-                # Child process: configure environment and initialize shell
-                env["TERM"] = "xterm-256color"
-                
-                # Start the shell isolated within the temporary workspace
-                os.chdir(self.workspace_dir)
-                os.execvpe("bash", ["bash", "--init-file", self.bashrc_path], env)
-            else:
-                # Parent process: monitor the child process asynchronously
-                self.process = pid
-                
-                # Switch PTY file descriptor to non-blocking mode
-                flags = fcntl.fcntl(self.fd, fcntl.F_GETFL)
-                fcntl.fcntl(self.fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-                
-                # Initialize the background output polling loop
-                self.read_task = asyncio.create_task(self.read_output())
+            self._spawn_unix(env)
 
-    async def disconnect(self, close_code):
-        """Handles WebSocket disconnect events and ensures resources are freed."""
-        self.cleanup_process()
+    def _spawn_unix(self, env: dict):
+        """Fork a PTY on Unix/macOS/Linux."""
+        env["TERM"] = "xterm-256color"
+        pid, fd = pty.fork()
 
-    def cleanup_process(self):
-        """Terminates the shell process and purges temporary files/directories."""
-        if hasattr(self, 'process') and self.process:
-            if sys.platform == 'win32':
-                try:
-                    self.process.terminate()
-                except Exception:
-                    pass
-            else:
-                try:
-                    os.kill(self.process, 9)
-                except OSError:
-                    pass
-            self.process = None
+        if pid == 0:
+            # Child: exec bash inside the workspace
+            os.chdir(self.session.workspace_dir)
+            os.execvpe("bash", ["bash", "--init-file", self.session.bashrc_path], env)
+        else:
+            # Parent
+            self.session.process = pid
+            self.session.fd = fd
 
-        if hasattr(self, 'fd') and self.fd is not None:
-            try:
-                os.close(self.fd)
-            except OSError:
-                pass
-            self.fd = None
-            
-        if hasattr(self, 'read_task') and self.read_task:
-            self.read_task.cancel()
-            self.read_task = None
-            
-        # Clean up the temporary bashrc file
-        if hasattr(self, 'bashrc_path') and os.path.exists(self.bashrc_path):
-            try:
-                os.remove(self.bashrc_path)
-            except OSError:
-                pass
+            flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
-        # Clean up the temporary workspace directory
-        if hasattr(self, 'workspace_dir') and os.path.exists(self.workspace_dir):
-            try:
-                shutil.rmtree(self.workspace_dir)
-            except OSError:
-                pass
+    def _spawn_windows(self, env: dict):
+        """Spawn cmd.exe on Windows as a fallback."""
+        self.session.process = subprocess.Popen(
+            ["cmd.exe"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=self.session.workspace_dir,
+            env=env,
+            bufsize=0,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+        )
+        self.session.fd = None
+
+    # ------------------------------------------------------------------ #
+    #  Incoming messages                                                   #
+    # ------------------------------------------------------------------ #
 
     async def receive(self, text_data=None, bytes_data=None):
-        """
-        Handles incoming data from the WebSocket.
-        Parses resize/kill JSON control commands from the frontend or
-        forwards raw keystroke input directly to the bash process.
-        """
-        if not hasattr(self, 'process') or not self.process:
+        if not self.session.is_alive():
             return
-            
-        if text_data and text_data.startswith('{'):
+
+        # Try to parse control messages first
+        if text_data and text_data.startswith("{"):
             try:
-                data = json.loads(text_data)
-                
-                if data.get('type') == 'resize':
-                    # Windows doesn't support PTY resizing naturally through termios
-                    if sys.platform != 'win32' and self.fd:
-                        cols = data.get('cols', 80)
-                        rows = data.get('rows', 24)
-                        winsize = struct.pack("HHHH", rows, cols, 0, 0)
-                        fcntl.ioctl(self.fd, termios.TIOCSWINSZ, winsize)
+                msg = json.loads(text_data)
+                msg_type = msg.get("type")
+
+                if msg_type == "resize":
+                    self._resize(msg.get("cols", 80), msg.get("rows", 24))
                     return
-                    
-                elif data.get('type') == 'kill':
-                    # Terminate current session and spawn a fresh replacement
-                    self.cleanup_process()
-                    await self.send(text_data='\r\n[Process Terminated by User]\r\n\r\n')
-                    self.spawn_process()
+
+                if msg_type == "kill":
+                    self._cleanup_session()
+                    await self.send(
+                        text_data="\r\n\x1b[31m[Terminal Killed]\x1b[0m\r\n"
+                    )
+                    await asyncio.get_event_loop().run_in_executor(
+                        None, self._spawn_process
+                    )
+                    self.session.read_task = asyncio.create_task(self._read_output())
                     return
-                    
+
             except json.JSONDecodeError:
-                pass
-                
-        # Forward direct terminal keystrokes to the underlying process
+                pass  # Not a control message — fall through to raw input
+
+        # Forward raw keystrokes to the process
         try:
-            input_data = text_data.encode('utf-8') if text_data else bytes_data
-            
-            if sys.platform == 'win32':
-                if self.process and self.process.stdin:
-                    self.process.stdin.write(input_data)
-                    self.process.stdin.flush()
+            payload = text_data.encode("utf-8") if text_data else bytes_data
+            if sys.platform == "win32":
+                if self.session.process and self.session.process.stdin:
+                    self.session.process.stdin.write(payload)
+                    self.session.process.stdin.flush()
             else:
-                if self.fd is not None:
-                    os.write(self.fd, input_data)
+                if self.session.fd is not None:
+                    os.write(self.session.fd, payload)
         except (OSError, BrokenPipeError):
             pass
 
-    async def read_windows_output(self):
-        """Fallback background loop to read standard Windows subprocess stdout."""
-        while hasattr(self, 'process') and self.process:
-            try:
-                await asyncio.sleep(0.01)
-                if self.process.stdout:
-                    # Non-blocking read trick for Windows PIPE
-                    output = self.process.stdout.read1(1024)
-                    if output:
-                        await self.send(text_data=output.decode('utf-8', errors='replace'))
-            except Exception:
-                break
+    # ------------------------------------------------------------------ #
+    #  Output reading                                                      #
+    # ------------------------------------------------------------------ #
 
-    async def read_output(self):
-        """Asynchronously polls the pseudo-terminal output and pushes to WebSocket."""
-        while self.fd:
+    async def _read_output(self):
+        """Continuously read PTY/pipe output and forward to the attached consumer."""
+        if sys.platform == "win32":
+            await self._read_windows()
+        else:
+            await self._read_unix()
+
+    async def _read_unix(self):
+        loop = asyncio.get_event_loop()
+        while self.session.fd is not None:
             try:
                 await asyncio.sleep(0.01)
-                output = os.read(self.fd, 1024)
-                if output:
-                    await self.send(text_data=output.decode('utf-8', errors='replace'))
+                output = os.read(self.session.fd, 4096)
+                if output and self.session.consumer:
+                    await self.session.consumer.send(
+                        text_data=output.decode("utf-8", errors="replace")
+                    )
             except BlockingIOError:
                 pass
             except OSError:
-                self.cleanup_process()
-                await self.send(text_data='\r\n[Process exited]\r\n')
+                # Process exited
+                if self.session.consumer:
+                    await self.session.consumer.send(
+                        text_data="\r\n\x1b[31m[Process exited]\x1b[0m\r\n"
+                    )
+                self._cleanup_session()
                 break
             except Exception:
                 break
+
+    async def _read_windows(self):
+        loop = asyncio.get_event_loop()
+        while self.session.is_alive():
+            try:
+                # Run blocking read in a thread so the event loop stays free
+                output = await loop.run_in_executor(
+                    None, self.session.process.stdout.read, 1024
+                )
+                if output and self.session.consumer:
+                    await self.session.consumer.send(
+                        text_data=output.decode("utf-8", errors="replace")
+                    )
+                elif not output:
+                    break
+            except Exception:
+                break
+
+    # ------------------------------------------------------------------ #
+    #  Helpers                                                             #
+    # ------------------------------------------------------------------ #
+
+    def _resize(self, cols: int, rows: int):
+        """Send a TIOCSWINSZ ioctl to resize the PTY window."""
+        if sys.platform == "win32" or self.session.fd is None:
+            return
+        try:
+            winsize = struct.pack("HHHH", rows, cols, 0, 0)
+            fcntl.ioctl(self.session.fd, termios.TIOCSWINSZ, winsize)
+        except OSError:
+            pass
+
+    def _cleanup_session(self):
+        """Kill the running process and free all associated resources."""
+        s = self.session
+
+        if s.read_task:
+            s.read_task.cancel()
+            s.read_task = None
+
+        if sys.platform == "win32":
+            if s.process:
+                try:
+                    s.process.terminate()
+                except Exception:
+                    pass
+        else:
+            if s.process:
+                try:
+                    os.kill(s.process, 9)
+                except OSError:
+                    pass
+            if s.fd is not None:
+                try:
+                    os.close(s.fd)
+                except OSError:
+                    pass
+
+        s.process = None
+        s.fd = None
+
+        if s.bashrc_path and os.path.exists(s.bashrc_path):
+            try:
+                os.remove(s.bashrc_path)
+            except OSError:
+                pass
+
+        if s.workspace_dir and os.path.exists(s.workspace_dir):
+            try:
+                shutil.rmtree(s.workspace_dir)
+            except OSError:
+                pass
+
+        s.bashrc_path = None
+        s.workspace_dir = None
