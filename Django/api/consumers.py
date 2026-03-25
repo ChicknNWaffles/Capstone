@@ -31,6 +31,7 @@ class TerminalSession:
         self.bashrc_path = None
         self.read_task = None
         self.consumer = None  # currently attached WebSocket consumer
+        self.buffer = b""
 
     def is_alive(self) -> bool:
         if sys.platform == "win32":
@@ -67,7 +68,8 @@ class TerminalConsumer(AsyncWebsocketConsumer):
             # Reattach to the existing session
             self.session = _sessions[session_key]
             self.session.attach(self)
-            await self.send(text_data="\r\n\x1b[33m[Reconnected to existing session]\x1b[0m\r\n")
+            if self.session.buffer:
+                await self.send(text_data=self.session.buffer.decode("utf-8", errors="replace"))
         else:
             # Spin up a brand-new session
             self.session = TerminalSession()
@@ -220,10 +222,14 @@ cd() {
             try:
                 await asyncio.sleep(0.01)
                 output = os.read(self.session.fd, 4096)
-                if output and self.session.consumer:
-                    await self.session.consumer.send(
-                        text_data=output.decode("utf-8", errors="replace")
-                    )
+                if output:
+                    self.session.buffer += output
+                    if len(self.session.buffer) > 65536:
+                        self.session.buffer = self.session.buffer[-65536:]
+                    if self.session.consumer:
+                        await self.session.consumer.send(
+                            text_data=output.decode("utf-8", errors="replace")
+                        )
             except BlockingIOError:
                 pass
             except OSError:
@@ -245,10 +251,14 @@ cd() {
                 output = await loop.run_in_executor(
                     None, self.session.process.stdout.read, 1024
                 )
-                if output and self.session.consumer:
-                    await self.session.consumer.send(
-                        text_data=output.decode("utf-8", errors="replace")
-                    )
+                if output:
+                    self.session.buffer += output
+                    if len(self.session.buffer) > 65536:
+                        self.session.buffer = self.session.buffer[-65536:]
+                    if self.session.consumer:
+                        await self.session.consumer.send(
+                            text_data=output.decode("utf-8", errors="replace")
+                        )
                 elif not output:
                     break
             except Exception:
