@@ -180,8 +180,10 @@ cd() {
 
                 if msg_type == "kill":
                     self._cleanup_session()
+                    self.session.buffer = b""
                     await self.send(
-                        text_data="\r\n\x1b[31m[Terminal Killed]\x1b[0m\r\n"
+                        # \x1b[2J clears screen, \x1b[3J clears scrollback, \x1b[H moves cursor home
+                        text_data="\x1b[2J\x1b[3J\x1b[H"
                     )
                     await asyncio.get_event_loop().run_in_executor(
                         None, self._spawn_process
