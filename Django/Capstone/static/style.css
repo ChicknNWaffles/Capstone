@@ -68,32 +68,6 @@ body {
       transparent 60%);
 }
 
-/* Apply glass look to panels */
-.sidebar,
-.tab-bar,
-.terminal-panel,
-.terminal-header {
-  position: relative;
-  background: var(--panel-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--glass-shadow), var(--glass-inner);
-}
-
-.sidebar::before,
-.tab-bar::before,
-.terminal-panel::before,
-.terminal-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0.06),
-      transparent 60%);
-}
-
 /* =========================
    Top Bar
 ========================= */
@@ -341,17 +315,20 @@ select.settings-input option {
   min-width: var(--sidebar-width);
   max-width: var(--sidebar-width);
   flex: 0 0 var(--sidebar-width);
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 0;
+  background: rgba(11, 18, 36, 0.4);
+  box-shadow: inset -5px 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-header {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  background: rgba(18, 25, 55, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(11, 18, 36, 0.65);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-header h4 {
@@ -409,28 +386,28 @@ select.settings-input option {
 }
 
 .file-subitem-buffer {
-    width: 1.2rem;
-    font-size: 0.85rem;
+  width: 1.2rem;
+  font-size: 0.85rem;
 }
 
 .folder-contents-with-offset {
-    display: flex;
-    flex:1;
-    align-items: center;
-    gap: 0.6rem;
-    cursor: pointer;
-    color: rgba(230, 235, 255, 0.7);
-    font-size: 0.85rem;
-    transition: background 0.15s, color 0.15s;
-    user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  color: rgba(230, 235, 255, 0.7);
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.folder-contents{
-    display:flex;
-    flex-direction:column;
-    flex:1;
+.folder-contents {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .file-name {
@@ -440,9 +417,9 @@ select.settings-input option {
   white-space: nowrap;
 }
 
-.vertLine{
-    height:100%;
-    border-left:2px solid var(--border-color);
+.vertLine {
+  height: 100%;
+  border-left: 2px solid var(--border-color);
 }
 
 /* =========================
@@ -462,8 +439,9 @@ select.settings-input option {
   height: 38px;
   display: flex;
   align-items: stretch;
-  background: rgba(11, 18, 36, 0.5);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(11, 18, 36, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
   overflow-y: hidden;
   border-radius: 0;
@@ -528,24 +506,85 @@ select.settings-input option {
 .openFiles {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0;
   background: transparent;
   min-height: 0;
+  border: none;
+}
+
+/* =========================
+   Monaco Editor — Blend with background
+   Removes the default opaque box so the
+   editor area inherits the app's dark glass bg.
+========================= */
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .margin,
+.monaco-editor .margin-view-overlays,
+.monaco-editor .lines-content,
+.monaco-editor .view-lines,
+.monaco-editor .inputarea,
+.monaco-editor .inputarea.ime-input,
+.overflow-guard {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Keep the cursor and selections visible */
+.monaco-editor .cursor {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.monaco-editor .selected-text {
+  background: rgba(88, 120, 255, 0.25) !important;
+}
+
+.monaco-editor .selectionHighlight {
+  background: rgba(88, 120, 255, 0.15) !important;
+}
+
+/* Line highlight (current line) */
+.monaco-editor .current-line,
+.monaco-editor .view-overlays .current-line {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: none !important;
+}
+
+/* Line numbers */
+.monaco-editor .line-numbers {
+  color: rgba(230, 235, 255, 0.25) !important;
+}
+
+.monaco-editor .line-numbers.active-line-number {
+  color: rgba(230, 235, 255, 0.6) !important;
+}
+
+/* Scrollbar inside Monaco */
+.monaco-editor .scrollbar .slider {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px;
+}
+
+.monaco-editor .scrollbar .slider:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* =========================
    Terminal Panel
 ========================= */
+
 .terminal-panel {
   flex: 0 0 var(--terminal-height);
   height: var(--terminal-height);
   min-height: var(--terminal-height);
   max-height: var(--terminal-height);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: rgba(13, 21, 48, 0.75);
+  background: rgba(11, 18, 36, 0.4) !important;
+  box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.2);
   border-radius: 0;
 }
 
@@ -555,8 +594,9 @@ select.settings-input option {
   display: flex;
   align-items: center;
   padding: 0 0.75rem;
-  border-bottom: 1px solid var(--border-color);
-  background: rgba(11, 18, 36, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(11, 18, 36, 0.65);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0;
   gap: 0.5rem;
 }
@@ -571,14 +611,16 @@ select.settings-input option {
   letter-spacing: 0.02em;
 }
 
+
 .terminal-content {
   flex: 1;
   padding: 0.5rem;
   overflow: hidden;
   min-height: 0;
+  background: transparent !important;
 }
 
-.terminal-content .xterm { height: 100%; }
+.terminal-content .xterm { height: 100%; background: transparent !important; }
 .terminal-content .xterm-viewport { background: transparent !important; }
 
 /* =========================
@@ -905,4 +947,21 @@ select.settings-input option {
 
 @media (max-width: 700px) {
   .project-cards3 { grid-template-columns: 1fr; }
+}
+
+/* Fariza's change: remove Monaco's container border so it blends with the background */
+.monaco-editor .overflow-guard {
+  border: none !important;
+}
+
+.monaco-editor {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Fariza's change: make Monaco background transparent so the page gradient shows through */
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .inputarea.ime-input {
+    background-color: transparent !important;
 }
