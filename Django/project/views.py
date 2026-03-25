@@ -12,6 +12,9 @@ from project.serializers import ProjectSerializer
 from collaborator.models import Collaborator
 from collaborator.serializers import CollaboratorSerializer
 
+from projectbranch.models import Branch
+from projectbranch.serializers import ProjectBranchSerializer
+
 
 
 # Create your views here.
@@ -205,3 +208,49 @@ class ProjectCollaboratorsListCreate(APIView):
         }
 
         return Response(response)
+    
+    
+class ProjectBranches(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProjectBranchSerializer
+
+    def post(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+
+        # Perms check
+        is_owner = project.owner == request.user
+        is_collaborator = Collaborator.objects.filter(
+            project=project,
+            user=request.user
+        ).exists()
+
+        if not (is_owner or is_collaborator):
+            return Response(
+                {"detail": "Only the project owner or collaborators can create branches."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = serializer.validated_data
+
+        branch = Branch(
+            project=project,
+            name=data.get("name"),
+        )
+        branch.save()
+        
+        response = {
+            "success": True,
+            "name": branch.name,
+            "project": project.name,
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+    
+    def _has_access(self, project, user):
+        """Helper: owner or collaborator?"""
+        return (
+            project.owner == user or
+            Collaborator.objects.filter(project=project, user=user).exists()
+        )

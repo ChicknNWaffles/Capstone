@@ -5,11 +5,12 @@ from rest_framework import status
 from rest_framework.views import APIView, Response
 from . import models
 from . import serializers
+from project.models import Project
 
 # Create your views here.
 class getCollaborators(View):
     
-    def get(self, request):
+    def get(self, request, project_id):
 
         # this one is getProjects(APIView)
         # projects = models.Project.objects.all().values()
