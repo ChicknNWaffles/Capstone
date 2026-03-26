@@ -13,12 +13,12 @@ class getBranches(View):
     def get(self, request, project_id):
 
         html = ""
-        branches = models.Branch.objects.all()
+        branches = models.Branch.objects.filter(project=project_id)
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
         for branch in branches:
-            html += f"<h1>{branch.name}</h1>"
+            html += f"<h1>Branch: {branch.name}</h1>"
             # html += f"<p>{branch.pk}</p>"
         response = HttpResponse(html)
 

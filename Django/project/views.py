@@ -28,15 +28,19 @@ class getProjects(View):
 
         # this one is getProjects(View)
         html = ""
-        projects = Project.objects.all()
+        user = request.user
+        projects = Project.objects.filter(owner=user)
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
         for project in projects:
-            html += f"<h1>{project.name}</h1>"
-            html += f"<p>{project.visibility}</p>"
-            html += f"<p>{project.file_path}</p>"
-            html += f"<p>{project.repo_link}</p>"
+            html += f"<h1>Name: {project.name}</h1>"
+            if project.visibility:
+                html += f"<p>Public</p>"
+            else: 
+                html += "<p>Private<p>"
+            html += f"<p>Filepath: {project.file_path}</p>"
+            html += f"<p>Repo link: {project.repo_link}</p>"
             html += f"<p>{project.last_edited}</p>"
         response = HttpResponse(html)
 

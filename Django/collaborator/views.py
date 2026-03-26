@@ -18,14 +18,15 @@ class getCollaborators(View):
 
         # this one is getProjects(View)
         html = ""
-        collaborators = models.Collaborator.objects.all()
+        collaborators = models.Collaborator.objects.filter(project=project_id)
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
         for collaborator in collaborators:
-            html += f"<h1>{collaborator.hours}</h1>"
-            html += f"<p>{collaborator.admin_perms}</p>"
-            html += f"<p>{collaborator.edit_perms}</p>"
+            html += f"<h1>Hours: {collaborator.hours}</h1>"
+            html += f"<p>Admin access: {collaborator.admin_perms}</p>"
+            html += f"<p>Editor: {collaborator.edit_perms}</p>"
+            
         response = HttpResponse(html)
 
         # if doing templates use:
