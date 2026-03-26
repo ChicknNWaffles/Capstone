@@ -652,11 +652,6 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Repository Link</label>
-                    <input type="text" class="form-control" id="repoLinkInput"
-                        placeholder="https://github.com/your-username/repo">
-                </div>
 
                 <button class="primary-submit" onclick="saveGeneralSettings()">Save Changes</button>
             </section>
@@ -745,9 +740,6 @@
                         document.getElementById('projectVisibility').value =
                             info.visibility ? "Public Collaborative" : "Private Workspace";
                     }
-                    if (info.repo_link !== undefined) {
-                        document.getElementById('repoLinkInput').value = info.repo_link || "";
-                    }
                 }
 
                 const filesRes = await fetch('/files/get/');
@@ -787,7 +779,6 @@
         async function saveGeneralSettings() {
             const name = document.getElementById('projectNameInput').value.trim();
             const visibility = document.getElementById('projectVisibility').value;
-            const repo_link = document.getElementById('repoLinkInput').value.trim();
 
             if (!name) {
                 alert("Project name cannot be empty.");
@@ -807,7 +798,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrftoken
                     },
-                    body: JSON.stringify({ name, visibility, repo_link })
+                    body: JSON.stringify({ name, visibility })
                 });
 
                 const data = await res.json();
