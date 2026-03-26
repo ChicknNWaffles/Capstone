@@ -38,8 +38,10 @@ class getProjects(View):
 class getUserProjects(APIView):
     def get(self,request):
         user = request.user
-        projects = models.Project.objects.filter(owner__username=user.username)
-        projects = models.Project.objects.all()
+        from collaborator.models import Collaborator
+        collab_project_ids = Collaborator.objects.filter(user=user).values_list('project_id', flat=True)
+        from django.db.models import Q
+        projects = models.Project.objects.filter(Q(owner=user) | Q(id__in=collab_project_ids))
         objs = []
         for project in projects:
             jsonObj = {}
@@ -60,7 +62,7 @@ class CreateProject(APIView):
         user = request.user
         name = request.data.get("name")
         visibility = request.data.get("visibility") == "public"
-        repoLink = request.data.get("repoLink")
+        repoLink = request.data.get("repoLink") or ""
 
 
         # example of a guard
