@@ -94,6 +94,10 @@ class CreateProject(APIView):
         project.save()
         file_service.create_project_folder(project.id)
 
+        # Auto-create main branch (signal will create S3 folder projects/{id}/main/)
+        from projectbranch.models import Branch
+        Branch.objects.create(project=project, name="main", isMain=True)
+
         response = {
             "success": True,
             "id": project.id,

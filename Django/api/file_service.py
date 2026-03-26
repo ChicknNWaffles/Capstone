@@ -191,6 +191,18 @@ class S3FileService:
             logger.error(f"Error creating project folder: {e}")
             return {'success': False, 'error': str(e)}
 
+    def create_branch_folder(self, project_id: int, branch_name: str) -> dict:
+        """Create an empty folder in S3 for a branch: projects/{project_id}/{branch_name}/"""
+        try:
+            self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=f"projects/{project_id}/{branch_name}/"
+            )
+            return {'success': True}
+        except ClientError as e:
+            logger.error(f"Error creating branch folder: {e}")
+            return {'success': False, 'error': str(e)}
+
     def list_files(self, project_id: int) -> dict:
         """
         List all files for a specific project
