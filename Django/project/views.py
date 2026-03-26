@@ -140,6 +140,12 @@ class CreateProjectButWithSerializers(APIView):
         )
         project.save()
 
+        main_branch = Branch(
+            project=project,
+            name="main",
+        )
+        main_branch.save()
+
         response = {
             "success": True,
             "name": project.name,
