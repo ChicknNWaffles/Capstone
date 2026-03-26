@@ -11,6 +11,9 @@
           href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
+
+    <!-- Fariza's change: added Monaco Editor (the same editor VS Code uses) so the code area actually works -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
 </head>
 
 <body>
@@ -118,7 +121,9 @@
 
             <!-- Content Area -->
             <div id="workspace">
-                <div class="openFiles" id="editorContent"></div>
+                <!-- Fariza's change: added style="height:100%;width:100%" so Monaco fills the whole editor box -->
+                <div class="openFiles" id="editorContent" style="height: 100%; width: 100%;"></div>
+
                 <!-- Horizontal Divider -->
                 <div class="divider horizontal" id="horizontalDivider"></div>
                 <div class="terminal-panel" id="terminalPanel">
@@ -178,7 +183,7 @@
 
 </body>
 <script>
-    const Host = "http://3.145.170.26:8000";
+    const Host = "http://127.0.0.1:8000";
 
     async function getProjectName() {
         const storedProjectName = sessionStorage.getItem("currentProjectName");
@@ -244,17 +249,12 @@
     function generateFileTreeHTML(files, levels = 0) {
         html = "";
         for (step in files) {
-            // determine if it is a folder or a file
             if (typeof files[step] === "string" || files[step] instanceof String) {
-                // start a file-item tag
                 html = html + "<div class='file-item lvl" + levels + "'>";
-                // for now, just set the icon to blank page, later will add function to
-                // determine file type
                 html = html + "<span class='file-icon' >📄</span>";
                 html = html + "<span class='file-name' >" + step + "</span>";
                 html = html + "</div>"
             } else {
-                // start a file-item tag
                 html = html + "<div class='file-item folder-item lvl" + levels + `' onclick = "toggleFolder(this)">`;
                 html = html + "<span class='file-icon'>📁</span>";
                 html = html + "<span class='file-name'>" + step + "</span>";
@@ -303,9 +303,10 @@
         if (!terminalContainer) return;
 
         const term = new Terminal({
+            allowTransparency: true,
             cursorBlink: true,
             theme: {
-                background: "#0d1530",
+                background: "transparent",
                 foreground: "#e6ebff",
                 cursor: "#5878ff",
                 selection: "rgba(88,120,255,0.3)",
@@ -488,6 +489,61 @@
         document.body.style.userSelect = "auto";
         document.body.style.cursor = "auto";
         currentDivider = null;
+    });
+
+    /* ============================
+       Fariza's change: Monaco Editor setup
+       This turns the empty editor box into a real working code editor
+       with syntax highlighting, autocomplete, and everything
+    ============================ */
+    require.config({
+        paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs" }
+    });
+
+    require(["vs/editor/editor.main"], function () {
+
+        // Fariza's change: custom theme to match the rest of the UI
+        // colors pulled directly from styles.css so everything looks consistent
+        monaco.editor.defineTheme("cocodingTheme", {
+            base: "vs-dark",
+            inherit: true,
+            rules: [],
+            colors: {
+                "editor.background":              "#00000000",  // fully transparent
+                "editor.lineHighlightBackground": "#ffffff08",
+                "editorLineNumber.foreground":    "#3a4a7a",
+                "editorLineNumber.activeForeground": "#5878ff",
+                "editor.selectionBackground":     "#5878ff50",
+                "editorCursor.foreground":        "#5878ff",
+                "editorWidget.background":        "#0d1530",
+                "editorSuggestWidget.background": "#0d1530",
+                "editorSuggestWidget.border":     "#ffffff14",
+            }
+        });
+
+        const editor = monaco.editor.create(document.getElementById("editorContent"), {
+            value: "# Start coding here\n",
+            language: "python",
+            theme: "cocodingTheme",   // our custom theme instead of vs-dark
+            fontSize: 13,
+            automaticLayout: true,    // auto resizes when the user drags the panel dividers
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+        });
+
+        // Fariza's change: lets you switch the language when a different file tab is clicked
+        // call this like: setEditorLanguage("javascript")
+        window.setEditorLanguage = (lang) => {
+            monaco.editor.setModelLanguage(editor.getModel(), lang);
+        };
+
+        // Fariza's change: call this to get whatever the user typed in the editor
+        // useful later when we hook up saving files to the backend
+        window.getEditorContent = () => editor.getValue();
+
+        // Fariza's change: call this to load a file's content into the editor
+        // useful later when we hook up opening files from the backend
+        window.setEditorContent = (content) => editor.setValue(content);
     });
 </script>
 </html>
