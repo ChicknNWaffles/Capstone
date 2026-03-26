@@ -5,6 +5,8 @@
 <head>
     <title>CoCodingStudio | editor</title>
     <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <!-- import Outfit font for a premium, professional look -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- xterm.js dependencies -->
     <link rel="stylesheet"
@@ -12,12 +14,12 @@
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
 
-    <!-- Fariza's change: added Monaco Editor (the same editor VS Code uses) so the code area actually works -->
+    <!-- Monaco Editor (the same editor VS Code uses) -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
 </head>
 
 <body>
-    <!-- Top Bar (removed activity-bar class so it no longer gets hidden) -->
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-left">
             <h3>Project:</h3>
@@ -25,14 +27,9 @@
         </div>
         <button id="settingsBtn" class="settings-button" title="Project Settings">
             <svg xmlns="http://www.w3.org/2000/svg"
-                 width="18"
-                 height="18"
-                 viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2"
-                 stroke-linecap="round"
-                 stroke-linejoin="round">
+                 width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
@@ -46,14 +43,9 @@
                 <h2>Project Settings</h2>
                 <button id="closeSettingsBtn" class="close-button">
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         width="18"
-                         height="18"
-                         viewBox="0 0 24 24"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="2"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
+                         width="18" height="18" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -62,17 +54,13 @@
             <div class="modal-content">
                 <div class="settings-section">
                     <label class="settings-label">Project Name</label>
-                    <input type="text"
-                           id="projectNameInput"
-                           class="settings-input"
+                    <input type="text" id="projectNameInput" class="settings-input"
                            placeholder="Enter project name" />
                 </div>
                 <div class="settings-section">
                     <label class="settings-label">Description</label>
-                    <textarea id="projectDescInput"
-                              class="settings-input"
-                              placeholder="Enter project description"
-                              rows="4"></textarea>
+                    <textarea id="projectDescInput" class="settings-input"
+                              placeholder="Enter project description" rows="4"></textarea>
                 </div>
                 <div class="settings-section">
                     <label class="settings-label">Visibility</label>
@@ -90,12 +78,91 @@
         </div>
     </div>
 
+    <!-- fariza's change: Rename Modal for Electron compatibility (replaces window.prompt) -->
+    <div id="renameModal" class="modal-overlay">
+        <div class="settings-modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Rename File</h2>
+                <button id="closeRenameBtn" class="close-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="settings-section">
+                    <label class="settings-label">New Name</label>
+                    <input type="text" id="newNameInput" class="settings-input" placeholder="Enter new filename" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmRenameBtn" class="btn-primary">Rename</button>
+                <button id="cancelRenameBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- fariza's change: Delete Confirmation Modal for Electron compatibility (replaces window.confirm) -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="settings-modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 style="color: #e5534b;">Delete File</h2>
+                <button id="closeDeleteBtn" class="close-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p style="color: rgba(230,235,255,0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    Are you sure you want to permanently delete <strong id="deleteFileNameDisplay" style="color: #fff;"></strong>?
+                </p>
+                <p style="color: rgba(229,83,75,0.8); font-size: 0.8rem; font-style: italic;">
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmDeleteBtn" class="btn-primary" style="background: #e5534b;">Delete Permanently</button>
+                <button id="cancelDeleteBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- fariza's change: Password Modal for Electron compatibility (replaces window.prompt) -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="settings-modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>File Protected</h2>
+                <button id="closePasswordBtn" class="close-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="settings-section">
+                    <label class="settings-label" id="passwordModalLabel">Enter password to view file</label>
+                    <input type="password" id="filePasswordInput" class="settings-input" placeholder="Enter password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmPasswordBtn" class="btn-primary">Unlock File</button>
+                <button id="cancelPasswordBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
     <!-- Main Layout -->
     <div class="editor-layout">
-        <!-- Sidebar with Files -->
+        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h4>Files</h4>
+                <span class="sidebar-title">Explorer</span>
             </div>
             <div class="sidebar-content">
                 <div id="file-tree"></div>
@@ -121,11 +188,11 @@
 
             <!-- Content Area -->
             <div id="workspace">
-                <!-- Fariza's change: added style="height:100%;width:100%" so Monaco fills the whole editor box -->
-                <div class="openFiles" id="editorContent" style="height: 100%; width: 100%;"></div>
+                <div class="openFiles" id="editorContent" style="height:100%;width:100%;"></div>
 
                 <!-- Horizontal Divider -->
                 <div class="divider horizontal" id="horizontalDivider"></div>
+
                 <div class="terminal-panel" id="terminalPanel">
                     <div class="terminal-header">
                         <div class="terminal-tab">Command Terminal</div>
@@ -133,28 +200,17 @@
                                 title="Kill Terminal"
                                 onclick="killTerminal()"
                                 style="
-                  background: none;
-                  border: none;
-                  cursor: pointer;
-                  margin-left: auto;
-                  padding: 4px 6px;
-                  color: #cccccc;
-                  display: flex;
-                  align-items: center;
-                  border-radius: 4px;
-                  transition: background 0.15s, color 0.15s;
-                "
+                                    background:none; border:none; cursor:pointer;
+                                    margin-left:auto; padding:4px 6px; color:#cccccc;
+                                    display:flex; align-items:center; border-radius:4px;
+                                    transition:background 0.15s, color 0.15s;
+                                "
                                 onmouseover="this.style.background='rgba(229,83,75,0.15)';this.style.color='#e5534b';"
                                 onmouseout="this.style.background='none';this.style.color='#cccccc';">
                             <svg xmlns="http://www.w3.org/2000/svg"
-                                 width="16"
-                                 height="16"
-                                 viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 stroke-width="1.8"
-                                 stroke-linecap="round"
-                                 stroke-linejoin="round">
+                                 width="16" height="16" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                                 <path d="M10 11v6"></path>
@@ -183,7 +239,25 @@
 
 </body>
 <script>
-    const Host = "http://127.0.0.1:8000";
+    // --- Helper function to get CSRF token from cookies ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // --- Original Host variable (Electron compatibility) ---
+    const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
 
     async function getProjectName() {
         const storedProjectName = sessionStorage.getItem("currentProjectName");
@@ -241,7 +315,7 @@
                 relPath = relPath.substr(relPath.indexOf("/") + 1);
                 bottomFolder = curFolder;
             }
-            bottomFolder[relPath] = "file";
+            bottomFolder[relPath] = file;
         }
         return topLevel;
     }
@@ -249,13 +323,71 @@
     function generateFileTreeHTML(files, levels = 0) {
         html = "";
         for (step in files) {
-            if (typeof files[step] === "string" || files[step] instanceof String) {
-                html = html + "<div class='file-item lvl" + levels + "'>";
-                html = html + "<span class='file-icon' >📄</span>";
-                html = html + "<span class='file-name' >" + step + "</span>";
-                html = html + "</div>"
+            if (files[step].name !== undefined) {
+                const isLocked = files[step].is_locked;
+
+                html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "'>";
+
+                // ── File icon with lock badge in the bottom-right corner ──
+                // Inspired by the Windows/macOS file-with-badge pattern:
+                // the lock is a small circle overlaid on the icon, not inline text.
+                const fileIcon = `
+                    <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             style="opacity:0.7;">
+                            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+                        ${isLocked ? `
+                        <span style="
+                            position: absolute;
+                            bottom: -3px;
+                            right: -4px;
+                            width: 9px;
+                            height: 9px;
+                            background: #5878ff;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border: 1.5px solid #0a1020;
+                        ">
+                            <svg width="5" height="5" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+                            </svg>
+                        </span>` : ''}
+                    </span>`;
+
+                // ── Rename Icon (fariza's change: match the request for renaming option) ──
+                const renameIcon = `
+                    <span class="rename-icon" title="Rename file" onclick="event.stopPropagation(); renameFile('${files[step].id}', '${step}')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </span>`;
+
+                // ── Delete Icon (fariza's change: match the request for deletion option) ──
+                const deleteIcon = `
+                    <span class="delete-icon" title="Delete file" onclick="event.stopPropagation(); deleteFile('${files[step].id}', '${step}')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </span>`;
+
+                html = html + fileIcon;
+                html = html + "<span class='file-name'>" + step + "</span>";
+                html = html + renameIcon;
+                html = html + deleteIcon;
+                html = html + "</div>";
+
             } else {
-                html = html + "<div class='file-item folder-item lvl" + levels + `' onclick = "toggleFolder(this)">`;
+                html = html + "<div class='file-item folder-item lvl" + levels + `' onclick="toggleFolder(this)">`;
                 html = html + "<span class='file-icon'>📁</span>";
                 html = html + "<span class='file-name'>" + step + "</span>";
                 html = html + "<span class='toggle-arrow'>▽</span>";
@@ -264,17 +396,17 @@
                 html = html + "<div class='file-subitem-buffer'></div>";
                 html = html + "<div class='folder-contents vertLine'>";
                 html = html + generateFileTreeHTML(files[step], levels + 1);
-                html = html + "</div>"
-                html = html + "</div>"
+                html = html + "</div>";
+                html = html + "</div>";
             }
         }
-        return html
+        return html;
     }
 
     function populateFileTree(files) {
         html = generateFileTreeHTML(files);
         tree = document.getElementById("file-tree");
-        tree.innerHTML = html
+        tree.innerHTML = html;
     }
 
     function toggleFolder(folder) {
@@ -283,11 +415,11 @@
         if (folderContents.hidden == true) {
             folderContents.hidden = false;
             folderContents.style.display = 'flex';
-            arrow.innerHTML = "▽"
+            arrow.innerHTML = "▽";
         } else {
             folderContents.hidden = true;
             folderContents.style.display = 'none';
-            arrow.innerHTML = "◁"
+            arrow.innerHTML = "◁";
         }
     }
 
@@ -355,13 +487,30 @@
 
     initializeTerminal();
 
-    document.querySelectorAll(".file-item").forEach((item) => {
-        item.addEventListener("click", function () {
-            document.querySelectorAll(".file-item").forEach((f) => f.classList.remove("active"));
-            this.classList.add("active");
-            const fileName = this.querySelector(".file-name").textContent;
-            console.log("Clicked file:", fileName);
-        });
+    // Event delegation for file tree clicks
+    document.getElementById("file-tree").addEventListener("click", async function (e) {
+        const item = e.target.closest(".file-item");
+        if (!item || item.classList.contains("folder-item")) return;
+
+        document.querySelectorAll(".file-item").forEach((f) => f.classList.remove("active"));
+        item.classList.add("active");
+
+        const fileId   = item.getAttribute("data-file-id");
+        const isLocked = item.getAttribute("data-is-locked") === "true";
+        const fileName = item.querySelector(".file-name").textContent;
+
+        console.log("Opening file:", fileName, "Locked:", isLocked);
+
+        if (isLocked) {
+            currentPasswordFileId = fileId;
+            currentPasswordFileName = fileName;
+            filePasswordInput.value = "";
+            passwordModal.classList.add("active");
+            setTimeout(() => filePasswordInput.focus(), 100);
+            return;
+        }
+
+        fetchFileContent(fileId, fileName);
     });
 
     document.querySelectorAll(".tab-close").forEach((closeBtn) => {
@@ -381,17 +530,15 @@
     /* ============================
        Settings Modal
     ============================ */
-    const settingsBtn = document.getElementById("settingsBtn");
-    const settingsModal = document.getElementById("settingsModal");
+    const settingsBtn      = document.getElementById("settingsBtn");
+    const settingsModal    = document.getElementById("settingsModal");
     const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-    const cancelSettingsBtn = document.getElementById("cancelSettingsBtn");
-    const saveSettingsBtn = document.getElementById("savSettingsBtn");
+    const cancelSettingsBtn= document.getElementById("cancelSettingsBtn");
+    const saveSettingsBtn  = document.getElementById("savSettingsBtn");
     const projectNameInput = document.getElementById("projectNameInput");
 
     settingsBtn.addEventListener("click", () => {
-        const projectName = document.getElementById("projectName").textContent;
-        projectNameInput.value = projectName;
-        settingsModal.classList.add("active");
+        window.location.href = "/settings/";
     });
 
     const closeModal = () => {
@@ -424,7 +571,7 @@
     let startSidebarWidth = 0;
     let startTerminalHeight = 0;
 
-    const verticalDivider = document.getElementById("verticalDivider");
+    const verticalDivider   = document.getElementById("verticalDivider");
     const horizontalDivider = document.getElementById("horizontalDivider");
 
     if (verticalDivider) {
@@ -456,14 +603,14 @@
     document.addEventListener("mousemove", (e) => {
         if (!isResizing) return;
 
-        const root = document.documentElement;
-        const sidebar = document.getElementById("sidebar");
-        const terminalPanel = document.getElementById("terminalPanel");
+        const root         = document.documentElement;
+        const sidebar      = document.getElementById("sidebar");
+        const terminalPanel= document.getElementById("terminalPanel");
         const editorLayout = document.querySelector(".editor-layout");
-        const workspace = document.getElementById("workspace");
+        const workspace    = document.getElementById("workspace");
 
         if (currentDivider === "vertical" && sidebar) {
-            const delta = e.clientX - startX;
+            const delta    = e.clientX - startX;
             const newWidth = startSidebarWidth + delta;
             const minWidth = 150;
             const maxWidth = editorLayout.offsetWidth - 300;
@@ -471,7 +618,7 @@
                 root.style.setProperty("--sidebar-width", newWidth + "px");
             }
         } else if (currentDivider === "horizontal" && terminalPanel && workspace) {
-            const delta = startY - e.clientY;
+            const delta     = startY - e.clientY;
             const newHeight = startTerminalHeight + delta;
             const minHeight = 80;
             const maxHeight = workspace.offsetHeight - 80;
@@ -484,17 +631,15 @@
     document.addEventListener("mouseup", () => {
         if (!isResizing) return;
         isResizing = false;
-        if (verticalDivider) verticalDivider.classList.remove("active");
+        if (verticalDivider)   verticalDivider.classList.remove("active");
         if (horizontalDivider) horizontalDivider.classList.remove("active");
         document.body.style.userSelect = "auto";
-        document.body.style.cursor = "auto";
+        document.body.style.cursor     = "auto";
         currentDivider = null;
     });
 
     /* ============================
-       Fariza's change: Monaco Editor setup
-       This turns the empty editor box into a real working code editor
-       with syntax highlighting, autocomplete, and everything
+       Monaco Editor setup
     ============================ */
     require.config({
         paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs" }
@@ -502,48 +647,224 @@
 
     require(["vs/editor/editor.main"], function () {
 
-        // Fariza's change: custom theme to match the rest of the UI
-        // colors pulled directly from styles.css so everything looks consistent
         monaco.editor.defineTheme("cocodingTheme", {
             base: "vs-dark",
             inherit: true,
             rules: [],
             colors: {
-                "editor.background":              "#00000000",  // fully transparent
-                "editor.lineHighlightBackground": "#ffffff08",
-                "editorLineNumber.foreground":    "#3a4a7a",
+                "editor.background":                 "#00000000",
+                "editor.lineHighlightBackground":    "#ffffff08",
+                "editorLineNumber.foreground":       "#3a4a7a",
                 "editorLineNumber.activeForeground": "#5878ff",
-                "editor.selectionBackground":     "#5878ff50",
-                "editorCursor.foreground":        "#5878ff",
-                "editorWidget.background":        "#0d1530",
-                "editorSuggestWidget.background": "#0d1530",
-                "editorSuggestWidget.border":     "#ffffff14",
+                "editor.selectionBackground":        "#5878ff50",
+                "editorCursor.foreground":           "#5878ff",
+                "editorWidget.background":           "#0d1530",
+                "editorSuggestWidget.background":    "#0d1530",
+                "editorSuggestWidget.border":        "#ffffff14",
             }
         });
 
         const editor = monaco.editor.create(document.getElementById("editorContent"), {
             value: "# Start coding here\n",
             language: "python",
-            theme: "cocodingTheme",   // our custom theme instead of vs-dark
+            theme: "cocodingTheme",
             fontSize: 13,
-            automaticLayout: true,    // auto resizes when the user drags the panel dividers
+            automaticLayout: true,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
         });
 
-        // Fariza's change: lets you switch the language when a different file tab is clicked
-        // call this like: setEditorLanguage("javascript")
         window.setEditorLanguage = (lang) => {
             monaco.editor.setModelLanguage(editor.getModel(), lang);
         };
 
-        // Fariza's change: call this to get whatever the user typed in the editor
-        // useful later when we hook up saving files to the backend
         window.getEditorContent = () => editor.getValue();
 
-        // Fariza's change: call this to load a file's content into the editor
-        // useful later when we hook up opening files from the backend
         window.setEditorContent = (content) => editor.setValue(content);
     });
+
+    /* ============================
+       Custom Modals (fariza's change: replace native dialogs for Electron compatibility)
+    ============================ */
+    let currentRenameFileId   = null;
+    let currentRenameFileName = null;
+    let currentDeleteFileId   = null;
+    let currentDeleteFileName = null;
+
+    const renameModal      = document.getElementById("renameModal");
+    const newNameInput     = document.getElementById("newNameInput");
+    const confirmRenameBtn = document.getElementById("confirmRenameBtn");
+    const cancelRenameBtn  = document.getElementById("cancelRenameBtn");
+    const closeRenameBtn   = document.getElementById("closeRenameBtn");
+
+    const deleteModal           = document.getElementById("deleteModal");
+    const deleteFileNameDisplay = document.getElementById("deleteFileNameDisplay");
+    const confirmDeleteBtn      = document.getElementById("confirmDeleteBtn");
+    const cancelDeleteBtn       = document.getElementById("cancelDeleteBtn");
+    const closeDeleteBtn        = document.getElementById("closeDeleteBtn");
+
+    // helper to get CSRF token
+    function getCSRFToken() {
+        let csrftoken = '';
+        const cookieParts = document.cookie.split(";");
+        for (let i = 0; i < cookieParts.length; i++) {
+            const part = cookieParts[i].trim();
+            if (part.startsWith('csrftoken=')) {
+                csrftoken = part.substring(10);
+                break;
+            }
+        }
+        return csrftoken;
+    }
+
+    function closeAllModals() {
+        renameModal.classList.remove("active");
+        deleteModal.classList.remove("active");
+        passwordModal.classList.remove("active");
+    }
+
+    /* ============================
+       File Opening (fariza's change: modal-driven password entry)
+    ============================ */
+    const passwordModal      = document.getElementById("passwordModal");
+    const filePasswordInput  = document.getElementById("filePasswordInput");
+    const confirmPasswordBtn = document.getElementById("confirmPasswordBtn");
+    const cancelPasswordBtn  = document.getElementById("cancelPasswordBtn");
+    const closePasswordBtn   = document.getElementById("closePasswordBtn");
+    let currentPasswordFileId   = null;
+    let currentPasswordFileName = null;
+
+    confirmPasswordBtn.addEventListener("click", () => {
+        const password = filePasswordInput.value;
+        if (!password) {
+            alert("Password is required.");
+            return;
+        }
+        closeAllModals();
+        fetchFileContent(currentPasswordFileId, currentPasswordFileName, password);
+    });
+
+    cancelPasswordBtn.addEventListener("click", closeAllModals);
+    closePasswordBtn.addEventListener("click", closeAllModals);
+
+    async function fetchFileContent(fileId, fileName, password = null) {
+        try {
+            const response = await fetch(Host + "/files/content/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ file_id: fileId, password: password })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                if (window.setEditorContent) {
+                    window.setEditorContent(data.content);
+                    const statusItem = document.querySelector(".status-left .status-item:first-child");
+                    if (statusItem) statusItem.textContent = fileName;
+                }
+            } else {
+                alert("Access Denied: " + (data.error || "Incorrect password or system error."));
+            }
+        } catch (err) {
+            console.error("File loading error:", err);
+            alert("Error: Could not reach the server to open the file.");
+        }
+    }
+
+    /* ============================
+       File Renaming (fariza's change: modal-driven renaming)
+    ============================ */
+    function renameFile(fileId, currentName) {
+        currentRenameFileId = fileId;
+        currentRenameFileName = currentName;
+        newNameInput.value = currentName;
+        renameModal.classList.add("active");
+        setTimeout(() => newNameInput.focus(), 100);
+    }
+
+    confirmRenameBtn.addEventListener("click", async () => {
+        const newName = newNameInput.value.trim();
+        if (!newName || newName === currentRenameFileName) {
+            closeAllModals();
+            return;
+        }
+
+        try {
+            const response = await fetch(Host + "/files/rename/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({
+                    file_id: currentRenameFileId,
+                    new_name: newName
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                getFileDirectories();
+                closeAllModals();
+            } else {
+                alert("Error: " + (data.error || "Failed to rename file"));
+            }
+        } catch (error) {
+            console.error("Rename error:", error);
+            alert("An error occurred while renaming the file.");
+        }
+    });
+
+    cancelRenameBtn.addEventListener("click", closeAllModals);
+    closeRenameBtn.addEventListener("click", closeAllModals);
+
+    /* ============================
+       File Deletion (fariza's change: modal-driven deletion)
+    ============================ */
+    function deleteFile(fileId, fileName) {
+        currentDeleteFileId = fileId;
+        currentDeleteFileName = fileName;
+        deleteFileNameDisplay.textContent = fileName;
+        deleteModal.classList.add("active");
+    }
+
+    confirmDeleteBtn.addEventListener("click", async () => {
+        try {
+            const response = await fetch(Host + "/files/delete-file/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({
+                    file_id: currentDeleteFileId
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                getFileDirectories();
+                closeAllModals();
+                // Clear the editor if the deleted file was open
+                const statusItem = document.querySelector(".status-left .status-item:first-child");
+                if (statusItem && statusItem.textContent === currentDeleteFileName) {
+                    if (window.setEditorContent) window.setEditorContent("");
+                    statusItem.textContent = "No file open";
+                }
+            } else {
+                alert("Error: " + (data.error || "Failed to delete file"));
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("An error occurred while deleting the file.");
+        }
+    });
+
+    cancelDeleteBtn.addEventListener("click", closeAllModals);
+    closeDeleteBtn.addEventListener("click", closeAllModals);
+
 </script>
 </html>

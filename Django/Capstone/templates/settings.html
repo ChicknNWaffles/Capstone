@@ -1,0 +1,963 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | CoCodingStudio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+
+    <style>
+        /* ─── Page-level overrides (loaded after style.css so these win) ─── */
+
+        :root {
+            --primary-accent: #5878ff;
+            --danger-accent: #ff5f5f;
+            --success-accent: #4ade80;
+            --card-bg: rgba(18, 25, 55, 0.4);
+            --item-bg: rgba(255, 255, 255, 0.03);
+            --item-hover: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Reset body — style.css sets overflow:hidden for the editor page */
+        html,
+        body {
+            height: auto;
+            overflow: auto !important;
+            display: block;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(88, 120, 255, 0.15), transparent 40%),
+                radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.1), transparent 40%),
+                #0b1224;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: var(--text-primary);
+        }
+
+        /* ─── Wrapper ─── */
+        .settings-wrapper {
+            max-width: 1100px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ─── Page header ─── */
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 48px;
+            padding: 0 4px;
+        }
+
+        .header-left h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.65) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-left p {
+            margin: 8px 0 0 0;
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-accent);
+            transform: translateX(-4px);
+            box-shadow: 0 0 20px rgba(88, 120, 255, 0.2);
+        }
+
+        /* ─── Two-column grid ─── */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+            gap: 28px;
+        }
+
+        /* ─── Cards ─── */
+        .settings-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: #fff;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* ─── Form elements ─── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(88, 120, 255, 0.12);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        select.form-control option {
+            background: #0d1530;
+        }
+
+        .primary-submit {
+            background: var(--primary-accent);
+            color: #fff;
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: auto;
+            font-family: inherit;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .primary-submit:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 120, 255, 0.3);
+        }
+
+        /* ─── File list
+             Use .file-list .file-item selector to beat style.css's .file-item
+             which targets the sidebar file tree ─── */
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-list .file-item {
+            background: var(--item-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s, border-color 0.2s;
+            cursor: default;
+            /* reset sidebar tree overrides */
+            gap: 0;
+            color: var(--text-primary);
+            font-size: inherit;
+            white-space: normal;
+        }
+
+        .file-list .file-item:hover {
+            background: var(--item-hover);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .file-icon {
+            font-size: 1.1rem;
+            opacity: 0.75;
+        }
+
+        /* Override style.css .file-name (sidebar uses this too) */
+        .file-list .file-name {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #fff;
+            flex: none;
+            overflow: visible;
+            text-overflow: unset;
+            white-space: normal;
+        }
+
+        .status-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+        }
+
+        .status-unlocked {
+            color: var(--success-accent);
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .status-locked {
+            color: var(--danger-accent);
+            background: rgba(255, 95, 95, 0.1);
+        }
+
+        /* ─── Action buttons — fixed min-width so all are identical size ─── */
+        .action-button {
+            min-width: 148px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: 1px solid transparent;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-set-lock {
+            background: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.85);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-set-lock:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: var(--primary-accent);
+            color: #fff;
+        }
+
+        .btn-remove-lock {
+            background: rgba(255, 95, 95, 0.08);
+            color: var(--danger-accent);
+            border-color: rgba(255, 95, 95, 0.2);
+        }
+
+        .btn-remove-lock:hover {
+            background: rgba(255, 95, 95, 0.18);
+            border-color: var(--danger-accent);
+        }
+
+        /* styling for search and filters */
+        .search-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper svg {
+            position: absolute;
+            left: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        .search-control {
+            padding-left: 38px !important;
+        }
+
+        .filter-ribbon {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-accent);
+            border-color: var(--primary-accent);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(88, 120, 255, 0.25);
+        }
+
+        .results-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /*  styling for scrollable file list */
+        .file-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-top: 4px;
+        }
+
+        .file-icon-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-right: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .lock-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #5878ff;
+            color: white;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #13192b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .lock-badge svg {
+            width: 7px;
+            height: 7px;
+        }
+
+        /* Custom scrollbar */
+        .file-list-container::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .file-list-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .file-list-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .file-list-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ════════════════════════════════════════════════════════
+           MODAL
+           style.css already defines .modal-overlay with the
+           opacity + pointer-events show/hide pattern, and
+           .settings-modal as a flex column with border etc.
+           We scope everything under #passwordModal to override
+           cleanly without touching the editor's own modal.
+        ════════════════════════════════════════════════════════ */
+
+        #passwordModal {
+            background: rgba(5, 8, 18, 0.78);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        #passwordModal .settings-modal {
+            background: #13192b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            width: 90%;
+            max-width: 400px;
+            max-height: none;
+            padding: 28px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+            position: relative;
+            text-align: left;
+            display: block;
+            overflow: visible;
+            animation: modalPop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.94) translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        #passwordModal .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.45);
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            line-height: 1;
+            padding: 0;
+        }
+
+        #passwordModal .modal-close:hover {
+            background: rgba(255, 95, 95, 0.15);
+            border-color: var(--danger-accent);
+            color: var(--danger-accent);
+        }
+
+        /* Override style.css .modal-header (flex row + border-bottom + padding) */
+        #passwordModal .modal-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 5px;
+            margin-bottom: 18px;
+            padding: 0;
+            padding-right: 32px;
+            border-bottom: none;
+        }
+
+        #passwordModal .modal-header h3 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        #passwordModal .modal-header p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+
+        #passwordModal .modal-header p strong {
+            color: rgba(255, 255, 255, 0.72);
+            font-weight: 600;
+        }
+
+        #filePasswordInput {
+            margin-bottom: 18px;
+        }
+
+        /* Override style.css .modal-footer (border-top + padding + justify flex-end) */
+        #passwordModal .modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 0;
+            border-top: none;
+            margin-top: 0;
+            justify-content: flex-start;
+        }
+
+        /* Override style.css .btn-secondary and .btn-primary scoped to this modal */
+        #passwordModal .btn-secondary {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        #passwordModal .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            transform: none;
+        }
+
+        #passwordModal .btn-primary {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--primary-accent);
+            border: none;
+            color: #fff;
+        }
+
+        #passwordModal .btn-primary:hover {
+            background: #4a67e0;
+            box-shadow: 0 0 16px rgba(88, 120, 255, 0.35);
+            transform: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="settings-wrapper">
+        <header class="settings-header">
+            <div class="header-left">
+                <h1>Project Settings</h1>
+                <p id="projectNameHeader">Loading project details...</p>
+            </div>
+            <a href="/editor/" class="back-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Editor
+            </a>
+        </header>
+
+        <main class="settings-grid">
+            <!-- General Settings -->
+            <section class="settings-card">
+                <h2>General</h2>
+                <p class="card-description">Configure high-level project preferences and repository connections.</p>
+
+                <div class="form-group">
+                    <label class="form-label">Project Name</label>
+                    <input type="text" class="form-control" id="projectNameInput"
+                        placeholder="My Awesome Project">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Visibility</label>
+                    <select class="form-control" id="projectVisibility">
+                        <option>Private Workspace</option>
+                        <option>Public Collaborative</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Repository Link</label>
+                    <input type="text" class="form-control" id="repoLinkInput"
+                        placeholder="https://github.com/your-username/repo">
+                </div>
+
+                <button class="primary-submit" onclick="saveGeneralSettings()">Save Changes</button>
+            </section>
+
+            <!-- File Security -->
+            <section class="settings-card">
+                <h2>Security</h2>
+                <p class="card-description">Individual file-level password protection. Add an extra layer of security
+                    to sensitive modules.</p>
+
+                <!--  area to search and filter files -->
+                <div class="search-area">
+                    <div class="search-input-wrapper">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="fileSearchInput" class="form-control search-control"
+                            placeholder="Search by filename..." oninput="handleSearch(this.value)">
+                    </div>
+
+                    <div class="filter-ribbon">
+                        <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+                        <button class="filter-btn" onclick="setFilter('locked', this)">Locked</button>
+                        <button class="filter-btn" onclick="setFilter('unlocked', this)">Unlocked</button>
+                    </div>
+
+                    <div class="results-meta">
+                        <span id="fileCountText">Loading files...</span>
+                        <span id="clearSearch" style="cursor:pointer; color:var(--primary-accent); display:none;"
+                            onclick="clearSearch()">Clear Search</span>
+                    </div>
+                </div>
+
+                <div class="file-list-container">
+                    <ul class="file-list" id="settingsFileList">
+                        <div style="text-align:center;padding:40px;opacity:0.4;">
+                            <p>Syncing files...</p>
+                        </div>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal-overlay" onclick="closePasswordModal()">
+        <div class="settings-modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+
+            <div class="modal-header">
+                <h3 id="passwordModalTitle">Secure File</h3>
+                <p id="passwordModalDesc">Enter a password to restrict access.</p>
+            </div>
+
+            <input type="password" id="filePasswordInput" class="form-control" placeholder="Enter password"
+                onkeydown="if(event.key==='Enter') submitPassword()">
+
+            <input type="hidden" id="activeFileId">
+            <input type="hidden" id="activeFileAction">
+
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                <button class="btn-primary" onclick="submitPassword()">Apply Security</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectFiles = [];
+        let currentFilter = 'all'; // all, locked, unlocked
+        let currentSearch = '';
+
+        async function loadProjectSettings() {
+            try {
+                const infoRes = await fetch('/api/getProjName');
+                if (infoRes.ok) {
+                    const info = await infoRes.json();
+                    const name = info.name || "Untitled Workspace";
+                    document.getElementById('projectNameHeader').textContent = name;
+                    document.getElementById('projectNameInput').value = name;
+
+                    // Populate General Settings
+                    if (info.visibility !== undefined) {
+                        document.getElementById('projectVisibility').value =
+                            info.visibility ? "Public Collaborative" : "Private Workspace";
+                    }
+                    if (info.repo_link !== undefined) {
+                        document.getElementById('repoLinkInput').value = info.repo_link || "";
+                    }
+                }
+
+                const filesRes = await fetch('/files/get/');
+                if (filesRes.ok) {
+                    const data = await filesRes.json();
+                    projectFiles = data.files || [];
+                    renderFilesList();
+                }
+            } catch (err) {
+                console.error("Settings sync error:", err);
+                document.getElementById('settingsFileList').innerHTML =
+                    `<div style="color:var(--danger-accent);text-align:center;padding:20px;">Connection failed.</div>`;
+            }
+        }
+
+        //  search for files by name
+        function handleSearch(query) {
+            currentSearch = query.toLowerCase().trim();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'inline' : 'none';
+            renderFilesList();
+        }
+
+        function clearSearch() {
+            document.getElementById('fileSearchInput').value = '';
+            handleSearch('');
+        }
+
+        //  show only locked or unlocked files
+        function setFilter(type, btn) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderFilesList();
+        }
+
+        //  save the project name, visibility, and repo link
+        async function saveGeneralSettings() {
+            const name = document.getElementById('projectNameInput').value.trim();
+            const visibility = document.getElementById('projectVisibility').value;
+            const repo_link = document.getElementById('repoLinkInput').value.trim();
+
+            if (!name) {
+                alert("Project name cannot be empty.");
+                return;
+            }
+
+            try {
+                let csrftoken = '';
+                document.cookie.split(';').forEach(part => {
+                    const p = part.trim();
+                    if (p.startsWith('csrftoken=')) csrftoken = p.substring(10);
+                });
+
+                const res = await fetch('/api/update-project-settings/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ name, visibility, repo_link })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    document.getElementById('projectNameHeader').textContent = name;
+                    alert("General settings saved successfully!");
+                } else {
+                    alert("Error saving settings: " + (data.error || "Unknown error"));
+                }
+            } catch (err) {
+                console.error("Save error:", err);
+                alert("Failed to save settings. Check console.");
+            }
+        }
+
+        //  display the files in a list
+        function renderFilesList() {
+            const list = document.getElementById('settingsFileList');
+            const countText = document.getElementById('fileCountText');
+            list.innerHTML = '';
+
+            if (projectFiles.length === 0) {
+                list.innerHTML = `<div style="text-align:center;padding:20px;opacity:0.5;">No files found.</div>`;
+                countText.textContent = "0 files found";
+                return;
+            }
+
+            // Apply filtering logic
+            const filteredFiles = projectFiles.filter(file => {
+                const matchesSearch = file.name.toLowerCase().includes(currentSearch);
+                let matchesFilter = true;
+                if (currentFilter === 'locked') matchesFilter = file.is_locked;
+                if (currentFilter === 'unlocked') matchesFilter = !file.is_locked;
+                return matchesSearch && matchesFilter;
+            });
+
+            countText.textContent = `Showing ${filteredFiles.length} of ${projectFiles.length} files`;
+
+            if (filteredFiles.length === 0) {
+                list.innerHTML = `<div style="text-align:center;padding:40px;opacity:0.5; font-size:0.9rem;">No matching files found.</div>`;
+                return;
+            }
+
+            filteredFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+
+                const isLocked = file.is_locked;
+
+                // Simple lock SVG for the small badge
+                const lockIconSmall = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/></svg>`;
+
+                li.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon-wrapper">
+                            <span class="file-icon" style="font-size: 1.1rem; opacity: 0.8;">📄</span>
+                            ${isLocked ? `<div class="lock-badge">${lockIconSmall}</div>` : ''}
+                        </div>
+                        <span class="file-name" style="font-weight: 500; font-size: 0.95rem;">${file.name}</span>
+                    </div>
+                    <div>
+                        <button class="action-button ${isLocked ? 'btn-remove-lock' : 'btn-set-lock'}">
+                            ${isLocked ? 'Remove' : 'Set Password'}
+                        </button>
+                    </div>
+                `;
+
+                li.querySelector('.action-button').addEventListener('click', e => {
+                    e.stopPropagation();
+                    openPasswordModal(file.id, file.name, isLocked ? 'unlock' : 'lock');
+                });
+
+                list.appendChild(li);
+            });
+        }
+
+        // ─── Modal ────────────────────────────────────────────────────────────────
+        // style.css uses opacity + pointer-events to show/hide .modal-overlay,
+        // toggled by adding/removing the .active class. We follow the same pattern.
+
+        function openPasswordModal(fileId, fileName, action) {
+            document.getElementById('activeFileId').value = fileId;
+            document.getElementById('activeFileAction').value = action;
+            document.getElementById('filePasswordInput').value = '';
+
+            const title = document.getElementById('passwordModalTitle');
+            const desc = document.getElementById('passwordModalDesc');
+
+            if (action === 'lock') {
+                title.textContent = "Protect File";
+                desc.innerHTML = `Establishing security for "<strong>${fileName}</strong>".<br>Choose a unique password.`;
+            } else {
+                title.textContent = "Release Lock";
+                desc.innerHTML = `Enter the password to remove protection from "<strong>${fileName}</strong>".`;
+            }
+
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('filePasswordInput').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closePasswordModal();
+        });
+
+        async function submitPassword() {
+            const fileId = document.getElementById('activeFileId').value;
+            const action = document.getElementById('activeFileAction').value;
+            const password = document.getElementById('filePasswordInput').value;
+
+            if (!password) {
+                alert("Please enter a password.");
+                return;
+            }
+
+            try {
+                let csrftoken = '';
+                document.cookie.split(';').forEach(part => {
+                    const p = part.trim();
+                    if (p.startsWith('csrftoken=')) csrftoken = p.substring(10);
+                });
+
+                const res = await fetch('/files/lock/toggle/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ file_id: fileId, action, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    closePasswordModal();
+                    loadProjectSettings();
+                } else {
+                    alert("Verification failed: " + (data.error || "Access denied"));
+                }
+            } catch (err) {
+                console.error("Security sync error:", err);
+                alert("System error. Check console.");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProjectSettings);
+    </script>
+</body>
+
+</html>
