@@ -35,12 +35,17 @@ body {
 }
 
 body {
-  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-family: 'Outfit', sans-serif;
   background:
     radial-gradient(1200px 600px at 15% 10%, rgba(88, 120, 255, 0.25), transparent 60%),
     radial-gradient(900px 600px at 80% 30%, rgba(168, 85, 247, 0.22), transparent 55%),
     linear-gradient(180deg, #0b1224, #060914);
   color: var(--text-primary);
+}
+
+/* Ensure code elements keep their functional monospace font */
+code, pre, .monaco-editor, .xterm-container, .terminal {
+  font-family: "Consolas", "Monaco", "Courier New", monospace !important;
 }
 
 /* =========================
@@ -91,7 +96,7 @@ body {
 }
 
 .top-bar h3 {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-muted);
 }
@@ -99,6 +104,7 @@ body {
 #projectName {
   color: var(--text-primary);
   font-weight: 600;
+  font-size: 1rem;
 }
 
 /* Settings Button */
@@ -130,15 +136,15 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
+  background: rgba(2, 4, 12, 0.85); /* Deeper overlay */
+  backdrop-filter: blur(12px) saturate(160%); /* Enhanced blur */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1001;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-overlay.active {
@@ -148,24 +154,24 @@ body {
 
 .settings-modal {
   position: relative;
-  background: var(--panel-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--glass-shadow), var(--glass-inner);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(22, 30, 60, 0.85), rgba(13, 21, 48, 0.95)); /* Layered background */
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border-radius: 16px; /* Softer corners */
   width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
+  max-width: 480px;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: modalSlideUp 0.2s ease;
+  animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .modal-header {
@@ -177,10 +183,11 @@ body {
 }
 
 .modal-header h2 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .close-button {
@@ -217,11 +224,11 @@ body {
 }
 
 .settings-label {
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem; /* Slightly larger for easier reading in mixed case */
+  font-weight: 600;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-transform: none; /* User's choice: mixed case instead of all caps */
+  letter-spacing: 0.02em;
 }
 
 .settings-input {
@@ -239,8 +246,8 @@ body {
 .settings-input:focus {
   outline: none;
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 12px rgba(88, 120, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 20px rgba(88, 120, 255, 0.2), inset 0 0 0 1px var(--accent);
 }
 
 .settings-input::placeholder {
@@ -279,12 +286,17 @@ select.settings-input option {
 }
 
 .btn-primary:hover {
-  background: #4a67e0;
-  box-shadow: 0 0 16px rgba(88, 120, 255, 0.3);
+  background: #6a88ff;
+  box-shadow: 0 8px 24px rgba(88, 120, 255, 0.4);
+  transform: translateY(-1.5px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text-muted);
   border: 1px solid var(--border-color);
 }
@@ -292,7 +304,8 @@ select.settings-input option {
 .btn-secondary:hover {
   color: var(--text-primary);
   border-color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1.5px);
 }
 
 /* =========================
@@ -325,15 +338,51 @@ select.settings-input option {
 }
 
 .sidebar-header {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(11, 18, 36, 0.65);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  box-sizing: border-box;
+}
+
+.sidebar-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  user-select: none;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sidebar-actions button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.sidebar-actions button:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-header h4 {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -410,11 +459,63 @@ select.settings-input option {
   flex: 1;
 }
 
-.file-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.lock-icon-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -2px;
+}
+
+.rename-icon {
+  margin-left: auto;
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 3px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.file-item:hover .rename-icon {
+  display: flex;
+}
+
+.rename-icon:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--primary-accent);
+}
+
+.delete-icon {
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 3px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.file-item:hover .delete-icon {
+  display: flex;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  background: rgba(229, 83, 75, 0.15);
+  color: #e5534b;
 }
 
 .vertLine {
@@ -445,6 +546,7 @@ select.settings-input option {
   overflow-x: auto;
   overflow-y: hidden;
   border-radius: 0;
+  box-sizing: border-box;
 }
 
 .tab-bar::-webkit-scrollbar { height: 2px; }

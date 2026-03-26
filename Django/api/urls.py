@@ -11,4 +11,6 @@ urlpatterns = [
     path("getComName", views.getComName),
     path("setCurProj/", views.setCurProj),
     path("setCurBranch/", views.setCurBranch),
+    # fariza's change: route to update project name, visibility, and repo link
+    path("update-project-settings/", views.updateProjectSettings),
 ]
