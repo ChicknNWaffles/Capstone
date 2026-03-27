@@ -30,7 +30,7 @@ class getProjects(View):
         # this one is getProjects(View)
         html = ""
         user = request.user
-        projects = Project.objects.filter(owner=user)
+        projects = Project.objects.all()
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
@@ -261,10 +261,3 @@ class ProjectBranches(APIView):
             "project": project.name,
         }
         return Response(response, status=status.HTTP_201_CREATED)
-    
-    def _has_access(self, project, user):
-        """Helper: owner or collaborator?"""
-        return (
-            project.owner == user or
-            Collaborator.objects.filter(project=project, user=user).exists()
-        )
