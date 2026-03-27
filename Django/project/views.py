@@ -278,10 +278,3 @@ class ProjectBranches(APIView):
             "project": project.name,
         }
         return Response(response, status=status.HTTP_201_CREATED)
-    
-    def _has_access(self, project, user):
-        """Helper: owner or collaborator?"""
-        return (
-            project.owner == user or
-            Collaborator.objects.filter(project=project, user=user).exists()
-        )
