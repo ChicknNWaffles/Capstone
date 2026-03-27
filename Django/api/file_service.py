@@ -203,6 +203,26 @@ class S3FileService:
             logger.error(f"Error creating branch folder: {e}")
             return {'success': False, 'error': str(e)}
 
+    def delete_project_folder(self, project_id: int) -> dict:
+        """Delete all objects in a project's S3 folder"""
+        try:
+            prefix = f"projects/{project_id}/"
+            response = self.s3_client.list_objects_v2(
+                Bucket=self.bucket_name,
+                Prefix=prefix
+            )
+            objects = [{'Key': obj['Key']} for obj in response.get('Contents', [])]
+            if objects:
+                self.s3_client.delete_objects(
+                    Bucket=self.bucket_name,
+                    Delete={'Objects': objects}
+                )
+            logger.info(f"Project folder deleted: {prefix}")
+            return {'success': True}
+        except ClientError as e:
+            logger.error(f"Error deleting project folder: {e}")
+            return {'success': False, 'error': str(e)}
+
     def list_files(self, project_id: int) -> dict:
         """
         List all files for a specific project

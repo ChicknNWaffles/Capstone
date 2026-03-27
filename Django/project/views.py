@@ -180,6 +180,10 @@ class DeleteProject(APIView):
         # only allow the owner to delete, not other users
         if project.owner != request.user:
             return Response({"error": "You do not have permission to delete this project."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            file_service.delete_project_folder(project_id)
+        except Exception as e:
+            print(f"Warning: Could not delete S3 folder (skipping): {e}")
         project.delete()
         return Response({"success": True}, status=status.HTTP_200_OK)
 
