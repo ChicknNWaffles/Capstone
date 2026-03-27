@@ -121,10 +121,9 @@ def setCurProj(request):
 @permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurBranch(request):
     proj = request.session.get("curProj")
-    main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
+    main = Branch.objects.filter(project__id=proj, name="main").first()
     if main is None:
-        from project.models import Project
-        main = Branch.objects.create(project_id=proj, name="main", isMain=True)
+        main = Branch.objects.create(project_id=proj, name="main")
     print(main)
     branch = Branch.objects.get(id = request.data.get("com") or main.id)
     request. session["curCom"] = branch.id
