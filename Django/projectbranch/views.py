@@ -5,20 +5,21 @@ from rest_framework import status
 from rest_framework.views import APIView, Response
 from . import models
 from . import serializers
+from project.models import Project
 
 # Create your views here.
 class getBranches(View):
     
-    def get(self, request):
+    def get(self, request, project_id):
 
         html = ""
-        branches = models.Branch.objects.all()
+        branches = models.Branch.objects.filter(project=project_id)
         # Project.objects.filter()
         # Project.objects.get()
         # Project.objects.filter(id__lt = 7)
         for branch in branches:
-            html += f"<h1>{branch.name}</h1>"
-            html += f"<p>{branch.pk}</p>"
+            html += f"<h1>Branch: {branch.name}</h1>"
+            # html += f"<p>{branch.pk}</p>"
         response = HttpResponse(html)
 
         # if doing templates use:
@@ -28,7 +29,7 @@ class getBranches(View):
 
 class CreateBranch(APIView):
 
-    serializer_class = serializers.ProjectSerializer
+    serializer_class = serializers.ProjectBranchSerializer
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)

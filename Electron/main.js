@@ -14,7 +14,7 @@ function createWindow() {
 
   //mainWindow.loadURL("http://127.0.0.1:8000/login");
   //mainWindow.loadURL("http://127.0.0.1:8000/signup");
-  mainWindow.loadURL("http://127.0.0.1:8000/");
+  mainWindow.loadURL("http://3.145.170.26:8000/");
   //mainWindow.loadURL("http://127.0.0.1:8000/editor");
   mainWindow.webContents.openDevTools();
 }
