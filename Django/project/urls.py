@@ -6,6 +6,7 @@ from projectbranch.views import getBranches
 urlpatterns = [
     path('', views.getProjects.as_view(), name='GetProject'),
     path("getUserProjects/", views.getUserProjects.as_view(), name='GetUserProjects'),
+    path('createProject/', views.CreateProject.as_view(), name='CreateProjectAlt'),
     path('create/', views.CreateProjectButWithSerializers.as_view(), name='CreateProjectButWithSerializers'),
     path('<int:project_id>/', getCollaborators.as_view(), name='projectDetails'),
     path('<int:project_id>/collaborators/', views.ProjectCollaboratorsListCreate.as_view(), name='addProjectCollaborators'),

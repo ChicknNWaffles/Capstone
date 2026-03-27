@@ -15,6 +15,7 @@ from collaborator.serializers import CollaboratorSerializer
 from projectbranch.models import Branch
 from projectbranch.serializers import ProjectBranchSerializer
 
+from api.file_service import file_service
 
 
 # Create your views here.
@@ -51,8 +52,10 @@ class getProjects(View):
 class getUserProjects(APIView):
     def get(self,request):
         user = request.user
-        projects = Project.objects.filter(owner__username=user.username)
-        projects = Project.objects.all()
+        from collaborator.models import Collaborator
+        collab_project_ids = Collaborator.objects.filter(user=user).values_list('project_id', flat=True)
+        from django.db.models import Q
+        projects = Project.objects.filter(Q(owner=user) | Q(id__in=collab_project_ids))
         objs = []
         for project in projects:
             jsonObj = {}
@@ -73,10 +76,8 @@ class CreateProject(APIView):
     def post(self, request):
         user = request.user
         name = request.data.get("name")
-        filepath = request.data.get("filepath")
-        visibility = request.data.get("visibility")
-        repoLink = request.data.get("repoLink")
-        
+        visibility = request.data.get("visibility") == "public"
+        repoLink = request.data.get("repoLink") or ""
 
 
         # example of a guard
@@ -88,14 +89,6 @@ class CreateProject(APIView):
             }
             return Response(response, status=status.HTTP_204_NO_CONTENT)
 
-        # check for filespath
-        if filepath is None:
-            response = {
-                "success": False,
-                "message": "User must provide info about filepath"
-            }
-            return Response(response, status=status.HTTP_204_NO_CONTENT)
-        
         # check for visibility
         if visibility is None:
             response = {
@@ -107,14 +100,24 @@ class CreateProject(APIView):
         project = Project(
             name=name,
             visibility=visibility,
-            file_path=filepath,
+            file_path="",
             owner=user,
             repo_link=repoLink,
         )
         project.save()
 
+        # Set S3 path and create the folder in the bucket
+        project.file_path = f"projects/{project.id}/"
+        project.save()
+        file_service.create_project_folder(project.id)
+
+        # Auto-create main branch (signal will create S3 folder projects/{id}/main/)
+        from projectbranch.models import Branch
+        Branch.objects.create(project=project, name="main", isMain=True)
+
         response = {
             "success": True,
+            "id": project.id,
             "name": project.name,
             "filepath": project.file_path,
             "visibility": project.visibility,

@@ -27,8 +27,8 @@ def projects(request):
     return Response({"id": project.id, "name": project.name}, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(["POST"])
+@csrf_exempt
 # for log in page
 def login_api(request):
     username = (request.data.get("username") or "").strip()
@@ -42,8 +42,8 @@ def login_api(request):
     return Response({"ok": True, "username": user.username})
 
 # for sign up page
-@csrf_exempt
 @api_view(["POST"])
+@csrf_exempt
 def signup_api(request):
     username = (request.data.get("username") or "").strip()
     email = (request.data.get("email") or "").strip()
@@ -108,6 +108,9 @@ def setCurProj(request):
 def setCurBranch(request):
     proj = request.session.get("curProj")
     main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
+    if main is None:
+        from project.models import Project
+        main = Branch.objects.create(project_id=proj, name="main", isMain=True)
     print(main)
     branch = Branch.objects.get(id = request.data.get("com") or main.id)
     request. session["curCom"] = branch.id
