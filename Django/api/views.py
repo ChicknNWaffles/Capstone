@@ -27,8 +27,8 @@ def projects(request):
     return Response({"id": project.id, "name": project.name}, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(["POST"])
+@csrf_exempt
 # for log in page
 def login_api(request):
     username = (request.data.get("username") or "").strip()
@@ -42,8 +42,8 @@ def login_api(request):
     return Response({"ok": True, "username": user.username})
 
 # for sign up page
-@csrf_exempt
 @api_view(["POST"])
+@csrf_exempt
 def signup_api(request):
     username = (request.data.get("username") or "").strip()
     email = (request.data.get("email") or "").strip()
