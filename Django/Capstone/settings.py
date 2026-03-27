@@ -27,13 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '3.145.170.26']
 CORS_ALLOW_ALL_ORIGINS = False
+# Allow login and signup to work in the browser
+CORS_ALLOW_CREDENTIALS = True
+# Addresses allowed to talk to the server
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
-    "http://3.145.170.26:8000",
+    "http://localhost:8000",
+    # "http://3.145.170.26:8000",
 ]
+# Trusted addresses for security (CSRF)
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
-    "http://3.145.170.26:8000",
+    "http://localhost:8000",
+    # "http://3.145.170.26:8000",
 ]
 
 

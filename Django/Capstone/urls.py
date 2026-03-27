@@ -18,7 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse, HttpResponse
 from django.template import loader
+# fariza's change: ensure_csrf_cookie makes sure the browser always gets a CSRF token when loading the homepage
+from django.views.decorators.csrf import ensure_csrf_cookie
 
+# fariza's change: added @ensure_csrf_cookie so the browser gets the CSRF cookie needed to create projects
+@ensure_csrf_cookie
 def homePage(request):
     template = loader.get_template("homepage.html")
     return HttpResponse(template.render())

@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:project_id>/collaborators/', views.ProjectCollaboratorsListCreate.as_view(), name='addProjectCollaborators'),
     path('<int:project_id>/branches/', getBranches.as_view(), name='viewBranches'),
     path('<int:project_id>/branches/add', views.ProjectBranches.as_view(), name='addBranches'),
+    path('<int:project_id>/delete/', views.DeleteProject.as_view(), name='deleteProject'),
 ]
