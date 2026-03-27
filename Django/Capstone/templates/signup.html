@@ -388,7 +388,7 @@
         });
 
         if (response.ok) {
-          showSuccess("Account created! Redirecting...");
+          /*showSuccess("Account created! Redirecting...");*/
           setTimeout(() => { window.location.href = "/"; }, 1200);
         } else {
           const data = await response.json();
