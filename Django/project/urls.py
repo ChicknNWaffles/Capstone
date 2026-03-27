@@ -9,7 +9,7 @@ urlpatterns = [
     path('createProject/', views.CreateProject.as_view(), name='CreateProjectAlt'),
     path('create/', views.CreateProjectButWithSerializers.as_view(), name='CreateProjectButWithSerializers'),
     path('<int:project_id>/', getBranches.as_view(), name='projectDetails'),
-    path('<int:project_id>/collaborators', getCollaborators.as_view(), name='projectDetails'),
-    path('<int:project_id>/collaborators/add', views.ProjectCollaboratorsListCreate.as_view(), name='addProjectCollaborators'),
+    path('<int:project_id>/collaborators/', getCollaborators.as_view(), name='projectDetails'),
+    path('<int:project_id>/collaborators/add/', views.ProjectCollaboratorsListCreate.as_view(), name='addProjectCollaborators'),
     path('<int:project_id>/addbranch/', views.ProjectBranches.as_view(), name='addBranches'),
 ]
