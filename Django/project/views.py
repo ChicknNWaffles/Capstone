@@ -119,7 +119,7 @@ class CreateProject(APIView):
 
         # Auto-create main branch
         from projectbranch.models import Branch
-        Branch.objects.create(project=project, name="main", isMain=True)
+        Branch.objects.create(project=project, name="main")
 
         response = {
             "success": True,
