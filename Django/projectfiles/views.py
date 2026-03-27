@@ -96,6 +96,42 @@ class CreateFiles(APIView):
         return Response({"success": True, "id": file.id, "name": file.name})
 
 
+class CreateFolder(APIView):
+
+    def post(self, request):
+        name = request.data.get("name", "").strip()
+        if not name:
+            return Response({"success": False, "error": "Folder name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        project_id = request.session.get("curProj")
+        branch_id = request.session.get("curCom")
+
+        if not project_id or not branch_id:
+            return Response({"success": False, "error": "No project or branch selected"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            from project.models import Project
+            from projectbranch.models import Branch
+            project = Project.objects.get(id=project_id)
+            branch = Branch.objects.get(id=branch_id)
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+        folder_entry_name = name + "/"
+        if models.ProjectFile.objects.filter(project=project, branch=branch, name=folder_entry_name).exists():
+            return Response({"success": False, "error": "A folder with that name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        folder = models.ProjectFile(project=project, branch=branch, name=folder_entry_name)
+        folder.save()
+
+        try:
+            file_service.create_file(project.id, branch.name, folder_entry_name, "")
+        except Exception as e:
+            print(f"Warning: Could not create S3 folder: {e}")
+
+        return Response({"success": True, "id": folder.id, "name": name})
+
+
 # ============================================
 # File Lock / Password Views
 # ============================================
