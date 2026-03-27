@@ -12,5 +12,10 @@ class ProjectFile(models.Model):
     name = models.CharField(max_length=255, default="")
     # file_path = models.CharField(max_length=255, default="")
 
+    # fariza's change: added field to track if the file is locked with a password
+    is_locked = models.BooleanField(default=False)
+    # fariza's change: added field to store the secured password string
+    password_hash = models.CharField(max_length=128, blank=True, null=True)
+
     def __str__(self):
         return self.name

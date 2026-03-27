@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CoCoding Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { height: 100%; }
@@ -21,7 +22,7 @@
       }
 
       body {
-        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         background:
           radial-gradient(1000px 500px at 10% 5%, rgba(88, 120, 255, 0.18), transparent 60%),
           radial-gradient(800px 500px at 85% 25%, rgba(168, 85, 247, 0.14), transparent 55%),
@@ -141,8 +142,9 @@
 
       .welcome-title {
         font-size: 1.4rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.88);
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        letter-spacing: -0.01em;
       }
 
       .welcome-sub {
@@ -299,9 +301,9 @@
       }
 
       .card-name {
-        font-size: 0.84rem;
-        font-weight: 700;
-        color: rgba(255,255,255,0.88);
+        font-size: 1rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.9);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -324,21 +326,23 @@
 
       .btn-card-menu:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); }
 
-      .card-dropdown {
-        position: absolute;
-        top: calc(100% + 3px);
-        right: 0;
+      /* ── Portal dropdown — appended to body, positioned with fixed ── */
+      .card-dropdown-portal {
+        position: fixed;
         background: #0c1428;
         border: 1px solid var(--border);
         border-radius: 7px;
         padding: 3px;
         min-width: 105px;
         box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-        z-index: 50;
-        display: none;
+        z-index: 9999;
+        animation: dropIn 0.12s cubic-bezier(0.16,1,0.3,1);
       }
 
-      .card-dropdown.show { display: block; }
+      @keyframes dropIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
 
       .card-action {
         display: block;
@@ -379,7 +383,7 @@
         background: rgba(74,210,120,0.05);
       }
 
-      /* ── New project button — only when projects exist ── */
+      /* ── New project button ── */
       .btn-new-float {
         position: fixed;
         bottom: 2rem;
@@ -562,7 +566,7 @@
       </div>
     </main>
 
-    <!-- Floating New button — only shows when projects exist -->
+    <!-- Floating New button -->
     <button class="btn-new-float" id="btnNewFloat">+ New Project</button>
 
     <!-- Modal -->
@@ -591,16 +595,87 @@
     </div>
 
     <script>
-      const Host = "http://3.145.170.26:8000";
+      const Host = "";
       const projects = [];
 
       const grid        = document.getElementById("projectsGrid");
       const searchInput = document.getElementById("projectSearch");
       const btnFloat    = document.getElementById("btnNewFloat");
 
+      // ── Portal dropdown state ──
+      let activePortalDrop = null;
+
+      function closePortalDropdown() {
+        if (activePortalDrop) {
+          activePortalDrop.remove();
+          activePortalDrop = null;
+        }
+      }
+
+      function openPortalDropdown(btn, project) {
+        // Close any existing one first
+        closePortalDropdown();
+
+        const rect = btn.getBoundingClientRect();
+
+        const drop = document.createElement("div");
+        drop.className = "card-dropdown-portal";
+
+        // Position: below the button, right-aligned to it
+        drop.style.top  = `${rect.bottom + 4}px`;
+        drop.style.left = `${rect.right - 105}px`;
+
+        drop.innerHTML = `
+          <button class="card-action" data-action="rename">Rename</button>
+          <button class="card-action danger" data-action="delete">Delete</button>
+        `;
+
+        drop.querySelector("[data-action='delete']").addEventListener("click", async e => {
+          e.stopPropagation();
+          closePortalDropdown();
+          if (!confirm(`Delete project "${project.name}"? This cannot be undone.`)) return;
+          const csrf = getCookie("csrftoken");
+          try {
+            const res = await fetch(`/project/${project.id}/delete/`, {
+              method: "DELETE",
+              headers: { "X-CSRFToken": csrf },
+              credentials: "include",
+            });
+            if (res.ok) {
+              const idx = projects.findIndex(x => x.id === project.id);
+              if (idx !== -1) projects.splice(idx, 1);
+              render(searchInput.value);
+            } else {
+              alert("Could not delete project.");
+            }
+          } catch (err) {
+            alert("Server error.");
+            console.error(err);
+          }
+        });
+
+        drop.querySelector("[data-action='rename']").addEventListener("click", e => {
+          e.stopPropagation();
+          closePortalDropdown();
+          // Rename logic can go here
+        });
+
+        // Prevent clicks inside from bubbling to document (which would close it)
+        drop.addEventListener("click", e => e.stopPropagation());
+
+        document.body.appendChild(drop);
+        activePortalDrop = drop;
+      }
+
       /* Welcome + avatar */
-      (function () {
-        const name = sessionStorage.getItem("currentUserName") || "";
+      (async function initGreeting() {
+        let name = "";
+        try {
+          const res  = await fetch("/api/me/", { credentials: "include" });
+          const data = await res.json();
+          if (data.authenticated) name = data.username || "";
+        } catch (e) {}
+
         const first = name.split(" ")[0];
         const h = new Date().getHours();
         const time = h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
@@ -608,6 +683,7 @@
         document.getElementById("welcomeTitle").textContent = greeting;
         const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "ME";
         document.getElementById("userAvatar").textContent = initials;
+        sessionStorage.setItem("currentUserName", name);
       })();
 
       /* Fetch */
@@ -649,8 +725,6 @@
         );
 
         grid.innerHTML = "";
-
-        // Show float button only when there are projects
         btnFloat.classList.toggle("visible", projects.length > 0);
 
         if (projects.length === 0) {
@@ -669,7 +743,7 @@
           return;
         }
 
-        filtered.forEach((p, i) => {
+        filtered.forEach(p => {
           const card = document.createElement("div");
           card.className = "card";
           card.innerHTML = `
@@ -677,10 +751,6 @@
               <span class="card-name">${p.name}</span>
               <div class="card-menu-wrap">
                 <button class="btn-card-menu">⋮</button>
-                <div class="card-dropdown" id="cdrop-${i}">
-                  <button class="card-action">Rename</button>
-                  <button class="card-action danger">Delete</button>
-                </div>
               </div>
             </div>
             <div class="card-meta">
@@ -688,10 +758,10 @@
               <span class="card-badge ${p.visibility}">${p.visibility}</span>
             </div>`;
 
+          // ── Open portal dropdown on ⋮ click ──
           card.querySelector(".btn-card-menu").addEventListener("click", e => {
             e.stopPropagation();
-            document.querySelectorAll(".card-dropdown").forEach(d => d.classList.remove("show"));
-            document.getElementById(`cdrop-${i}`)?.classList.toggle("show");
+            openPortalDropdown(e.currentTarget, p);
           });
 
           card.addEventListener("click", e => {
@@ -703,6 +773,12 @@
       }
 
       searchInput.addEventListener("input", e => render(e.target.value));
+
+      /* Close portal dropdown when clicking anywhere else */
+      document.addEventListener("click", () => {
+        closePortalDropdown();
+        document.getElementById("userDropdown").classList.remove("active");
+      });
 
       /* CSRF */
       function getCookie(name) {
@@ -736,9 +812,9 @@
             sessionStorage.setItem("currentProjectName", p.name);
             sessionStorage.setItem("currentProjectId", p.id);
           }
-          window.location.href = Host + "/editor/";
+          window.location.href = "/editor/";
         } catch (e) {
-          alert("Backend not running");
+          alert("Something went wrong. The project may have been created — please refresh the page.");
           console.error(e);
         }
       }
@@ -747,10 +823,6 @@
       const avatar   = document.getElementById("userAvatar");
       const dropdown = document.getElementById("userDropdown");
       avatar.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.toggle("active"); });
-      document.addEventListener("click", () => {
-        dropdown.classList.remove("active");
-        document.querySelectorAll(".card-dropdown").forEach(d => d.classList.remove("show"));
-      });
       document.getElementById("logoutBtn").addEventListener("click", () => { window.location.href = "/login/"; });
 
       /* Modal */
@@ -791,7 +863,7 @@
             alert((await res.json()).error || "Failed");
           }
         } catch (e) {
-          alert("Backend not running");
+          alert("Something went wrong. The project may have been created — please refresh the page.");
           console.error(e);
         }
       });

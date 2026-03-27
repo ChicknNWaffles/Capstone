@@ -1,10 +1,9 @@
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework import status, permissions
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from rest_framework import status
 from project.models import Project
 from projectbranch.models import Branch
 
@@ -28,9 +27,11 @@ def projects(request):
     return Response({"id": project.id, "name": project.name}, status=status.HTTP_201_CREATED)
 
 
+# fariza's change: added security skip and open access so browser login works without CSRF block
+@csrf_exempt
 @api_view(["POST"])
-@authentication_classes([])
-@permission_classes([AllowAny])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow anyone to access
 # for log in page
 def login_api(request):
     username = (request.data.get("username") or "").strip()
@@ -44,9 +45,11 @@ def login_api(request):
     return Response({"ok": True, "username": user.username})
 
 # for sign up page
+# fariza's change: same security skip as login so browser signup works
+@csrf_exempt
 @api_view(["POST"])
-@authentication_classes([])
-@permission_classes([AllowAny])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow anyone to access
 def signup_api(request):
     username = (request.data.get("username") or "").strip()
     email = (request.data.get("email") or "").strip()
@@ -72,13 +75,23 @@ def me(request):
         return Response({"authenticated": True, "username": request.user.username})
     return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-# gets the name of the current project
+# fariza's change: gets the name and details of the current project
 @api_view(["GET"])
 def getProjName(request):
     # get the project that the current user is looking at from a session variable
-    projName = request.session.get("curProjName", "unknownProject")
-    # send to front end
-    return Response({"name":projName})
+    proj_id = request.session.get("curProj")
+    if not proj_id:
+        return Response({"name": "unknownProject", "visibility": False, "repo_link": ""})
+    
+    try:
+        project = Project.objects.get(id=proj_id)
+        return Response({
+            "name": project.name,
+            "visibility": project.visibility,
+            "repo_link": project.repo_link
+        })
+    except Project.DoesNotExist:
+        return Response({"name": "unknownProject", "visibility": False, "repo_link": ""})
 
 # gets the name of the current commit
 @api_view(["GET"])
@@ -89,7 +102,11 @@ def getComName(request):
     return Response({"name":comName})
 
 # sets the current project
+# fariza's change: added security skip so the browser can call this after creating a project
+@csrf_exempt
 @api_view(["POST"])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurProj(request):
     project = Project.objects.get(id = request.data.get("project"))
     request.session["curProj"] = project.id
@@ -97,7 +114,11 @@ def setCurProj(request):
     return Response({"ok":True})
 
 # sets the current branch
+# fariza's change: same security skip as setCurProj so both work together seamlessly
+@csrf_exempt
 @api_view(["POST"])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurBranch(request):
     proj = request.session.get("curProj")
     main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
@@ -109,3 +130,46 @@ def setCurBranch(request):
     request. session["curCom"] = branch.id
     request.session["curComName"] = branch.name
     return Response({"ok":True})
+
+# fariza's change: updates project general settings (visibility and repo link)
+@csrf_exempt
+@api_view(["POST"])
+def updateProjectSettings(request):
+    proj_id = request.session.get("curProj")
+    if not proj_id:
+        return Response({"success": False, "error": "No project selected in session"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    try:
+        project = Project.objects.get(id=proj_id)
+        
+        # Update name
+        new_name = request.data.get("name")
+        if new_name:
+            project.name = new_name
+            request.session["curProjName"] = new_name # sync session
+            
+        # Update visibility (front-end sends "Private Workspace" or "Public Collaborative")
+        visibility_val = request.data.get("visibility")
+        if visibility_val is not None:
+            # If it's a string from the select box:
+            if isinstance(visibility_val, str):
+                project.visibility = (visibility_val == "Public Collaborative")
+            else:
+                project.visibility = bool(visibility_val)
+                
+        # Update repo link
+        repo_link = request.data.get("repo_link")
+        if repo_link is not None:
+            project.repo_link = repo_link
+            
+        project.save()
+        return Response({
+            "success": True, 
+            "message": "Settings updated",
+            "visibility": project.visibility,
+            "repo_link": project.repo_link
+        })
+    except Project.DoesNotExist:
+        return Response({"success": False, "error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

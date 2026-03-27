@@ -8,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up — CoCoding Studio</title>
   <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <!-- Import Outfit font for a premium, professional look -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body.page.page-auth {
       display: flex;
@@ -386,7 +388,7 @@
         });
 
         if (response.ok) {
-          showSuccess("Account created! Redirecting...");
+          /*showSuccess("Account created! Redirecting...");*/
           setTimeout(() => { window.location.href = "/"; }, 1200);
         } else {
           const data = await response.json();
