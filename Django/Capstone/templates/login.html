@@ -6,71 +6,303 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
+  <title>Login — CoCoding Studio</title>
   <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <!-- Import Outfit font for a premium, professional look -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body.page.page-auth {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .auth-card {
+      padding: 32px 28px 24px;
+      border-radius: 10px;
+    }
+
+    .title {
+      font-size: 1.1rem !important;
+      font-weight: 700;
+      margin-bottom: 1.6rem !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 0 !important;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .input {
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 0 !important;
+      padding: 6px 0 !important;
+      font-size: 0.85rem !important;
+      color: rgba(230, 235, 255, 0.9) !important;
+      outline: none !important;
+      box-shadow: none !important;
+      transition: border-color 0.2s !important;
+      width: 100%;
+    }
+
+    .input::placeholder {
+      color: rgba(230, 235, 255, 0.3) !important;
+    }
+
+    .input:focus {
+      border-bottom-color: #5878ff !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+
+    .input.error {
+      border-bottom-color: rgba(255, 95, 87, 0.6) !important;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper .input {
+      padding-right: 1.8rem !important;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(230, 235, 255, 0.22);
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      transition: color 0.15s;
+    }
+
+    .toggle-password:hover { color: rgba(230, 235, 255, 0.6); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 9px !important;
+      font-size: 0.83rem !important;
+      font-weight: 600;
+      border-radius: 6px !important;
+      margin-top: 6px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .auth-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      background: rgba(88, 120, 255, 0.3);
+    }
+
+    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-spinner {
+      display: none;
+      width: 11px;
+      height: 11px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+
+    .auth-btn.loading .btn-spinner { display: block; }
+    .auth-btn.loading .btn-text    { opacity: 0.75; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .auth-message {
+      display: none;
+      padding: 6px 9px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      background: rgba(255, 95, 87, 0.08);
+      border: 1px solid rgba(255, 95, 87, 0.2);
+      color: rgba(255, 175, 170, 0.9);
+    }
+
+    .auth-message.show { display: block; }
+
+    .foot {
+      font-size: 0.73rem !important;
+      margin-top: 14px !important;
+      text-align: center;
+      color: rgba(230, 235, 255, 0.3) !important;
+    }
+
+    .foot .link {
+      color: rgba(150, 175, 255, 0.7);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(150, 175, 255, 0.2);
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .foot .link:hover {
+      color: rgba(150, 175, 255, 0.95);
+      border-bottom-color: rgba(150, 175, 255, 0.5);
+    }
+  </style>
 </head>
 
 <body class="page page-auth">
   <main class="wrap">
     <section class="auth-card">
-      <h1 class="title">Welcome Back</h1>
-      <p class="sub">Log in to your account</p>
 
-      <form class="form" onsubmit="return false;">
+      <h1 class="title">Welcome back</h1>
+
+      <div class="auth-message" id="authError"></div>
+
+      <form class="form" id="loginForm">
+
         <label class="field">
-          <input class="input" type="text" id="username" placeholder="Username" autocomplete="username" />
+          <input
+            class="input"
+            type="text"
+            id="username"
+            placeholder="Username"
+            autocomplete="username"
+          />
         </label>
 
         <label class="field">
-          <input class="input" type="password" id="password" placeholder="Password" autocomplete="current-password" />
+          <div class="input-wrapper">
+            <input
+              class="input"
+              type="password"
+              id="password"
+              placeholder="Password"
+              autocomplete="current-password"
+            />
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">
+              <svg id="iconEye" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="iconEyeOff" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
         </label>
 
-        <button class="auth-btn" type="button" id="loginBtn">
-          Sign In
+        <button class="auth-btn" type="submit" id="loginBtn">
+          <span class="btn-spinner"></span>
+          <span class="btn-text">Sign in</span>
         </button>
 
         <p class="foot">
-          Don’t have an account?
-          <a class="link strong" href="/signup/">Sign up</a>
+          Don't have an account? <a class="link" href="/signup/">Sign up</a>
         </p>
+
       </form>
     </section>
   </main>
 
   <script>
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const form       = document.getElementById("loginForm");
+    const loginBtn   = document.getElementById("loginBtn");
+    const errorBox   = document.getElementById("authError");
+    const usernameEl = document.getElementById("username");
+    const passwordEl = document.getElementById("password");
+    const toggleBtn  = document.getElementById("togglePassword");
+    const iconEye    = document.getElementById("iconEye");
+    const iconEyeOff = document.getElementById("iconEyeOff");
+
+    toggleBtn.addEventListener("click", () => {
+      const hidden = passwordEl.type === "password";
+      passwordEl.type          = hidden ? "text"  : "password";
+      iconEye.style.display    = hidden ? "none"  : "block";
+      iconEyeOff.style.display = hidden ? "block" : "none";
+    });
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.add("show");
+      usernameEl.classList.add("error");
+      passwordEl.classList.add("error");
+    }
+
+    function clearError() {
+      errorBox.classList.remove("show");
+      usernameEl.classList.remove("error");
+      passwordEl.classList.remove("error");
+    }
+
+    [usernameEl, passwordEl].forEach(el => el.addEventListener("input", clearError));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const username = usernameEl.value.trim();
+      const password = passwordEl.value;
 
       if (!username || !password) {
-        alert("Fill in all fields");
+        showError("Please fill in both fields.");
         return;
       }
+
+      loginBtn.disabled = true;
+      loginBtn.classList.add("loading");
 
       try {
         const response = await fetch("http://localhost:8000/api/login/", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
-          credentials: "include"
+          credentials: "include",
         });
 
         if (response.ok) {
           window.location.href = "/";
         } else {
           const data = await response.json();
-          alert(data.error || "Login failed");
+          showError(data.error || "Incorrect username or password.");
         }
       } catch (err) {
-        alert("Backend not running");
+        showError("Could not connect to the server.");
         console.error(err);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.classList.remove("loading");
       }
     });
   </script>
 </body>
 
 </html>
-
-<!-- END -->

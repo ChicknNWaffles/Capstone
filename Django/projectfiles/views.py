@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view, parser_classes
 from . import serializers
 from . import models
 from api.file_service import file_service
+from django.contrib.auth.hashers import make_password, check_password
+import os # fariza's change: added os to read files from the computer's disk
 
 
 # Create your views here.
@@ -41,24 +43,22 @@ class getAllProjectFiles(View):
 class getProjectFiles(APIView):
     
     def get(self, request):
-
-        # this one is getProjects(APIView)
-        # projects = models.Project.objects.all().values()
-        # response = Response(projects)
-
-        # this one is getProjects(View)
         fileList = []
         curProj = request.session.get("curProj", "")
         curBranch = request.session.get("curCom", "")
+
+        # Guard: if no project/branch selected yet, return empty list instead of crashing
+        if not curProj or not curBranch:
+            return Response({"files": fileList})
+
         projectFiles = models.ProjectFile.objects.filter(project=curProj).filter(branch=curBranch)
-        # Project.objects.filter()
-        # Project.objects.get()
-        # Project.objects.filter(id__lt = 7)
         for files in projectFiles:
             file_path = "" + str(files.project.file_path) + "/" + str(files.branch.name) + "/" + str(files.name)
             file = {}
+            file["id"] = files.id # fariza's change: pulling the file's ID from database
             file["name"] = files.name
             file["path"] = file_path
+            file["is_locked"] = files.is_locked # fariza's change: pulling the file's lock status from database
             fileList.append(file)
         return Response({"files":fileList})
     
@@ -82,6 +82,127 @@ class CreateFiles(APIView):
         }
 
         return Response(response)
+
+
+# ============================================
+# File Lock / Password Views
+# ============================================
+
+# fariza's change: class to handle creating and removing passwords on a file
+class ToggleFileLock(APIView):
+    def post(self, request):
+        file_id = request.data.get("file_id") # fariza's change: get the file ID from the frontend
+        password = request.data.get("password") # fariza's change: get the password from the frontend
+        action = request.data.get("action") # fariza's change: check if we are locking or unlocking
+        
+        try:
+            file_obj = models.ProjectFile.objects.get(id=file_id) # fariza's change: find the exact file in database
+        except models.ProjectFile.DoesNotExist:
+            return Response({"success": False, "error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        if action == "lock":
+            if not password:
+                return Response({"success": False, "error": "Password required to lock file"}, status=status.HTTP_400_BAD_REQUEST)
+            file_obj.is_locked = True
+            file_obj.password_hash = make_password(password)
+            file_obj.save()
+            return Response({"success": True, "message": "File locked successfully", "is_locked": True})
+            
+        elif action == "unlock":
+            # Require the old password to unlock it permanently
+            if not password or not check_password(password, file_obj.password_hash):
+                return Response({"success": False, "error": "Incorrect password"}, status=status.HTTP_403_FORBIDDEN)
+            file_obj.is_locked = False
+            file_obj.password_hash = None
+            file_obj.save()
+            return Response({"success": True, "message": "File unlocked successfully", "is_locked": False})
+            
+        return Response({"success": False, "error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+
+# fariza's change: class to verify if the entered password matches the file's lock password
+class VerifyFilePassword(APIView):
+    def post(self, request):
+        file_id = request.data.get("file_id") # fariza's change: get the file ID from the frontend
+        password = request.data.get("password") # fariza's change: get the password from the frontend
+        
+        try:
+            file_obj = models.ProjectFile.objects.get(id=file_id) # fariza's change: find the exact file in database
+        except models.ProjectFile.DoesNotExist:
+            return Response({"success": False, "error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        if not file_obj.is_locked:
+            return Response({"success": True, "message": "File is not locked"})
+            
+        if check_password(password, file_obj.password_hash):
+            return Response({"success": True, "message": "Password correct"})
+        else:
+            return Response({"success": False, "error": "Incorrect password"}, status=status.HTTP_403_FORBIDDEN)
+
+# fariza's change: class to read the actual text inside a file, but only if the password is correct
+class ReadFileContent(APIView):
+    def post(self, request):
+        file_id = request.data.get("file_id") # fariza's change: get the file ID from the frontend
+        password = request.data.get("password") # fariza's change: get the password for locked files
+        
+        try:
+            file_obj = models.ProjectFile.objects.get(id=file_id) # fariza's change: find the file in database
+        except models.ProjectFile.DoesNotExist:
+            return Response({"success": False, "error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        # fariza's change: if the file is locked, we must check the password first
+        if file_obj.is_locked:
+            if not password or not check_password(password, file_obj.password_hash):
+                return Response({"success": False, "error": "This file is locked. Please enter the correct password."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # fariza's change: find where the file is stored on the computer
+        file_path = str(file_obj.project.file_path) + "/" + str(file_obj.branch.name) + "/" + str(file_obj.name)
+        
+        try:
+            # fariza's change: open and read the text from the file
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as f:
+                    content = f.read()
+            else:
+                # fariza's change: if file doesn't exist on disk yet, show a friendly message
+                content = f"# This is the content of {file_obj.name}\n# (File created in database but not yet on disk)"
+                
+            return Response({
+                "success": True, 
+                "content": content,
+                "name": file_obj.name
+            })
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# fariza's change: class to delete a file from database and disk
+class DeleteFile(APIView):
+    def post(self, request):
+        file_id = request.data.get("file_id") # get the ID of the file to delete
+        
+        if not file_id:
+            return Response({"success": False, "error": "file_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            file_obj = models.ProjectFile.objects.get(id=file_id) # find the file in database
+        except models.ProjectFile.DoesNotExist:
+            return Response({"success": False, "error": "File not found in database"}, status=status.HTTP_404_NOT_FOUND)
+            
+        # path on disk where the file is stored
+        file_path = f"{file_obj.project.file_path}/{file_obj.branch.name}/{file_obj.name}"
+        
+        try:
+            # fariza's change: delete from the computer's disk if it exists
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            # fariza's change: delete from database permanently
+            file_obj.delete()
+            
+            return Response({"success": True, "message": "File deleted successfully!"})
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 # ============================================
@@ -160,3 +281,39 @@ def file_info(request, file_key):
     if result.get('error') == 'File not found':
         return Response(result, status=status.HTTP_404_NOT_FOUND)
     return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# fariza's change: class to rename a file on disk and update its name in the database
+class RenameFile(APIView):
+    def post(self, request):
+        file_id = request.data.get("file_id") # get original file ID
+        new_name = request.data.get("new_name") # get the desired new name
+        
+        if not file_id or not new_name:
+            return Response({"success": False, "error": "file_id and new_name are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            file_obj = models.ProjectFile.objects.get(id=file_id) # find original record
+        except models.ProjectFile.DoesNotExist:
+            return Response({"success": False, "error": "File not found in database"}, status=status.HTTP_404_NOT_FOUND)
+            
+        # calculate where the file is on the computer's disk
+        base_path = f"{file_obj.project.file_path}/{file_obj.branch.name}"
+        old_path = os.path.join(base_path, file_obj.name)
+        new_path = os.path.join(base_path, new_name)
+        
+        try:
+            # fariza's change: rename the actual file on the computer's disk if it exists
+            if os.path.exists(old_path):
+                # check if a file with the new name already exists to avoid overwriting
+                if os.path.exists(new_path):
+                    return Response({"success": False, "error": f"A file named '{new_name}' already exists in this folder."}, status=status.HTTP_400_BAD_REQUEST)
+                os.rename(old_path, new_path)
+            
+            # update the name in original record and save to database
+            file_obj.name = new_name
+            file_obj.save()
+            
+            return Response({"success": True, "new_name": new_name, "message": "File renamed successfully!"})
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

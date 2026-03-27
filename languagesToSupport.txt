@@ -1,0 +1,364 @@
+Languages:		Has Icon:		Has Compiler		Has Assembler
+
+Python
+	.py
+	.py3
+	.pyc
+	.pyo
+	.pyw
+	.pyd
+	.pyi
+	.pyz
+	.pyzw
+	.pth
+	.whl
+Cython
+	.pyx
+	.pxd
+	.pxi
+Javascript
+	.js
+	.mjs
+	.cjs
+Java
+	.java
+	.jar
+TypeScript
+	.ts
+	.map
+	.mts
+	.cts
+C++
+	.C
+	.cc
+	.cpp
+	.cppm
+	.CPP
+	.c++
+	.cp
+	.cxx
+	.H
+	.hh
+	.hp
+	.hxx
+	.HPP
+	.h++
+	.hpp
+	.lib
+	.ii
+	.ixx
+	.mm
+	.M
+	.mii
+	.tcc
+C#
+	.cs
+C
+	.c
+	.h
+	.out
+	.i
+SQL
+	.sql
+	.mdf
+	.ndf
+	.ldf
+	.bak
+	.dacpac
+	.bacpac
+	.tuf
+	.frm
+	.sqlite
+	.mdb
+	.csv
+HTML
+	.htm
+	.html
+	.shtml
+	.dhtml
+	.mhtml
+	.tpl
+CSS
+	.css
+	.scss
+	.sass
+	.less
+	.pcss
+	.postcss
+PHP
+	.php
+	.phtml
+	.php3
+	.php4
+	.php5
+Golang
+	.go
+	.sum
+	.mod
+
+Proto
+	.proto
+	.protodevel
+	.pbtxt
+	.textproto
+Dart
+	.dart
+	.dart_tool
+	.dill
+Bash
+	.sh
+	.bash
+Kotlin
+	.kt
+	.kts
+Rust
+	.rs
+	.rlib
+	.rmeta
+Swift
+	.swift
+	.swiftinterface
+	.swiftmodule
+	.swiftdoc
+	.xcodeproj
+	.xcworkspace
+	.swift-format
+	.swift-format-generated
+	.plist
+	.swiftui
+	.docc
+	.playground
+	.xcplaygroundpage
+R
+	.R
+	.Rmd
+	.qmd
+	.Rds
+	.Rdata
+	.Rproj
+	.feather
+	.fst
+Ruby
+	.rb
+	.erb
+	.haml
+	.rake
+	.gemspec
+LUA
+	.lua
+	.tl
+	.luac
+	.rockspec
+SML
+	.sml
+	.sig
+	.fun
+	.cm
+	.ml
+	.use
+	.smlrun
+	.lst
+	.map
+	.mlb
+XML
+	.xml
+	.entitlements
+	.storyboard
+	.xcassets
+	.xib
+	.csproj
+	.fsproj
+JSON
+	.json
+	.ndjson
+	.jsonl
+	.hjson
+	.json5
+	.bson
+Dockerfile
+	(no extension but name is exactly "Dockerfile")
+	.dockerfile
+Prolog
+	.pl
+	.pro
+	.P
+	.qlf
+.Net
+	.vb
+	.fs
+	.razor
+	.tlog
+	.cache
+Markdown
+	.markdown
+	.md
+	.rmd
+	.mmd
+	.yaml
+	.yml
+
+=================================================================================
+Other File Types:
+-------------------
+Images:
+-------------------
+.png
+.jpg
+.jpeg
+.svg
+.webp
+.tif
+.tiff
+.heif
+.bmp
+.eps
+.psd
+
+-------------------
+Video:
+-------------------
+.mp4
+.gif
+.avif
+.mov
+.avchd
+.mkv
+.wmv
+.flv
+.f4v
+.swf
+.mpeg-2
+.mpeg1
+
+-------------------
+Audio:
+-------------------
+.wav
+.mp3
+.aac
+.alac
+.aiff
+.dsd
+.flac
+.mqa
+.ogg
+.wma
+.midi
+.adpcm
+
+-------------------
+3D Modling:
+-------------------
+.fbx
+.stl
+.3mf
+.amf
+.x3d
+.dae
+.obj
+.igs
+.step
+.3ds
+.blend
+.ipt
+.skp
+.lwo
+.off
+.ply
+.dwg
+.dwf
+.dxf
+.acis
+
+-------------------
+database:
+-------------------
+.db
+.dat
+.sav
+.dta
+.parquet
+.ibd
+.myd
+.myi
+.accdb
+.control
+.fdb
+.ora
+.xlsx
+
+-------------------
+zipped:
+-------------------
+.rar
+.iso
+.7z
+.ser
+.zip
+.gz
+.rpm
+.aab
+
+-------------------
+Compiled Stuff:
+-------------------
+.app
+.ipa
+.exe
+.dll
+.lib
+.a
+.o
+.obj
+.so
+.dylib
+.class
+.apk
+.dex
+.bat
+.d
+.framework
+.xcframework
+.elf
+.axf
+
+-------------------
+Config files shared
+by multiple langs:
+-------------------
+.am
+.lock
+.inc
+.venv
+.ini
+.env
+.example
+.properties
+.toml
+.config
+.editorconfig
+.gitattributes
+
+-------------------
+Assembly Stuff:
+-------------------
+.asm
+.s
+.amd64
+.x86
+.x64
+.x32
+.x16
+
+-------------------
+other:
+-------------------
+.gitignore
+.git
+.txt
+.rdoc
+.doc
+.strings
+.stringsdict
+.hcl
+.tf

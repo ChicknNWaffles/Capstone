@@ -69,13 +69,23 @@ def me(request):
         return Response({"authenticated": True, "username": request.user.username})
     return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-# gets the name of the current project
+# fariza's change: gets the name and details of the current project
 @api_view(["GET"])
 def getProjName(request):
     # get the project that the current user is looking at from a session variable
-    projName = request.session.get("curProjName", "unknownProject")
-    # send to front end
-    return Response({"name":projName})
+    proj_id = request.session.get("curProj")
+    if not proj_id:
+        return Response({"name": "unknownProject", "visibility": False, "repo_link": ""})
+    
+    try:
+        project = Project.objects.get(id=proj_id)
+        return Response({
+            "name": project.name,
+            "visibility": project.visibility,
+            "repo_link": project.repo_link
+        })
+    except Project.DoesNotExist:
+        return Response({"name": "unknownProject", "visibility": False, "repo_link": ""})
 
 # gets the name of the current commit
 @api_view(["GET"])
@@ -103,3 +113,46 @@ def setCurBranch(request):
     request. session["curCom"] = branch.id
     request.session["curComName"] = branch.name
     return Response({"ok":True})
+
+# fariza's change: updates project general settings (visibility and repo link)
+@csrf_exempt
+@api_view(["POST"])
+def updateProjectSettings(request):
+    proj_id = request.session.get("curProj")
+    if not proj_id:
+        return Response({"success": False, "error": "No project selected in session"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    try:
+        project = Project.objects.get(id=proj_id)
+        
+        # Update name
+        new_name = request.data.get("name")
+        if new_name:
+            project.name = new_name
+            request.session["curProjName"] = new_name # sync session
+            
+        # Update visibility (front-end sends "Private Workspace" or "Public Collaborative")
+        visibility_val = request.data.get("visibility")
+        if visibility_val is not None:
+            # If it's a string from the select box:
+            if isinstance(visibility_val, str):
+                project.visibility = (visibility_val == "Public Collaborative")
+            else:
+                project.visibility = bool(visibility_val)
+                
+        # Update repo link
+        repo_link = request.data.get("repo_link")
+        if repo_link is not None:
+            project.repo_link = repo_link
+            
+        project.save()
+        return Response({
+            "success": True, 
+            "message": "Settings updated",
+            "visibility": project.visibility,
+            "repo_link": project.repo_link
+        })
+    except Project.DoesNotExist:
+        return Response({"success": False, "error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -6,74 +6,403 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up</title>
+  <title>Sign Up — CoCoding Studio</title>
   <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <!-- Import Outfit font for a premium, professional look -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body.page.page-auth {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    /* Card — sleek, less padding */
+    .auth-card {
+      padding: 32px 28px 24px;
+      border-radius: 10px;
+    }
+
+    /* Title only — no brand label, no subtitle */
+    .title {
+      font-size: 1.1rem !important;
+      font-weight: 700;
+      margin-bottom: 1.6rem !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    /* Form */
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 0 !important;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    /* Underline-only inputs */
+    .input {
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 0 !important;
+      padding: 6px 0 !important;
+      font-size: 0.85rem !important;
+      color: rgba(230, 235, 255, 0.9) !important;
+      outline: none !important;
+      box-shadow: none !important;
+      transition: border-color 0.2s !important;
+      width: 100%;
+    }
+
+    .input::placeholder {
+      color: rgba(230, 235, 255, 0.3) !important;
+    }
+
+    .input:focus {
+      border-bottom-color: #5878ff !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+
+    .input.error {
+      border-bottom-color: rgba(255, 95, 87, 0.6) !important;
+    }
+
+    /* Password wrapper */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper .input {
+      padding-right: 1.8rem !important;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(230, 235, 255, 0.22);
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      transition: color 0.15s;
+    }
+
+    .toggle-password:hover { color: rgba(230, 235, 255, 0.6); }
+
+    /* Strength bar */
+    .strength-bar-wrap {
+      display: flex;
+      gap: 3px;
+      margin-top: 5px;
+    }
+
+    .strength-seg {
+      flex: 1;
+      height: 2px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.07);
+      transition: background 0.2s;
+    }
+
+    .strength-seg.weak   { background: #ff6b6b; }
+    .strength-seg.fair   { background: #f5a623; }
+    .strength-seg.good   { background: #5878ff; }
+    .strength-seg.strong { background: #4caf82; }
+
+    .strength-label {
+      font-size: 0.65rem;
+      color: rgba(230, 235, 255, 0.35);
+      margin-top: 3px;
+      min-height: 0.9em;
+    }
+
+    /* Button */
+    .auth-btn {
+      width: 100%;
+      padding: 9px !important;
+      font-size: 0.83rem !important;
+      font-weight: 600;
+      border-radius: 6px !important;
+      margin-top: 6px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .auth-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      background: rgba(88, 120, 255, 0.3);
+    }
+
+    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-spinner {
+      display: none;
+      width: 11px;
+      height: 11px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+
+    .auth-btn.loading .btn-spinner { display: block; }
+    .auth-btn.loading .btn-text    { opacity: 0.75; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Inline message */
+    .auth-message {
+      display: none;
+      padding: 6px 9px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .auth-message.show  { display: block; }
+
+    .auth-message.error {
+      background: rgba(255, 95, 87, 0.08);
+      border: 1px solid rgba(255, 95, 87, 0.2);
+      color: rgba(255, 175, 170, 0.9);
+    }
+
+    .auth-message.success {
+      background: rgba(88, 200, 120, 0.08);
+      border: 1px solid rgba(88, 200, 120, 0.2);
+      color: rgba(150, 225, 170, 0.9);
+    }
+
+    /* Footer */
+    .foot {
+      font-size: 0.73rem !important;
+      margin-top: 14px !important;
+      text-align: center;
+      color: rgba(230, 235, 255, 0.3) !important;
+    }
+
+    .foot .link {
+      color: rgba(150, 175, 255, 0.7);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(150, 175, 255, 0.2);
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .foot .link:hover {
+      color: rgba(150, 175, 255, 0.95);
+      border-bottom-color: rgba(150, 175, 255, 0.5);
+    }
+  </style>
 </head>
 
 <body class="page page-auth">
   <main class="wrap">
     <section class="auth-card">
-      <h1 class="title">CoCoding Studio</h1>
-      <p class="sub">Sign up to get started</p>
 
-      <form class="form" onsubmit="return false;">
+      <h1 class="title">Create account</h1>
+
+      <div class="auth-message" id="authMessage"></div>
+
+      <form class="form" id="signupForm">
+
         <label class="field">
-          <input class="input" type="text" id="username" placeholder="Username" autocomplete="username" />
+          <input class="input" type="text" id="username"
+            placeholder="Username" autocomplete="username" />
         </label>
 
         <label class="field">
-          <input class="input" type="email" id="email" placeholder="Email" autocomplete="email" />
+          <input class="input" type="email" id="email"
+            placeholder="Email" autocomplete="email" />
         </label>
 
         <label class="field">
-          <input class="input" type="password" id="password" placeholder="Password" autocomplete="new-password" />
+          <div class="input-wrapper">
+            <input class="input" type="password" id="password"
+              placeholder="Password" autocomplete="new-password" />
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password">
+              <svg id="iconEye" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="iconEyeOff" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="strength-bar-wrap">
+            <div class="strength-seg" id="seg1"></div>
+            <div class="strength-seg" id="seg2"></div>
+            <div class="strength-seg" id="seg3"></div>
+            <div class="strength-seg" id="seg4"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel"></div>
         </label>
 
-        <button class="auth-btn" type="button" id="signupBtn">Sign Up</button>
+        <label class="field">
+          <div class="input-wrapper">
+            <input class="input" type="password" id="confirmPassword"
+              placeholder="Confirm password" autocomplete="new-password" />
+            <button type="button" class="toggle-password" id="toggleConfirm" aria-label="Toggle confirm">
+              <svg id="iconEye2" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="iconEyeOff2" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+        </label>
+
+        <button class="auth-btn" type="submit" id="signupBtn">
+          <span class="btn-spinner"></span>
+          <span class="btn-text">Create account</span>
+        </button>
 
         <p class="foot">
-          Already have an account?
-          <a class="link strong" href="/login/">Log in</a>
+          Already have an account? <a class="link" href="/login/">Log in</a>
         </p>
+
       </form>
     </section>
   </main>
 
   <script>
-    document.getElementById("signupBtn").addEventListener("click", async () => {
-      const username = document.getElementById("username").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const form          = document.getElementById("signupForm");
+    const signupBtn     = document.getElementById("signupBtn");
+    const msgBox        = document.getElementById("authMessage");
+    const usernameEl    = document.getElementById("username");
+    const emailEl       = document.getElementById("email");
+    const passwordEl    = document.getElementById("password");
+    const confirmEl     = document.getElementById("confirmPassword");
+    const strengthLabel = document.getElementById("strengthLabel");
+    const segs          = ["seg1","seg2","seg3","seg4"].map(id => document.getElementById(id));
 
-      if (!username || !password) {
-        alert("Username and password required");
-        return;
-      }
+    function makeToggle(btnId, inputEl, eyeId, eyeOffId) {
+      document.getElementById(btnId).addEventListener("click", () => {
+        const hidden = inputEl.type === "password";
+        inputEl.type = hidden ? "text" : "password";
+        document.getElementById(eyeId).style.display    = hidden ? "none"  : "block";
+        document.getElementById(eyeOffId).style.display = hidden ? "block" : "none";
+      });
+    }
+    makeToggle("togglePassword", passwordEl, "iconEye",  "iconEyeOff");
+    makeToggle("toggleConfirm",  confirmEl,  "iconEye2", "iconEyeOff2");
+
+    function getStrength(pw) {
+      let s = 0;
+      if (pw.length >= 8)          s++;
+      if (/[A-Z]/.test(pw))        s++;
+      if (/[0-9]/.test(pw))        s++;
+      if (/[^A-Za-z0-9]/.test(pw)) s++;
+      return s;
+    }
+
+    const meta = [
+      { label: "",       cls: "",       color: "rgba(230,235,255,0.35)" },
+      { label: "Weak",   cls: "weak",   color: "#ff6b6b" },
+      { label: "Fair",   cls: "fair",   color: "#f5a623" },
+      { label: "Good",   cls: "good",   color: "#5878ff" },
+      { label: "Strong", cls: "strong", color: "#4caf82" },
+    ];
+
+    passwordEl.addEventListener("input", () => {
+      const pw    = passwordEl.value;
+      const score = pw.length ? getStrength(pw) : 0;
+      const m     = meta[score];
+      segs.forEach((seg, i) => {
+        seg.className = "strength-seg" + (i < score ? " " + m.cls : "");
+      });
+      strengthLabel.textContent = pw.length ? m.label : "";
+      strengthLabel.style.color = m.color;
+    });
+
+    function showError(msg)   { msgBox.textContent = msg; msgBox.className = "auth-message error show"; }
+    function showSuccess(msg) { msgBox.textContent = msg; msgBox.className = "auth-message success show"; }
+    function clearMsg()       { msgBox.className = "auth-message"; }
+
+    [usernameEl, emailEl, passwordEl, confirmEl].forEach(el => {
+      el.addEventListener("input", () => { clearMsg(); el.classList.remove("error"); });
+    });
+
+    function markError(...els) { els.forEach(el => el.classList.add("error")); }
+    function isValidEmail(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMsg();
+
+      const username = usernameEl.value.trim();
+      const email    = emailEl.value.trim();
+      const password = passwordEl.value;
+      const confirm  = confirmEl.value;
+
+      if (!username)                      { showError("Username is required.");        markError(usernameEl); return; }
+      if (!email || !isValidEmail(email)) { showError("Enter a valid email address."); markError(emailEl);    return; }
+      if (!password)                      { showError("Password is required.");        markError(passwordEl); return; }
+      if (getStrength(password) < 2)      { showError("Password is too weak.");        markError(passwordEl); return; }
+      if (password !== confirm)           { showError("Passwords do not match.");      markError(confirmEl);  return; }
+
+      signupBtn.disabled = true;
+      signupBtn.classList.add("loading");
 
       try {
         const response = await fetch("http://localhost:8000/api/signup/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
-          credentials: "include"
+          credentials: "include",
         });
 
-        const text = await response.text();
-
         if (response.ok) {
-          alert("Account created");
-          window.location.href = "/"; // must exist
+          showSuccess("Account created! Redirecting...");
+          setTimeout(() => { window.location.href = "/"; }, 1200);
         } else {
-          alert("Signup failed: " + text);
+          const data = await response.json();
+          showError(data.error || "Signup failed. Please try again.");
         }
       } catch (err) {
-        alert("Backend not running");
+        showError("Could not connect to the server.");
         console.error(err);
+      } finally {
+        signupBtn.disabled = false;
+        signupBtn.classList.remove("loading");
       }
     });
   </script>
 </body>
 
 </html>
-
-<!-- END -->
