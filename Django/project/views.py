@@ -36,6 +36,7 @@ class getProjects(View):
         # Project.objects.filter(id__lt = 7)
         for project in projects:
             html += f"<h1>Name: {project.name}</h1>"
+            html += f"<p>ID: {project.id}</p>"
             if project.visibility:
                 html += f"<p>Public</p>"
             else: 
