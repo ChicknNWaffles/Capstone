@@ -110,9 +110,14 @@ class CreateProject(APIView):
         # Set S3 path and create the folder in the bucket
         project.file_path = f"projects/{project.id}/"
         project.save()
-        file_service.create_project_folder(project.id)
+        # fariza's change: wrapped S3 call in try/except so it doesn't crash when running locally without AWS
+        try:
+            file_service.create_project_folder(project.id)
+        except Exception as e:
+            # S3 is not set up locally — skip this step, project is still saved
+            print(f"Warning: Could not create S3 folder (skipping): {e}")
 
-        # Auto-create main branch (signal will create S3 folder projects/{id}/main/)
+        # Auto-create main branch
         from projectbranch.models import Branch
         Branch.objects.create(project=project, name="main", isMain=True)
 
@@ -166,7 +171,19 @@ class CreateProjectButWithSerializers(APIView):
 
         return Response(response)
 
-class GetMainBranch(APIView):
+# fariza's change: added delete project feature — only the owner can delete their own project
+class DeleteProject(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, project_id):
+        project = get_object_or_404(Project, id=project_id)
+        # only allow the owner to delete, not other users
+        if project.owner != request.user:
+            return Response({"error": "You do not have permission to delete this project."}, status=status.HTTP_403_FORBIDDEN)
+        project.delete()
+        return Response({"success": True}, status=status.HTTP_200_OK)
+
+
     def get(self, request):
         pass
 

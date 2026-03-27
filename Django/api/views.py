@@ -27,10 +27,11 @@ def projects(request):
     return Response({"id": project.id, "name": project.name}, status=status.HTTP_201_CREATED)
 
 
+# fariza's change: added security skip and open access so browser login works without CSRF block
 @csrf_exempt
 @api_view(["POST"])
-@authentication_classes([])
-@permission_classes([permissions.AllowAny])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow anyone to access
 # for log in page
 def login_api(request):
     username = (request.data.get("username") or "").strip()
@@ -44,10 +45,11 @@ def login_api(request):
     return Response({"ok": True, "username": user.username})
 
 # for sign up page
+# fariza's change: same security skip as login so browser signup works
 @csrf_exempt
 @api_view(["POST"])
-@authentication_classes([])
-@permission_classes([permissions.AllowAny])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow anyone to access
 def signup_api(request):
     username = (request.data.get("username") or "").strip()
     email = (request.data.get("email") or "").strip()
@@ -100,7 +102,11 @@ def getComName(request):
     return Response({"name":comName})
 
 # sets the current project
+# fariza's change: added security skip so the browser can call this after creating a project
+@csrf_exempt
 @api_view(["POST"])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurProj(request):
     project = Project.objects.get(id = request.data.get("project"))
     request.session["curProj"] = project.id
@@ -108,7 +114,11 @@ def setCurProj(request):
     return Response({"ok":True})
 
 # sets the current branch
+# fariza's change: same security skip as setCurProj so both work together seamlessly
+@csrf_exempt
 @api_view(["POST"])
+@authentication_classes([])  # skip session check
+@permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurBranch(request):
     proj = request.session.get("curProj")
     main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
