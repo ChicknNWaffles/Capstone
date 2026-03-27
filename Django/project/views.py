@@ -261,6 +261,7 @@ class ProjectBranches(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        # serialize data
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
