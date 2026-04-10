@@ -44,7 +44,6 @@ C++					✔️
 	.HPP
 	.h++
 	.hpp
-	.lib
 	.ii
 	.ixx
 	.mm
@@ -354,7 +353,6 @@ Assembly Stuff:		✔️
 other:				✔️
 -------------------
 .gitignore
-.git
 .txt
 .rdoc
 .doc

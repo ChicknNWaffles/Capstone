@@ -1,1470 +1,1450 @@
 {
-	"py":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"py": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"py3":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"py3": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyc": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyo":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyo": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyw":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyw": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyd": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyi":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyi": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyz":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyz": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pyzw":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyzw": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"pth":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pth": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
-	"whl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-
-	"pyx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"pxd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"pxi":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"whl": {
+		"language": "python",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
+		"compiler": ""
 	},
 
-	"js":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pyx": {
+		"language": "cython",
+		"icon": "../Capstone/static/fileTypeIcons/cython.ico",
+		"compiler": ""
 	},
-	"mjs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pxd": {
+		"language": "cython",
+		"icon": "../Capstone/static/fileTypeIcons/cython.ico",
+		"compiler": ""
 	},
-	"cjs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-
-	"java":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"jar":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pxi": {
+		"language": "cython",
+		"icon": "../Capstone/static/fileTypeIcons/cython.ico",
+		"compiler": ""
 	},
 
-	"ts":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"js": {
+		"language": "javascript",
+		"icon": "../Capstone/static/fileTypeIcons/javascript.ico",
+		"compiler": ""
 	},
-	"map":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mjs": {
+		"language": "javascript",
+		"icon": "../Capstone/static/fileTypeIcons/javascript.ico",
+		"compiler": ""
 	},
-	"mts":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cts":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cjs": {
+		"language": "javascript",
+		"icon": "../Capstone/static/fileTypeIcons/javascript.ico",
+		"compiler": ""
 	},
 
-	"C":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"java": {
+		"language": "java",
+		"icon": "../Capstone/static/fileTypeIcons/java.ico",
+		"compiler": ""
 	},
-	"cc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cpp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cppm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"CPP":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"c++":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cxx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"H":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"hh":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"hp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"hxx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"HPP":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"h++":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"hpp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"lib":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ii":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ixx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"M":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mii":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"tcc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"jar": {
+		"language": "java",
+		"icon": "../Capstone/static/fileTypeIcons/java.ico",
+		"compiler": ""
 	},
 
-	"cs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ts": {
+		"language": "typescript",
+		"icon": "../Capstone/static/fileTypeIcons/typescript.ico",
+		"compiler": ""
+	},
+	"mts": {
+		"language": "typescript",
+		"icon": "../Capstone/static/fileTypeIcons/typescript.ico",
+		"compiler": ""
+	},
+	"cts": {
+		"language": "typescript",
+		"icon": "../Capstone/static/fileTypeIcons/typescript.ico",
+		"compiler": ""
 	},
 
-	"c":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"C": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"h":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cc": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"out":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cpp": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"i":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cppm": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-
-	"sql":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"CPP": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"mdf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"c++": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"ndf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cp": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"ldf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cxx": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"bak":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"H": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"dacpac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"hh": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"bacpac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"hp": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"tuf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"hxx": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"frm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"HPP": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"sqlite":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"h++": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"mdb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"hpp": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"csv":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ii": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-
-	"htm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ixx": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"html":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mm": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"shtml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"M": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"dhtml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mii": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
-	"mhtml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"tpl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"tcc": {
+		"language": "c++",
+		"icon": "../Capstone/static/fileTypeIcons/cpp.ico",
+		"compiler": ""
 	},
 
-	"css":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"scss":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"sass":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"less":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"pcss":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"postcss":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cs": {
+		"language": "c#",
+		"icon": "../Capstone/static/fileTypeIcons/csharp.ico",
+		"compiler": ""
 	},
 
-	"php":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"c": {
+		"language": "c",
+		"icon": "../Capstone/static/fileTypeIcons/c.ico",
+		"compiler": ""
 	},
-	"phtml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"h": {
+		"language": "c",
+		"icon": "../Capstone/static/fileTypeIcons/c.ico",
+		"compiler": ""
 	},
-	"php3":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"out": {
+		"language": "c",
+		"icon": "../Capstone/static/fileTypeIcons/c.ico",
+		"compiler": ""
 	},
-	"php4":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"php5":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"i": {
+		"language": "c",
+		"icon": "../Capstone/static/fileTypeIcons/c.ico",
+		"compiler": ""
 	},
 
-	"go":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sql": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"sum":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mdf": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"mod":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ndf": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-
-	"proto":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ldf": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"protodevel":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"bak": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"pbtxt":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dacpac": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"textproto":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"bacpac": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-
-	"dart":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"tuf": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"dart_tool":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"frm": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"dill":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sqlite": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-
-	"sh":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mdb": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
-	"bash":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"csv": {
+		"language": "sql",
+		"icon": "../Capstone/static/fileTypeIcons/sql.ico",
+		"compiler": ""
 	},
 
-	"kt":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"htm": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
-	"kts":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"html": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
-
-	"rs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"shtml": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
-	"rlib":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dhtml": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
-	"rmeta":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mhtml": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
-
-	"swift":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swiftinterface":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swiftmodule":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swiftdoc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xcodeproj":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xcworkspace":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swift-format":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swift-format-generated":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"plist":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swiftui":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"docc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"playground":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xcplaygroundpage":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"tpl": {
+		"language": "html",
+		"icon": "../Capstone/static/fileTypeIcons/html.ico",
+		"compiler": ""
 	},
 
-	"R":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"css": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
-	"Rmd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"scss": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
-	"qmd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sass": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
-	"Rds":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"less": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
-	"Rdata":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pcss": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
-	"Rproj":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"feather":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"fst":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"postcss": {
+		"language": "css",
+		"icon": "../Capstone/static/fileTypeIcons/css.ico",
+		"compiler": ""
 	},
 
-	"rb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"php": {
+		"language": "php",
+		"icon": "../Capstone/static/fileTypeIcons/PHP.ico",
+		"compiler": ""
 	},
-	"erb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"phtml": {
+		"language": "php",
+		"icon": "../Capstone/static/fileTypeIcons/PHP.ico",
+		"compiler": ""
 	},
-	"haml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"php3": {
+		"language": "php",
+		"icon": "../Capstone/static/fileTypeIcons/PHP.ico",
+		"compiler": ""
 	},
-	"rake":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"php4": {
+		"language": "php",
+		"icon": "../Capstone/static/fileTypeIcons/PHP.ico",
+		"compiler": ""
 	},
-	"gemspec":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-
-	"lua":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"tl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"luac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"rockspec":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"php5": {
+		"language": "php",
+		"icon": "../Capstone/static/fileTypeIcons/PHP.ico",
+		"compiler": ""
 	},
 
-	"sml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"go": {
+		"language": "golang",
+		"icon": "../Capstone/static/fileTypeIcons/golang.ico",
+		"compiler": ""
 	},
-	"sig":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sum": {
+		"language": "golang",
+		"icon": "../Capstone/static/fileTypeIcons/golang.ico",
+		"compiler": ""
 	},
-	"fun":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"use":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"smlrun":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"lst":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"map":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mlb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mod": {
+		"language": "golang",
+		"icon": "../Capstone/static/fileTypeIcons/golang.ico",
+		"compiler": ""
 	},
 
-	"xml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"proto": {
+		"language": "proto",
+		"icon": "../Capstone/static/fileTypeIcons/proto.ico",
+		"compiler": ""
 	},
-	"entitlements":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"protodevel": {
+		"language": "proto",
+		"icon": "../Capstone/static/fileTypeIcons/proto.ico",
+		"compiler": ""
 	},
-	"storyboard":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pbtxt": {
+		"language": "proto",
+		"icon": "../Capstone/static/fileTypeIcons/proto.ico",
+		"compiler": ""
 	},
-	"xcassets":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xib":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"csproj":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"fsproj":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"textproto": {
+		"language": "proto",
+		"icon": "../Capstone/static/fileTypeIcons/proto.ico",
+		"compiler": ""
 	},
 
-	"json":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dart": {
+		"language": "dart",
+		"icon": "../Capstone/static/fileTypeIcons/dart.ico",
+		"compiler": ""
 	},
-	"ndjson":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dart_tool": {
+		"language": "dart",
+		"icon": "../Capstone/static/fileTypeIcons/dart.ico",
+		"compiler": ""
 	},
-	"jsonl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"hjson":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"json5":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"bson":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dill": {
+		"language": "dart",
+		"icon": "../Capstone/static/fileTypeIcons/dart.ico",
+		"compiler": ""
 	},
 
-	"dockerfile":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sh": {
+		"language": "bash",
+		"icon": "../Capstone/static/fileTypeIcons/bash.ico",
+		"compiler": ""
+	},
+	"bash": {
+		"language": "bash",
+		"icon": "../Capstone/static/fileTypeIcons/bash.ico",
+		"compiler": ""
 	},
 
-	"pl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"kt": {
+		"language": "kotlin",
+		"icon": "../Capstone/static/fileTypeIcons/kotlin.ico",
+		"compiler": ""
 	},
-	"pro":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"P":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"qlf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"kts": {
+		"language": "kotlin",
+		"icon": "../Capstone/static/fileTypeIcons/kotlin.ico",
+		"compiler": ""
 	},
 
-	"vb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rs": {
+		"language": "rust",
+		"icon": "../Capstone/static/fileTypeIcons/rust.ico",
+		"compiler": ""
 	},
-	"fs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rlib": {
+		"language": "rust",
+		"icon": "../Capstone/static/fileTypeIcons/rust.ico",
+		"compiler": ""
 	},
-	"razor":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"tlog":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"cache":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rmeta": {
+		"language": "rust",
+		"icon": "../Capstone/static/fileTypeIcons/rust.ico",
+		"compiler": ""
 	},
 
-	"markdown":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swift": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"md":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swiftinterface": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"rmd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swiftmodule": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"mmd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swiftdoc": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"yaml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xcodeproj": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"yml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xcworkspace": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-
-	"png":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swift-format": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"jpg":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swift-format-generated": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"jpeg":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"plist": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"svg":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"swiftui": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"webp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"docc": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"tif":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"playground": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
-	"tiff":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"heif":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"bmp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"eps":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"psd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xcplaygroundpage": {
+		"language": "swift",
+		"icon": "../Capstone/static/fileTypeIcons/swift.ico",
+		"compiler": ""
 	},
 
-	"mp4":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"R": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"gif":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"Rmd": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"avif":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"qmd": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"mov":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"Rds": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"avchd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"Rdata": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"mkv":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"Rproj": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"wmv":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"feather": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
-	"flv":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"f4v":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"swf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mpeg-2":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mpeg1":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"fst": {
+		"language": "r",
+		"icon": "../Capstone/static/fileTypeIcons/r.ico",
+		"compiler": ""
 	},
 
-	"wav":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rb": {
+		"language": "ruby",
+		"icon": "../Capstone/static/fileTypeIcons/ruby.ico",
+		"compiler": ""
 	},
-	"mp3":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"erb": {
+		"language": "ruby",
+		"icon": "../Capstone/static/fileTypeIcons/ruby.ico",
+		"compiler": ""
 	},
-	"aac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"haml": {
+		"language": "ruby",
+		"icon": "../Capstone/static/fileTypeIcons/ruby.ico",
+		"compiler": ""
 	},
-	"alac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rake": {
+		"language": "ruby",
+		"icon": "../Capstone/static/fileTypeIcons/ruby.ico",
+		"compiler": ""
 	},
-	"aiff":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dsd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"flac":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"mqa":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ogg":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"wma":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"midi":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"adpcm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"gemspec": {
+		"language": "ruby",
+		"icon": "../Capstone/static/fileTypeIcons/ruby.ico",
+		"compiler": ""
 	},
 
-	"fbx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"lua": {
+		"language": "lua",
+		"icon": "../Capstone/static/fileTypeIcons/lua.ico",
+		"compiler": ""
 	},
-	"stl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"tl": {
+		"language": "lua",
+		"icon": "../Capstone/static/fileTypeIcons/lua.ico",
+		"compiler": ""
 	},
-	"3mf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"luac": {
+		"language": "lua",
+		"icon": "../Capstone/static/fileTypeIcons/lua.ico",
+		"compiler": ""
 	},
-	"amf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"x3d":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dae":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"igs":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"step":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"3ds":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"blend":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ipt":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"skp":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"lwo":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"off":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ply":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dwg":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dwf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dxf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"acis":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rockspec": {
+		"language": "lua",
+		"icon": "../Capstone/static/fileTypeIcons/lua.ico",
+		"compiler": ""
 	},
 
-	"db":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sml": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"dat":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"sig": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"sav":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"fun": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"dta":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cm": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"parquet":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ml": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"ibd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"use": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"myd":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"smlrun": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"myi":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"lst": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
-	"accdb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"control":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"fdb":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ora":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xlsx":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mlb": {
+		"language": "sml",
+		"icon": "../Capstone/static/fileTypeIcons/sml.ico",
+		"compiler": ""
 	},
 
-	"rar":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xml": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"iso":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"entitlements": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"7z":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"storyboard": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"ser":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xcassets": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"zip":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"xib": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"gz":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"csproj": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
-	"rpm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"aab":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"fsproj": {
+		"language": "xml",
+		"icon": "../Capstone/static/fileTypeIcons/xml.ico",
+		"compiler": ""
 	},
 
-	"app":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"json": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
-	"ipa":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"ndjson": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
-	"exe":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"jsonl": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
-	"dll":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"hjson": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
-	"lib":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"json5": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
-	"a":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"o":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"so":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dylib":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"class":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"apk":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"dex":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"bat":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"d":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"framework":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"xcframework":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"elf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"axf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"bson": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
 	},
 
-	"am":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"lock":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"inc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"venv":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"ini":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"env":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"example":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"properties":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"toml":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"config":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"editorconfig":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"gitattributes":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"dockerfile": {
+		"language": "dockerfile",
+		"icon": "../Capstone/static/fileTypeIcons/docker.ico",
+		"compiler": ""
 	},
 
-	"asm":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pl": {
+		"language": "prolog",
+		"icon": "../Capstone/static/fileTypeIcons/prolog.ico",
+		"compiler": ""
 	},
-	"s":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"pro": {
+		"language": "prolog",
+		"icon": "../Capstone/static/fileTypeIcons/prolog.ico",
+		"compiler": ""
 	},
-	"amd64":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"P": {
+		"language": "prolog",
+		"icon": "../Capstone/static/fileTypeIcons/prolog.ico",
+		"compiler": ""
 	},
-	"x86":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"x64":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"x32":{
-		"language":"",
-		"icon":"",
-		"compiler":""
-	},
-	"x16":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"qlf": {
+		"language": "prolog",
+		"icon": "../Capstone/static/fileTypeIcons/prolog.ico",
+		"compiler": ""
 	},
 
-	"gitignore":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"vb": {
+		"language": ".Net",
+		"icon": "../Capstone/static/fileTypeIcons/dotnet-logo.ico",
+		"compiler": ""
 	},
-	"git":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"fs": {
+		"language": ".Net",
+		"icon": "../Capstone/static/fileTypeIcons/dotnet-logo.ico",
+		"compiler": ""
 	},
-	"txt":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"razor": {
+		"language": ".Net",
+		"icon": "../Capstone/static/fileTypeIcons/dotnet-logo.ico",
+		"compiler": ""
 	},
-	"rdoc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"tlog": {
+		"language": ".Net",
+		"icon": "../Capstone/static/fileTypeIcons/dotnet-logo.ico",
+		"compiler": ""
 	},
-	"doc":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"cache": {
+		"language": ".Net",
+		"icon": "../Capstone/static/fileTypeIcons/dotnet-logo.ico",
+		"compiler": ""
 	},
-	"strings":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+
+	"markdown": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
 	},
-	"stringsdict":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"md": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
 	},
-	"hcl":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"rmd": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
 	},
-	"tf":{
-		"language":"",
-		"icon":"",
-		"compiler":""
+	"mmd": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
+	},
+	"yaml": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
+	},
+	"yml": {
+		"language": "markdown",
+		"icon": "../Capstone/static/fileTypeIcons/markdown.ico",
+		"compiler": ""
+	},
+
+	"png": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"jpg": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"jpeg": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"svg": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"webp": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"tif": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"tiff": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"heif": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"bmp": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"eps": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+	"psd": {
+		"language": "image",
+		"icon": "../Capstone/static/fileTypeIcons/image.ico",
+		"compiler": ""
+	},
+
+	"mp4": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"gif": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"avif": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"mov": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"avchd": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"mkv": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"wmv": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"flv": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"f4v": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"swf": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"mpeg-2": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+	"mpeg1": {
+		"language": "video",
+		"icon": "../Capstone/static/fileTypeIcons/video.ico",
+		"compiler": ""
+	},
+
+	"wav": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"mp3": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"aac": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"alac": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"aiff": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"dsd": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"flac": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"mqa": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"ogg": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"wma": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"midi": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+	"adpcm": {
+		"language": "audio",
+		"icon": "../Capstone/static/fileTypeIcons/audio.ico",
+		"compiler": ""
+	},
+
+	"fbx": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"stl": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"3mf": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"amf": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"x3d": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"dae": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"igs": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"step": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"3ds": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"blend": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"ipt": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"skp": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"lwo": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"off": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"ply": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"dwg": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"dwf": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"dxf": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+	"acis": {
+		"language": "3d",
+		"icon": "../Capstone/static/fileTypeIcons/3d.ico",
+		"compiler": ""
+	},
+
+	"db": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"dat": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"sav": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"dta": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"parquet": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"ibd": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"myd": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"myi": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"accdb": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"control": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"fdb": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"ora": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+	"xlsx": {
+		"language": "database",
+		"icon": "../Capstone/static/fileTypeIcons/dataase.ico",
+		"compiler": ""
+	},
+
+	"rar": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"iso": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"7z": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"ser": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"zip": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"gz": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"rpm": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+	"aab": {
+		"language": "zipped",
+		"icon": "../Capstone/static/fileTypeIcons/zipped.ico",
+		"compiler": ""
+	},
+
+	"app": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"ipa": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"exe": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"dll": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"lib": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"a": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"o": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"so": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"dylib": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"apk": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"dex": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"bat": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"d": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"framework": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"xcframework": {
+		"language": "library",
+		"icon": "../Capstone/static/fileTypeIcons/library.ico",
+		"compiler": ""
+	},
+	"elf": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+	"axf": {
+		"language": "executable",
+		"icon": "../Capstone/static/fileTypeIcons/executable.ico",
+		"compiler": ""
+	},
+
+	"am": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"lock": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"inc": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"venv": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"ini": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"env": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"example": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"properties": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"toml": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"config": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"editorconfig": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+	"gitattributes": {
+		"language": "config",
+		"icon": "../Capstone/static/fileTypeIcons/config.ico",
+		"compiler": ""
+	},
+
+	"asm": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"s": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"amd64": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"x86": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"x64": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"x32": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+	"x16": {
+		"language": "assembly",
+		"icon": "../Capstone/static/fileTypeIcons/assembly.ico",
+		"compiler": ""
+	},
+
+	"gitignore": {
+		"language": "gitignore",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"txt": {
+		"language": "text",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"rdoc": {
+		"language": "text",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"doc": {
+		"language": "text",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"strings": {
+		"language": "strings",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"stringsdict": {
+		"language": "stringsdict",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"hcl": {
+		"language": "hcl",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"tf": {
+		"language": "tf",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": ""
+	},
+	"unknown": {
+		"language": "unknown",
+		"icon": "../Capstone/static/fileTypeIcons/file.ico",
+		"compiler": "none"
 	}
 }

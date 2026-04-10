@@ -363,6 +363,7 @@
 
 </body>
 <script>
+
     // --- Helper function to get CSRF token from cookies ---
     function getCookie(name) {
         let cookieValue = null;
@@ -383,6 +384,14 @@
     // --- Original Host variable (Electron compatibility) ---
     const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
     // const Host = "http://3.145.170.26:8000";
+
+    async function getfileTypesDictionary() {
+        console.log("the json data should be:")
+        const result = await fetch("../Capstone/static/fileTypes.json");
+        const jsonData = await result.json();
+        return jsonData;
+    }
+    const FileTypes = getfileTypesDictionary()
 
     async function getProjectName() {
         const storedProjectName = sessionStorage.getItem("currentProjectName");
@@ -415,6 +424,15 @@
         });
     }
     getFileDirectories();
+
+    function identifyType(filename) {
+        fileExtension = filename.substring(filename.lastIndexOf('.' + 1));
+        if (FileTypes.hasOwn(fileExtension)) {
+            return FileTypes[fileExtension];
+        } else {
+            return FileTypes["unknown"];
+        }
+    }
 
     function sortDirectories(files) {
         topLevel = { "/": {} };
