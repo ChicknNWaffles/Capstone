@@ -427,8 +427,12 @@
 
     function identifyType(filename) {
         fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
+        // get the file type by the file extension
         if (FileTypes.hasOwnProperty(fileExtension)) {
             return FileTypes[fileExtension];
+        // the first and easies edge case: no file extension, name is exactly "Dockerfile"
+        } else if (filename.substr(filename.lastIndexOf('/') + 1 ) === "Dockerfile" ) {
+            return FileTypes["dockerfile"]
         } else {
             return FileTypes["unknown"];
         }

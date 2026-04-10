@@ -753,6 +753,11 @@
 		"icon": "../Capstone/static/fileTypeIcons/json.ico",
 		"compiler": ""
 	},
+	"map": {
+		"language": "json",
+		"icon": "../Capstone/static/fileTypeIcons/json.ico",
+		"compiler": ""
+	},
 
 	"dockerfile": {
 		"language": "dockerfile",
