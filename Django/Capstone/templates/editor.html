@@ -363,6 +363,9 @@
 
 </body>
 <script>
+    // a variable that holds the current directories object (important for quickly checking for changes
+    // in the file tree)
+    var fileTreeObj = {}
 
     // --- Helper function to get CSRF token from cookies ---
     function getCookie(name) {
@@ -420,10 +423,37 @@
             var files = data.files;
             var sorted = sortDirectories(files);
             console.log(sorted);
+            fileTreeObj = sorted["/"];
             populateFileTree(sorted["/"]);
         });
     }
     getFileDirectories();
+
+    async function checkDirectoriesForChange() {
+        const URL = Host + "/files/get/";
+        const result = await fetch(URL);
+        result.json().then((data) => {
+            var files = data.files;
+            var sorted = sortDirectories(files);
+            // only actaully update the html if a change has been detected
+            if (JSON.stringify(sorted["/"]) === JSON.stringify(fileTreeObj)) { } else {
+                console.log("directories changed:");
+                console.log(sorted);
+                fileTreeObj = sorted["/"];
+                refreshDirectory(sorted["/"]);
+            }
+        });
+    }
+    // check for changes in the file tree every 5 seconds
+    setInterval(async () => {
+        await checkDirectoriesForChange();
+    }, 5000)
+
+    function refreshDirectory(files) {
+        tree = document.getElementById("file-tree");
+        tree.innerHTML = "";
+        populateFileTree(files);
+    }
 
     function identifyType(filename) {
         fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
@@ -472,7 +502,6 @@
         for (step in files) {
             if (files[step].name !== undefined) {
                 fileType = identifyType(files[step].name)
-                console.log(fileType);
                 language = fileType["language"];
                 iconLink = fileType["icon"];
                 const isLocked = files[step].is_locked;

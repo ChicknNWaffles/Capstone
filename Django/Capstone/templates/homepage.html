@@ -689,7 +689,7 @@
       /* Fetch */
       async function loadProjects() {
         try {
-          const res  = await fetch(Host + "/project/getUserProjects");
+          const res  = await fetch("/project/getUserProjects");
           const data = await res.json();
 
           for (const proj of data.projects) {
@@ -793,14 +793,14 @@
       async function redirect(id) {
         const csrf = getCookie("csrftoken");
         try {
-          const r1 = await fetch(Host + "/api/setCurProj/", {
+          const r1 = await fetch("/api/setCurProj/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ project: id }), credentials: "include",
           });
           if (!r1.ok) { alert((await r1.json()).error || "Error"); return; }
 
-          const r2 = await fetch(Host + "/api/setCurBranch/", {
+          const r2 = await fetch("/api/setCurBranch/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ com: "" }), credentials: "include",
@@ -812,7 +812,7 @@
             sessionStorage.setItem("currentProjectName", p.name);
             sessionStorage.setItem("currentProjectId", p.id);
           }
-          window.location.href = Host + "/editor/";
+          window.location.href = "/editor/";
         } catch (e) {
           alert("Something went wrong. The project may have been created — please refresh the page.");
           console.error(e);
@@ -848,7 +848,7 @@
 
         try {
           const csrf = getCookie("csrftoken");
-          const res  = await fetch(Host + "/project/createProject/", {
+          const res  = await fetch("/project/createProject/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ name, visibility }),
