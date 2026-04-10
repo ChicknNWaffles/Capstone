@@ -595,7 +595,7 @@
     </div>
 
     <script>
-      const Host = "";
+      const Host = "127.0.0.1:8000";
       const projects = [];
 
       const grid        = document.getElementById("projectsGrid");
@@ -812,7 +812,7 @@
             sessionStorage.setItem("currentProjectName", p.name);
             sessionStorage.setItem("currentProjectId", p.id);
           }
-          window.location.href = "/editor/";
+          window.location.href = Host + "/editor/";
         } catch (e) {
           alert("Something went wrong. The project may have been created — please refresh the page.");
           console.error(e);

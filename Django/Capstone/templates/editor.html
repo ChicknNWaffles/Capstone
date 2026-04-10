@@ -391,7 +391,7 @@
         const jsonData = await result.json();
         return jsonData;
     }
-    const FileTypes = getfileTypesDictionary()
+    getfileTypesDictionary().then(data => FileTypes = data)
 
     async function getProjectName() {
         const storedProjectName = sessionStorage.getItem("currentProjectName");
@@ -426,8 +426,8 @@
     getFileDirectories();
 
     function identifyType(filename) {
-        fileExtension = filename.substring(filename.lastIndexOf('.' + 1));
-        if (FileTypes.hasOwn(fileExtension)) {
+        fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
+        if (FileTypes.hasOwnProperty(fileExtension)) {
             return FileTypes[fileExtension];
         } else {
             return FileTypes["unknown"];
@@ -467,6 +467,10 @@
         html = "";
         for (step in files) {
             if (files[step].name !== undefined) {
+                fileType = identifyType(files[step].name)
+                console.log(fileType);
+                language = fileType["language"];
+                iconLink = fileType["icon"];
                 const isLocked = files[step].is_locked;
 
                 html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "'>";
@@ -474,16 +478,12 @@
                 // ── File icon with lock badge in the bottom-right corner ──
                 // Inspired by the Windows/macOS file-with-badge pattern:
                 // the lock is a small circle overlaid on the icon, not inline text.
-                const fileIcon = `
-                    <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round"
-                             style="opacity:0.7;">
-                            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"></path>
-                            <polyline points="13 2 13 9 20 9"></polyline>
-                        </svg>
-                        ${isLocked ? `
+                var fileIcon = `
+                <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
+                        <img width = "18", height = "18" src = ` + iconLink + `>
+                `
+                if (isLocked) {
+                    fileIcon = fileIcon + `
                         <span style="
                             position: absolute;
                             bottom: -3px;
@@ -496,12 +496,14 @@
                             align-items: center;
                             justify-content: center;
                             border: 1.5px solid #0a1020;
-                        ">
-                            <svg width="5" height="5" viewBox="0 0 24 24" fill="white">
-                                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
-                            </svg>
-                        </span>` : ''}
-                    </span>`;
+                            ">
+                        <svg width="5" height="5" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+                        </svg>
+                    </span>
+                    `
+                }
+                fileIcon = fileIcon + "</span>";
 
                 // ── Rename Icon (fariza's change: match the request for renaming option) ──
                 const renameIcon = `
