@@ -13,5 +13,7 @@ class Collaborator(models.Model):
     edit_perms = models.BooleanField(default=False)
     hours = models.IntegerField(default=0)
 
+    color = models.CharField(max_length=7, default="#767676")
+
     def __str__(self):
         return f"{self.user.username} on {self.project.name}"
