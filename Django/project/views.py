@@ -265,6 +265,7 @@ class ProjectBranches(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        # serialize data
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -282,10 +283,3 @@ class ProjectBranches(APIView):
             "project": project.name,
         }
         return Response(response, status=status.HTTP_201_CREATED)
-    
-    def _has_access(self, project, user):
-        """Helper: owner or collaborator?"""
-        return (
-            project.owner == user or
-            Collaborator.objects.filter(project=project, user=user).exists()
-        )

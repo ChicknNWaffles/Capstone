@@ -1,6 +1,6 @@
-Languages:		Has Icon:		Has Compiler		Has Assembler
+﻿Languages:		Has Icon:		Has Compiler		Has Assembler
 
-Python
+Python				✔️
 	.py
 	.py3
 	.pyc
@@ -12,23 +12,23 @@ Python
 	.pyzw
 	.pth
 	.whl
-Cython
+Cython				✔️
 	.pyx
 	.pxd
 	.pxi
-Javascript
+Javascript			✔️
 	.js
 	.mjs
 	.cjs
-Java
+Java				✔️
 	.java
 	.jar
-TypeScript
+TypeScript			✔️
 	.ts
 	.map
 	.mts
 	.cts
-C++
+C++					✔️
 	.C
 	.cc
 	.cpp
@@ -44,21 +44,20 @@ C++
 	.HPP
 	.h++
 	.hpp
-	.lib
 	.ii
 	.ixx
 	.mm
 	.M
 	.mii
 	.tcc
-C#
+C#					✔️
 	.cs
-C
+C					✔️
 	.c
 	.h
 	.out
 	.i
-SQL
+SQL					✔️
 	.sql
 	.mdf
 	.ndf
@@ -71,51 +70,51 @@ SQL
 	.sqlite
 	.mdb
 	.csv
-HTML
+HTML				✔️
 	.htm
 	.html
 	.shtml
 	.dhtml
 	.mhtml
 	.tpl
-CSS
+CSS					✔️
 	.css
 	.scss
 	.sass
 	.less
 	.pcss
 	.postcss
-PHP
+PHP					✔️
 	.php
 	.phtml
 	.php3
 	.php4
 	.php5
-Golang
+Golang				✔️
 	.go
 	.sum
 	.mod
 
-Proto
+Proto				✔️
 	.proto
 	.protodevel
 	.pbtxt
 	.textproto
-Dart
+Dart				✔️
 	.dart
 	.dart_tool
 	.dill
-Bash
+Bash				✔️
 	.sh
 	.bash
-Kotlin
+Kotlin				✔️
 	.kt
 	.kts
-Rust
+Rust				✔️
 	.rs
 	.rlib
 	.rmeta
-Swift
+Swift				✔️
 	.swift
 	.swiftinterface
 	.swiftmodule
@@ -129,7 +128,7 @@ Swift
 	.docc
 	.playground
 	.xcplaygroundpage
-R
+R					✔️
 	.R
 	.Rmd
 	.qmd
@@ -138,18 +137,18 @@ R
 	.Rproj
 	.feather
 	.fst
-Ruby
+Ruby				✔️
 	.rb
 	.erb
 	.haml
 	.rake
 	.gemspec
-LUA
+LUA					✔️
 	.lua
 	.tl
 	.luac
 	.rockspec
-SML
+SML					✔️
 	.sml
 	.sig
 	.fun
@@ -160,7 +159,7 @@ SML
 	.lst
 	.map
 	.mlb
-XML
+XML					✔️
 	.xml
 	.entitlements
 	.storyboard
@@ -168,28 +167,28 @@ XML
 	.xib
 	.csproj
 	.fsproj
-JSON
+JSON				✔️
 	.json
 	.ndjson
 	.jsonl
 	.hjson
 	.json5
 	.bson
-Dockerfile
+Dockerfile			✔️
 	(no extension but name is exactly "Dockerfile")
 	.dockerfile
-Prolog
+Prolog				✔️
 	.pl
 	.pro
 	.P
 	.qlf
-.Net
+.Net				✔️
 	.vb
 	.fs
 	.razor
 	.tlog
 	.cache
-Markdown
+Markdown			✔️
 	.markdown
 	.md
 	.rmd
@@ -200,7 +199,7 @@ Markdown
 =================================================================================
 Other File Types:
 -------------------
-Images:
+Images:				✔️
 -------------------
 .png
 .jpg
@@ -215,7 +214,7 @@ Images:
 .psd
 
 -------------------
-Video:
+Video:				✔️
 -------------------
 .mp4
 .gif
@@ -231,7 +230,7 @@ Video:
 .mpeg1
 
 -------------------
-Audio:
+Audio:				✔️
 -------------------
 .wav
 .mp3
@@ -247,7 +246,7 @@ Audio:
 .adpcm
 
 -------------------
-3D Modling:
+3D Modling:			✔️
 -------------------
 .fbx
 .stl
@@ -271,7 +270,7 @@ Audio:
 .acis
 
 -------------------
-database:
+database:			✔️
 -------------------
 .db
 .dat
@@ -288,7 +287,7 @@ database:
 .xlsx
 
 -------------------
-zipped:
+zipped:				✔️
 -------------------
 .rar
 .iso
@@ -300,7 +299,7 @@ zipped:
 .aab
 
 -------------------
-Compiled Stuff:
+Compiled Stuff:		✔️
 -------------------
 .app
 .ipa
@@ -323,7 +322,7 @@ Compiled Stuff:
 .axf
 
 -------------------
-Config files shared
+Config files shared	✔️
 by multiple langs:
 -------------------
 .am
@@ -340,7 +339,7 @@ by multiple langs:
 .gitattributes
 
 -------------------
-Assembly Stuff:
+Assembly Stuff:		✔️
 -------------------
 .asm
 .s
@@ -351,10 +350,9 @@ Assembly Stuff:
 .x16
 
 -------------------
-other:
+other:				✔️
 -------------------
 .gitignore
-.git
 .txt
 .rdoc
 .doc
