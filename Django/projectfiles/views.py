@@ -202,25 +202,18 @@ class ReadFileContent(APIView):
             if not password or not check_password(password, file_obj.password_hash):
                 return Response({"success": False, "error": "This file is locked. Please enter the correct password."}, status=status.HTTP_403_FORBIDDEN)
         
-        # fariza's change: find where the file is stored on the computer
-        file_path = str(file_obj.project.file_path) + "/" + str(file_obj.branch.name) + "/" + str(file_obj.name)
-        
-        try:
-            # fariza's change: open and read the text from the file
-            if os.path.exists(file_path):
-                with open(file_path, 'r') as f:
-                    content = f.read()
-            else:
-                # fariza's change: if file doesn't exist on disk yet, show a friendly message
-                content = f"# This is the content of {file_obj.name}\n# (File created in database but not yet on disk)"
-                
-            return Response({
-                "success": True, 
-                "content": content,
-                "name": file_obj.name
-            })
-        except Exception as e:
-            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Read file content from S3
+        result = file_service.read_file(file_obj.project.id, file_obj.branch.name, file_obj.name)
+        if result["success"]:
+            content = result["content"]
+        else:
+            content = ""
+
+        return Response({
+            "success": True,
+            "content": content,
+            "name": file_obj.name
+        })
 
 
 # fariza's change: class to delete a file from database and disk

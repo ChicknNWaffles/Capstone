@@ -385,7 +385,7 @@
     }
 
     // --- Original Host variable (Electron compatibility) ---
-    const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
+    const Host = window.location.protocol === 'file:' ? 'http://3.145.170.26:8000' : '';
 
     async function getfileTypesDictionary() {
         console.log("the json data should be:")
@@ -858,6 +858,41 @@
         window.getEditorContent = () => editor.getValue();
 
         window.setEditorContent = (content) => editor.setValue(content);
+
+        // --- Collaborative editing via WebSocket ---
+        let _editorFileId = null;
+        let _saveTimer = null;
+        let _isRemoteUpdate = false;
+
+        window.setCurrentEditorFile = (fileId) => {
+            _editorFileId = fileId;
+        };
+
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const editorSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/editor/`);
+
+        editorSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "content_change" && String(data.file_id) === String(_editorFileId)) {
+                _isRemoteUpdate = true;
+                editor.setValue(data.content);
+                _isRemoteUpdate = false;
+            }
+        };
+
+        editor.onDidChangeModelContent(() => {
+            if (_isRemoteUpdate || !_editorFileId) return;
+            clearTimeout(_saveTimer);
+            _saveTimer = setTimeout(() => {
+                if (editorSocket.readyState === WebSocket.OPEN) {
+                    editorSocket.send(JSON.stringify({
+                        type: "content_change",
+                        file_id: _editorFileId,
+                        content: editor.getValue(),
+                    }));
+                }
+            }, 2000);
+        });
     });
 
     /* ============================
@@ -939,6 +974,7 @@
 
             const data = await response.json();
             if (response.ok && data.success) {
+                if (window.setCurrentEditorFile) window.setCurrentEditorFile(fileId);
                 if (window.setEditorContent) {
                     window.setEditorContent(data.content);
                     const statusItem = document.querySelector(".status-left .status-item:first-child");
