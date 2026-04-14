@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#^6ip%nhft!=b8!h70c3em-7#xk-b5k78n6tu$!z-pxv$w^l7@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '3.145.170.26']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '3.145.186.153']
 CORS_ALLOW_ALL_ORIGINS = False
 # Allow login and signup to work in the browser
 CORS_ALLOW_CREDENTIALS = True
@@ -33,13 +33,13 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    "http://3.145.170.26:8000",
+    "http://3.145.186.153:8000",
 ]
 # Trusted addresses for security (CSRF)
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    "http://3.145.170.26:8000",
+    "http://3.145.186.153:8000",
 ]
 
 
