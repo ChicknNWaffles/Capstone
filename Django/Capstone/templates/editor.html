@@ -299,16 +299,7 @@
         <!-- Editor Area -->
         <div class="editor-main" id="editorMain">
             <!-- Tab Bar -->
-            <div class="tab-bar">
-                <div class="tab active">
-                    <span class="tab-name">main.py</span>
-                    <button class="tab-close">×</button>
-                </div>
-                <div class="tab">
-                    <span class="tab-name">utils.py</span>
-                    <button class="tab-close">×</button>
-                </div>
-            </div>
+            <div class="tab-bar"></div>
 
             <!-- Content Area -->
             <div id="workspace">
@@ -352,8 +343,8 @@
     <!-- Status Bar -->
     <div class="status-bar">
         <div class="status-left">
-            <span class="status-item">main.py</span>
-            <span class="status-item">Python</span>
+            <span class="status-item"></span>
+            <span class="status-item"></span>
         </div>
         <div class="status-right">
             <span class="status-item">Ln 1, Col 1</span>
@@ -496,6 +487,16 @@
         return topLevel;
     }
 
+    function generateTabHTML(fileName) {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        tabBar = document.getElementsByClassName("tab-bar")[0];
+        html = "<div class='tab active', onclick='tabClick(this)'>";
+        html = html + "<span class='tab-name'>" + fileName + "</span>";
+        html = html + "<button class='tab-close' onclick='closeBtn(this)'>×</button>";
+        html = html + "</div>";
+        tabBar.innerHTML = tabBar.innerHTML + html
+    }
+
     function generateFileTreeHTML(files, levels = 0) {
         html = "";
         for (step in files) {
@@ -504,8 +505,9 @@
                 language = fileType["language"];
                 iconLink = fileType["icon"];
                 const isLocked = files[step].is_locked;
+                name = files[step].name.substr(files[step].name.lastIndexOf("/") + 1)
 
-                html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "'>";
+                html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "', data-lang='" + language + "', data-name='" + name + "'>";
 
                 // ── File icon with lock badge in the bottom-right corner ──
                 // Inspired by the Windows/macOS file-with-badge pattern:
@@ -674,13 +676,15 @@
 
         const fileId   = item.getAttribute("data-file-id");
         const isLocked = item.getAttribute("data-is-locked") === "true";
-        const fileName = item.querySelector(".file-name").textContent;
+        const fileName = item.getAttribute("data-name");
+        const fileLang = item.getAttribute("data-lang");
+        const filePath = item.querySelector(".file-name").textContent;
 
         console.log("Opening file:", fileName, "Locked:", isLocked);
 
         if (isLocked) {
             currentPasswordFileId = fileId;
-            currentPasswordFileName = fileName;
+            currentPasswordFileName = filePath;
             filePasswordInput.value = "";
             passwordModal.classList.add("active");
             setTimeout(() => filePasswordInput.focus(), 100);
@@ -690,19 +694,30 @@
         fetchFileContent(fileId, fileName);
     });
 
-    document.querySelectorAll(".tab-close").forEach((closeBtn) => {
-        closeBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            this.closest(".tab").remove();
-        });
-    });
+    function closeBtn(e) {
+        tab = e.parentNode;
+        tabBar = tab.parentNode;
+        tab.remove();
+        if (tabBar.children.length == 0) {
+            const statusItem = document.querySelector(".status-left .status-item:first-child");
+            if (statusItem) statusItem.textContent = "";
+            const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+            if (langItem) langItem.textContent = ""
+        }
+    }
 
-    document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", function () {
-            document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-            this.classList.add("active");
-        });
-    });
+    function tabClick(e){
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        e.classList.add("active");
+        name = e.children[0].textContent;
+        language = identifyType(name)["language"];
+
+        const statusItem = document.querySelector(".status-left .status-item:first-child");
+        if (statusItem) statusItem.textContent = name;
+        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+        language = language.charAt(0).toUpperCase() + language.slice(1);
+        if (langItem) langItem.textContent = language;
+    };
 
     /* ============================
        Settings Modal
@@ -842,7 +857,7 @@
         });
 
         const editor = monaco.editor.create(document.getElementById("editorContent"), {
-            value: "# Start coding here\n",
+            value: "# Open a file to start coding\n",
             language: "python",
             theme: "cocodingTheme",
             fontSize: 13,
@@ -955,6 +970,7 @@
             return;
         }
         closeAllModals();
+        currentPasswordFileName = currentPasswordFileName.substr(currentPasswordFileName.lastIndexOf('/') + 1);
         fetchFileContent(currentPasswordFileId, currentPasswordFileName, password);
     });
 
@@ -979,6 +995,11 @@
                     window.setEditorContent(data.content);
                     const statusItem = document.querySelector(".status-left .status-item:first-child");
                     if (statusItem) statusItem.textContent = fileName;
+                    language = identifyType(fileName)["language"]
+                    language = language.charAt(0).toUpperCase() + language.slice(1);
+                    const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+                    if (langItem) langItem.textContent = language
+                    generateTabHTML(fileName);
                 }
             } else {
                 alert("Access Denied: " + (data.error || "Incorrect password or system error."));
