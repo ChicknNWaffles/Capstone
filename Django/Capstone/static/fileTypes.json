@@ -1,7 +1,7 @@
 {
 	"py": {
 		"language": "python",
-		"icon": "../Capstone/static/filetypeIcons/python.ico",
+		"icon": "../Capstone/static/fileTypeIcons/python.ico",
 		"compiler": ""
 	},
 	"py3": {
