@@ -262,8 +262,6 @@
         </div>
     </div>
 
-    </div>
-
     <!-- Main Layout -->
     <div class="editor-layout">
         <!-- Sidebar -->
@@ -352,7 +350,6 @@
         </div>
     </div>
 
-</body>
 <script>
     // a variable that holds the current directories object (important for quickly checking for changes
     // in the file tree)
@@ -1055,10 +1052,11 @@
                     language = language.charAt(0).toUpperCase() + language.slice(1);
                     const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
                     if (langItem) langItem.textContent = language
-                    generateTabHTML(fileName);
+                    generateTabHTML(fileId, fileName);
                 }
             } else {
                 alert("Access Denied: " + (data.error || "Incorrect password or system error."));
+            }
             }
         } catch (err) {
             console.error("File loading error:", err);
@@ -1251,4 +1249,5 @@
     closeNewFolderBtn.addEventListener("click", closeAllModals);
 
 </script>
+</body>
 </html>
