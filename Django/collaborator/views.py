@@ -12,20 +12,37 @@ class getCollaborators(View):
     
     def get(self, request, project_id):
 
-        # this one is getProjects(APIView)
-        # projects = models.Project.objects.all().values()
-        # response = Response(projects)
-
-        # this one is getProjects(View)
         html = ""
         collaborators = models.Collaborator.objects.filter(project=project_id)
-        # Project.objects.filter()
-        # Project.objects.get()
-        # Project.objects.filter(id__lt = 7)
+
+
+        color_names = {
+            "#dc3545": "Red",
+            "#007bff": "Blue",
+            "#28a745": "Green",
+            "#ffc107": "Yellow",
+            "#fd7e14": "Orange",
+            "#e83e8c": "Pink",
+            "#6610f2": "Purple",
+            "#00cec9": "Light Blue",
+        }
+        
         for collaborator in collaborators:
-            html += f"<h1>Hours: {collaborator.hours}</h1>"
+            html += f"<h1>Name: {collaborator.user}</h1>"
+            html += f"<p>Hours: {collaborator.hours}</p>"
             html += f"<p>Admin access: {collaborator.admin_perms}</p>"
             html += f"<p>Editor: {collaborator.edit_perms}</p>"
+            color_hex = collaborator.color
+            color_name = color_names.get(color_hex, "Unknown")
+            html += f'''
+                <p>
+                    Color: 
+                    <span style="background-color: {color_hex}; color: white; padding: 4px 12px; 
+                                border-radius: 20px; font-weight: bold;">
+                        {color_name}
+                    </span>
+                </p>
+            '''
             
         response = HttpResponse(html)
 
@@ -86,3 +103,26 @@ class CreateCollaboratorButWithSerializers(APIView):
         }
 
         return Response(response)
+    
+# colors to choose from 
+COLOR_PALETTE = [
+    "#007bff", "#28a745", "#ffc107", "#fd7e14",
+    "#e83e8c", "#6610f2", "#00cec9",
+]
+
+def unique_color_per_project(project, user):
+    # owner is always red
+    if project.owner == user:
+        return "#dc3545"
+
+    # get all used colors (except owners)
+    used_colors = set(
+        models.Collaborator.objects.filter(project=project)
+        .exclude(user=user)
+        .values_list('color', flat=True)
+    )
+
+    # assigns first available color
+    for color in COLOR_PALETTE:
+        if color not in used_colors:
+            return color

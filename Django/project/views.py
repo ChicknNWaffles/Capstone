@@ -6,6 +6,7 @@ from rest_framework.views import APIView, Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
+from collaborator.views import unique_color_per_project
 from project.models import Project
 from project.serializers import ProjectSerializer
 
@@ -225,6 +226,7 @@ class ProjectCollaboratorsListCreate(APIView):
             admin_perms=data.get('admin_perms', False),
             edit_perms=data.get('edit_perms', False),
             hours=data.get('hours', 0),
+            color=unique_color_per_project(project, data.get('user')),
         )
         collaborator.save()
 
@@ -236,6 +238,7 @@ class ProjectCollaboratorsListCreate(APIView):
             "admin_perms": collaborator.admin_perms,
             "edit_perms": collaborator.edit_perms,
             "hours": collaborator.hours,
+            "color": collaborator.color,
         }
 
         return Response(response)
@@ -261,6 +264,7 @@ class ProjectBranches(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        # serialize data
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -278,10 +282,3 @@ class ProjectBranches(APIView):
             "project": project.name,
         }
         return Response(response, status=status.HTTP_201_CREATED)
-    
-    def _has_access(self, project, user):
-        """Helper: owner or collaborator?"""
-        return (
-            project.owner == user or
-            Collaborator.objects.filter(project=project, user=user).exists()
-        )

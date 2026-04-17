@@ -299,16 +299,7 @@
         <!-- Editor Area -->
         <div class="editor-main" id="editorMain">
             <!-- Tab Bar -->
-            <div class="tab-bar">
-                <div class="tab active">
-                    <span class="tab-name">main.py</span>
-                    <button class="tab-close">×</button>
-                </div>
-                <div class="tab">
-                    <span class="tab-name">utils.py</span>
-                    <button class="tab-close">×</button>
-                </div>
-            </div>
+            <div class="tab-bar"></div>
 
             <!-- Content Area -->
             <div id="workspace">
@@ -352,8 +343,8 @@
     <!-- Status Bar -->
     <div class="status-bar">
         <div class="status-left">
-            <span class="status-item">main.py</span>
-            <span class="status-item">Python</span>
+            <span class="status-item"></span>
+            <span class="status-item"></span>
         </div>
         <div class="status-right">
             <span class="status-item">Ln 1, Col 1</span>
@@ -363,6 +354,17 @@
 
 </body>
 <script>
+    // a variable that holds the current directories object (important for quickly checking for changes
+    // in the file tree)
+    var fileTreeObj = {}
+
+    // a varaible that holds id ids and passwords of all of the open tabs (important for preventing from
+    //having 2 copies of the same tab open at once, and from stoping it from asking for the password every
+    // time you switch back to a tab with a file you already have open). the key is the id and the value is
+    // the password. This isn't insecure because it'll still only show you the file if the password stored
+    // here is correct, and this will only contain passwords that the user has provided
+    var openTabs = {}
+
     // --- Helper function to get CSRF token from cookies ---
     function getCookie(name) {
         let cookieValue = null;
@@ -383,6 +385,14 @@
     // --- Original Host variable (Electron compatibility) ---
     const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
     // const Host = "http://3.145.170.26:8000";
+
+    async function getfileTypesDictionary() {
+        console.log("the json data should be:")
+        const result = await fetch("../Capstone/static/fileTypes.json");
+        const jsonData = await result.json();
+        return jsonData;
+    }
+    getfileTypesDictionary().then(data => FileTypes = data)
 
     async function getProjectName() {
         const storedProjectName = sessionStorage.getItem("currentProjectName");
@@ -411,10 +421,50 @@
             var files = data.files;
             var sorted = sortDirectories(files);
             console.log(sorted);
+            fileTreeObj = sorted["/"];
             populateFileTree(sorted["/"]);
         });
     }
     getFileDirectories();
+
+    async function checkDirectoriesForChange() {
+        const URL = Host + "/files/get/";
+        const result = await fetch(URL);
+        result.json().then((data) => {
+            var files = data.files;
+            var sorted = sortDirectories(files);
+            // only actaully update the html if a change has been detected
+            if (JSON.stringify(sorted["/"]) === JSON.stringify(fileTreeObj)) { } else {
+                console.log("directories changed:");
+                console.log(sorted);
+                fileTreeObj = sorted["/"];
+                refreshDirectory(sorted["/"]);
+            }
+        });
+    }
+    // check for changes in the file tree every 5 seconds
+    setInterval(async () => {
+        await checkDirectoriesForChange();
+    }, 5000)
+
+    function refreshDirectory(files) {
+        tree = document.getElementById("file-tree");
+        tree.innerHTML = "";
+        populateFileTree(files);
+    }
+
+    function identifyType(filename) {
+        fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
+        // get the file type by the file extension
+        if (FileTypes.hasOwnProperty(fileExtension)) {
+            return FileTypes[fileExtension];
+        // the first and easies edge case: no file extension, name is exactly "Dockerfile"
+        } else if (filename.substr(filename.lastIndexOf('/') + 1 ) === "Dockerfile" ) {
+            return FileTypes["dockerfile"]
+        } else {
+            return FileTypes["unknown"];
+        }
+    }
 
     function sortDirectories(files) {
         topLevel = { "/": {} };
@@ -445,27 +495,37 @@
         return topLevel;
     }
 
+    function generateTabHTML(id, fileName) {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        tabBar = document.getElementsByClassName("tab-bar")[0];
+        html = "<div class='tab active' data-id='" + id + "' onclick='tabClick(this)'>";
+        html = html + "<span class='tab-name'>" + fileName + "</span>";
+        html = html + "<button class='tab-close' onclick='closeBtn(event, this)'>×</button>";
+        html = html + "</div>";
+        tabBar.innerHTML = tabBar.innerHTML + html
+    }
+
     function generateFileTreeHTML(files, levels = 0) {
         html = "";
         for (step in files) {
             if (files[step].name !== undefined) {
+                fileType = identifyType(files[step].name)
+                language = fileType["language"];
+                iconLink = fileType["icon"];
                 const isLocked = files[step].is_locked;
+                name = files[step].name.substr(files[step].name.lastIndexOf("/") + 1)
 
-                html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "'>";
+                html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "', data-lang='" + language + "', data-name='" + name + "'>";
 
                 // ── File icon with lock badge in the bottom-right corner ──
                 // Inspired by the Windows/macOS file-with-badge pattern:
                 // the lock is a small circle overlaid on the icon, not inline text.
-                const fileIcon = `
-                    <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round"
-                             style="opacity:0.7;">
-                            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"></path>
-                            <polyline points="13 2 13 9 20 9"></polyline>
-                        </svg>
-                        ${isLocked ? `
+                var fileIcon = `
+                <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
+                        <img width = "18", height = "18" src = ` + iconLink + `>
+                `
+                if (isLocked) {
+                    fileIcon = fileIcon + `
                         <span style="
                             position: absolute;
                             bottom: -3px;
@@ -478,12 +538,14 @@
                             align-items: center;
                             justify-content: center;
                             border: 1.5px solid #0a1020;
-                        ">
-                            <svg width="5" height="5" viewBox="0 0 24 24" fill="white">
-                                <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
-                            </svg>
-                        </span>` : ''}
-                    </span>`;
+                            ">
+                        <svg width="5" height="5" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7z"/>
+                        </svg>
+                    </span>
+                    `
+                }
+                fileIcon = fileIcon + "</span>";
 
                 // ── Rename Icon (fariza's change: match the request for renaming option) ──
                 const renameIcon = `
@@ -622,13 +684,15 @@
 
         const fileId   = item.getAttribute("data-file-id");
         const isLocked = item.getAttribute("data-is-locked") === "true";
-        const fileName = item.querySelector(".file-name").textContent;
+        const fileName = item.getAttribute("data-name");
+        const fileLang = item.getAttribute("data-lang");
+        const filePath = item.querySelector(".file-name").textContent;
 
         console.log("Opening file:", fileName, "Locked:", isLocked);
 
         if (isLocked) {
             currentPasswordFileId = fileId;
-            currentPasswordFileName = fileName;
+            currentPasswordFileName = filePath;
             filePasswordInput.value = "";
             passwordModal.classList.add("active");
             setTimeout(() => filePasswordInput.focus(), 100);
@@ -638,19 +702,49 @@
         fetchFileContent(fileId, fileName);
     });
 
-    document.querySelectorAll(".tab-close").forEach((closeBtn) => {
-        closeBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            this.closest(".tab").remove();
-        });
-    });
+    function closeBtn(e, t) {
+        e.stopPropagation();
+        tab = t.parentNode;
+        id = tab.getAttribute("data-id");
+        wasActive = tab.classList.contains("active");
+        tabBar = tab.parentNode;
+        tab.remove();
+        delete openTabs[id];
+        if (tabBar.children.length == 0) {
+            const statusItem = document.querySelector(".status-left .status-item:first-child");
+            if (statusItem) statusItem.textContent = "";
+            const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+            if (langItem) langItem.textContent = ""
+        } else if (wasActive){
+            tabBar.children[0].classList.add("active");
 
-    document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", function () {
-            document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-            this.classList.add("active");
-        });
-    });
+
+            name = tabBar.children[0].children[0].textContent;
+            language = identifyType(name)["language"];
+
+            const statusItem = document.querySelector(".status-left .status-item:first-child");
+            if (statusItem) statusItem.textContent = name;
+            const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+            language = language.charAt(0).toUpperCase() + language.slice(1);
+            if (langItem) langItem.textContent = language;
+        }
+    }
+
+    function tabClick(e) {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        e.classList.add("active");
+        id = e.getAttribute("data-id");
+        name = e.children[0].textContent;
+        language = identifyType(name)["language"];
+
+        const statusItem = document.querySelector(".status-left .status-item:first-child");
+        if (statusItem) statusItem.textContent = name;
+        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+        language = language.charAt(0).toUpperCase() + language.slice(1);
+        if (langItem) langItem.textContent = language;
+        
+        fetchFileContent(id, name)
+    };
 
     /* ============================
        Settings Modal
@@ -790,7 +884,7 @@
         });
 
         const editor = monaco.editor.create(document.getElementById("editorContent"), {
-            value: "# Start coding here\n",
+            value: "# Open a file to start coding\n",
             language: "python",
             theme: "cocodingTheme",
             fontSize: 13,
@@ -868,6 +962,7 @@
             return;
         }
         closeAllModals();
+        currentPasswordFileName = currentPasswordFileName.substr(currentPasswordFileName.lastIndexOf('/') + 1);
         fetchFileContent(currentPasswordFileId, currentPasswordFileName, password);
     });
 
@@ -876,24 +971,61 @@
 
     async function fetchFileContent(fileId, fileName, password = null) {
         try {
-            const response = await fetch(Host + "/files/content/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({ file_id: fileId, password: password })
-            });
+            if (openTabs.hasOwnProperty(fileId)) {
+                const response = await fetch(Host + "/files/content/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({ file_id: fileId, password: openTabs[fileId] })
+                });
 
-            const data = await response.json();
-            if (response.ok && data.success) {
-                if (window.setEditorContent) {
-                    window.setEditorContent(data.content);
-                    const statusItem = document.querySelector(".status-left .status-item:first-child");
-                    if (statusItem) statusItem.textContent = fileName;
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    if (window.setEditorContent) {
+                        window.setEditorContent(data.content);
+                        const statusItem = document.querySelector(".status-left .status-item:first-child");
+                        if (statusItem) statusItem.textContent = fileName;
+                        language = identifyType(fileName)["language"]
+                        language = language.charAt(0).toUpperCase() + language.slice(1);
+                        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+                        if (langItem) langItem.textContent = language
+                        tab = document.querySelector(".tab-bar").querySelector("[data-id='" + fileId + "']");
+                        if (tab.classList.contains("active") == false) {
+                            document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+                            tab.classList.add("active");
+                        }
+                    }
+                } else {
+                    alert("Access Denied: " + (data.error || "Incorrect password or system error."));
                 }
             } else {
-                alert("Access Denied: " + (data.error || "Incorrect password or system error."));
+                const response = await fetch(Host + "/files/content/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({ file_id: fileId, password: password })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    if (window.setEditorContent) {
+                        window.setEditorContent(data.content);
+                        const statusItem = document.querySelector(".status-left .status-item:first-child");
+                        if (statusItem) statusItem.textContent = fileName;
+                        language = identifyType(fileName)["language"]
+                        language = language.charAt(0).toUpperCase() + language.slice(1);
+                        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+                        if (langItem) langItem.textContent = language
+                        generateTabHTML(fileId, fileName);
+                        openTabs[fileId] = password;
+                    }
+                } else {
+                    alert("Access Denied: " + (data.error || "Incorrect password or system error."));
+                }
             }
         } catch (err) {
             console.error("File loading error:", err);

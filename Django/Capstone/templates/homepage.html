@@ -595,7 +595,7 @@
     </div>
 
     <script>
-      const Host = "";
+      const Host = "127.0.0.1:8000";
       const projects = [];
 
       const grid        = document.getElementById("projectsGrid");
@@ -689,7 +689,7 @@
       /* Fetch */
       async function loadProjects() {
         try {
-          const res  = await fetch(Host + "/project/getUserProjects");
+          const res  = await fetch("/project/getUserProjects");
           const data = await res.json();
 
           for (const proj of data.projects) {
@@ -793,14 +793,14 @@
       async function redirect(id) {
         const csrf = getCookie("csrftoken");
         try {
-          const r1 = await fetch(Host + "/api/setCurProj/", {
+          const r1 = await fetch("/api/setCurProj/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ project: id }), credentials: "include",
           });
           if (!r1.ok) { alert((await r1.json()).error || "Error"); return; }
 
-          const r2 = await fetch(Host + "/api/setCurBranch/", {
+          const r2 = await fetch("/api/setCurBranch/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ com: "" }), credentials: "include",
@@ -848,7 +848,7 @@
 
         try {
           const csrf = getCookie("csrftoken");
-          const res  = await fetch(Host + "/project/createProject/", {
+          const res  = await fetch("/project/createProject/", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
             body: JSON.stringify({ name, visibility }),
