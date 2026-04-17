@@ -358,6 +358,13 @@
     // in the file tree)
     var fileTreeObj = {}
 
+    // a varaible that holds id ids and passwords of all of the open tabs (important for preventing from
+    //having 2 copies of the same tab open at once, and from stoping it from asking for the password every
+    // time you switch back to a tab with a file you already have open). the key is the id and the value is
+    // the password. This isn't insecure because it'll still only show you the file if the password stored
+    // here is correct, and this will only contain passwords that the user has provided
+    var openTabs = {}
+
     // --- Helper function to get CSRF token from cookies ---
     function getCookie(name) {
         let cookieValue = null;
@@ -487,12 +494,12 @@
         return topLevel;
     }
 
-    function generateTabHTML(fileName) {
+    function generateTabHTML(id, fileName) {
         document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
         tabBar = document.getElementsByClassName("tab-bar")[0];
-        html = "<div class='tab active', onclick='tabClick(this)'>";
+        html = "<div class='tab active' data-id='" + id + "' onclick='tabClick(this)'>";
         html = html + "<span class='tab-name'>" + fileName + "</span>";
-        html = html + "<button class='tab-close' onclick='closeBtn(this)'>×</button>";
+        html = html + "<button class='tab-close' onclick='closeBtn(event, this)'>×</button>";
         html = html + "</div>";
         tabBar.innerHTML = tabBar.innerHTML + html
     }
@@ -694,21 +701,38 @@
         fetchFileContent(fileId, fileName);
     });
 
-    function closeBtn(e) {
-        tab = e.parentNode;
+    function closeBtn(e, t) {
+        e.stopPropagation();
+        tab = t.parentNode;
+        id = tab.getAttribute("data-id");
+        wasActive = tab.classList.contains("active");
         tabBar = tab.parentNode;
         tab.remove();
+        delete openTabs[id];
         if (tabBar.children.length == 0) {
             const statusItem = document.querySelector(".status-left .status-item:first-child");
             if (statusItem) statusItem.textContent = "";
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             if (langItem) langItem.textContent = ""
+        } else if (wasActive){
+            tabBar.children[0].classList.add("active");
+
+
+            name = tabBar.children[0].children[0].textContent;
+            language = identifyType(name)["language"];
+
+            const statusItem = document.querySelector(".status-left .status-item:first-child");
+            if (statusItem) statusItem.textContent = name;
+            const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+            language = language.charAt(0).toUpperCase() + language.slice(1);
+            if (langItem) langItem.textContent = language;
         }
     }
 
-    function tabClick(e){
+    function tabClick(e) {
         document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
         e.classList.add("active");
+        id = e.getAttribute("data-id");
         name = e.children[0].textContent;
         language = identifyType(name)["language"];
 
@@ -717,6 +741,8 @@
         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
         language = language.charAt(0).toUpperCase() + language.slice(1);
         if (langItem) langItem.textContent = language;
+        
+        fetchFileContent(id, name)
     };
 
     /* ============================
@@ -979,14 +1005,44 @@
 
     async function fetchFileContent(fileId, fileName, password = null) {
         try {
-            const response = await fetch(Host + "/files/content/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({ file_id: fileId, password: password })
-            });
+            if (openTabs.hasOwnProperty(fileId)) {
+                const response = await fetch(Host + "/files/content/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({ file_id: fileId, password: openTabs[fileId] })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    if (window.setEditorContent) {
+                        window.setEditorContent(data.content);
+                        const statusItem = document.querySelector(".status-left .status-item:first-child");
+                        if (statusItem) statusItem.textContent = fileName;
+                        language = identifyType(fileName)["language"]
+                        language = language.charAt(0).toUpperCase() + language.slice(1);
+                        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+                        if (langItem) langItem.textContent = language
+                        tab = document.querySelector(".tab-bar").querySelector("[data-id='" + fileId + "']");
+                        if (tab.classList.contains("active") == false) {
+                            document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+                            tab.classList.add("active");
+                        }
+                    }
+                } else {
+                    alert("Access Denied: " + (data.error || "Incorrect password or system error."));
+                }
+            } else {
+                const response = await fetch(Host + "/files/content/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({ file_id: fileId, password: password })
+                });
 
             const data = await response.json();
             if (response.ok && data.success) {
