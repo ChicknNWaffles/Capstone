@@ -44,7 +44,11 @@ body {
 }
 
 /* Ensure code elements keep their functional monospace font */
-code, pre, .monaco-editor, .xterm-container, .terminal {
+code,
+pre,
+.monaco-editor,
+.xterm-container,
+.terminal {
   font-family: "Consolas", "Monaco", "Courier New", monospace !important;
 }
 
@@ -136,8 +140,10 @@ code, pre, .monaco-editor, .xterm-container, .terminal {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(2, 4, 12, 0.85); /* Deeper overlay */
-  backdrop-filter: blur(12px) saturate(160%); /* Enhanced blur */
+  background: rgba(2, 4, 12, 0.85);
+  /* Deeper overlay */
+  backdrop-filter: blur(12px) saturate(160%);
+  /* Enhanced blur */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,12 +160,14 @@ code, pre, .monaco-editor, .xterm-container, .terminal {
 
 .settings-modal {
   position: relative;
-  background: linear-gradient(135deg, rgba(22, 30, 60, 0.85), rgba(13, 21, 48, 0.95)); /* Layered background */
+  background: linear-gradient(135deg, rgba(22, 30, 60, 0.85), rgba(13, 21, 48, 0.95));
+  /* Layered background */
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 32px 64px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  border-radius: 16px; /* Softer corners */
+  border-radius: 16px;
+  /* Softer corners */
   width: 90%;
   max-width: 480px;
   max-height: 85vh;
@@ -170,8 +178,15 @@ code, pre, .monaco-editor, .xterm-container, .terminal {
 }
 
 @keyframes modalScaleUp {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
@@ -224,10 +239,12 @@ code, pre, .monaco-editor, .xterm-container, .terminal {
 }
 
 .settings-label {
-  font-size: 0.85rem; /* Slightly larger for easier reading in mixed case */
+  font-size: 0.85rem;
+  /* Slightly larger for easier reading in mixed case */
   font-weight: 600;
   color: var(--text-muted);
-  text-transform: none; /* User's choice: mixed case instead of all caps */
+  text-transform: none;
+  /* User's choice: mixed case instead of all caps */
   letter-spacing: 0.02em;
 }
 
@@ -397,8 +414,14 @@ select.settings-input option {
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
-.sidebar-content::-webkit-scrollbar { width: 4px; }
-.sidebar-content::-webkit-scrollbar-track { background: transparent; }
+.sidebar-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .sidebar-content::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
@@ -549,7 +572,9 @@ select.settings-input option {
   box-sizing: border-box;
 }
 
-.tab-bar::-webkit-scrollbar { height: 2px; }
+.tab-bar::-webkit-scrollbar {
+  height: 2px;
+}
 
 .tab {
   display: flex;
@@ -577,7 +602,9 @@ select.settings-input option {
   border-bottom: 2px solid var(--accent);
 }
 
-.tab-name { flex: 1; }
+.tab-name {
+  flex: 1;
+}
 
 .tab-close {
   background: none;
@@ -591,7 +618,9 @@ select.settings-input option {
   transition: opacity 0.2s;
 }
 
-.tab-close:hover { opacity: 1; }
+.tab-close:hover {
+  opacity: 1;
+}
 
 /* =========================
    Workspace
@@ -722,8 +751,14 @@ select.settings-input option {
   background: transparent !important;
 }
 
-.terminal-content .xterm { height: 100%; background: transparent !important; }
-.terminal-content .xterm-viewport { background: transparent !important; }
+.terminal-content .xterm {
+  height: 100%;
+  background: transparent !important;
+}
+
+.terminal-content .xterm-viewport {
+  background: transparent !important;
+}
 
 /* =========================
    Resizable Dividers
@@ -750,7 +785,8 @@ select.settings-input option {
 }
 
 .divider.vertical::after {
-  top: 0; bottom: 0;
+  top: 0;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 1px;
@@ -771,7 +807,8 @@ select.settings-input option {
 }
 
 .divider.horizontal::after {
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   height: 1px;
@@ -818,13 +855,23 @@ select.settings-input option {
 /* =========================
    Scrollbars
 ========================= */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
 
 /* =========================
    Misc (kept for compat)
@@ -844,7 +891,9 @@ select.settings-input option {
   padding: 48px 18px;
 }
 
-.page-auth .wrap { width: min(540px, 100%); }
+.page-auth .wrap {
+  width: min(540px, 100%);
+}
 
 .page-auth .auth-card {
   position: relative;
@@ -884,8 +933,15 @@ select.settings-input option {
   text-align: center;
 }
 
-.page-auth .form { display: grid; gap: 20px; }
-.page-auth .field { display: grid; gap: 8px; }
+.page-auth .form {
+  display: grid;
+  gap: 20px;
+}
+
+.page-auth .field {
+  display: grid;
+  gap: 8px;
+}
 
 .page-auth .label {
   font-size: 13px;
@@ -903,7 +959,9 @@ select.settings-input option {
   font: inherit;
 }
 
-.page-auth .input::placeholder { color: rgba(232, 238, 252, 0.45); }
+.page-auth .input::placeholder {
+  color: rgba(232, 238, 252, 0.45);
+}
 
 .page-auth .input:focus {
   border-color: rgba(88, 120, 255, 0.55);
@@ -921,8 +979,14 @@ select.settings-input option {
   cursor: pointer;
 }
 
-.page-auth .auth-btn:hover { background: rgba(88, 120, 255, 0.28); }
-.page-auth .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.page-auth .auth-btn:hover {
+  background: rgba(88, 120, 255, 0.28);
+}
+
+.page-auth .auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .page-auth .foot {
   margin-top: 14px;
@@ -936,7 +1000,9 @@ select.settings-input option {
   border-bottom: 1px solid rgba(151, 176, 255, 0.45);
 }
 
-.page-auth .link:hover { border-bottom-color: rgba(151, 176, 255, 0.95); }
+.page-auth .link:hover {
+  border-bottom-color: rgba(151, 176, 255, 0.95);
+}
 
 .page-auth .auth-error {
   display: none;
@@ -967,7 +1033,9 @@ select.settings-input option {
   text-align: center;
 }
 
-.home3-header { margin-bottom: 36px; }
+.home3-header {
+  margin-bottom: 36px;
+}
 
 .home3-title {
   font-size: clamp(36px, 5vw, 56px);
@@ -982,7 +1050,9 @@ select.settings-input option {
   color: rgba(232, 238, 252, 0.7);
 }
 
-.home3-projects { width: 100%; }
+.home3-projects {
+  width: 100%;
+}
 
 .project-cards3 {
   display: grid;
@@ -1028,7 +1098,9 @@ select.settings-input option {
   background: rgba(18, 25, 55, 0.34);
 }
 
-.home3-actions { margin-top: 8px; }
+.home3-actions {
+  margin-top: 8px;
+}
 
 .home3-btn {
   padding: 14px 28px;
@@ -1048,7 +1120,9 @@ select.settings-input option {
 }
 
 @media (max-width: 700px) {
-  .project-cards3 { grid-template-columns: 1fr; }
+  .project-cards3 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Fariza's change: remove Monaco's container border so it blends with the background */
@@ -1065,5 +1139,5 @@ select.settings-input option {
 .monaco-editor,
 .monaco-editor-background,
 .monaco-editor .inputarea.ime-input {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }

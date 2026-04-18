@@ -5,16 +5,12 @@
 <head>
     <title>CoCodingStudio | editor</title>
     <link rel="stylesheet" href="{% static 'style.css' %}" />
-    <!-- import Outfit font for a premium, professional look -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- xterm.js dependencies -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css" />
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
 
-    <!-- Monaco Editor (the same editor VS Code uses) -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
 
     <style>
@@ -72,6 +68,38 @@
             width: 16px;
             height: 16px;
         }
+
+        /* fariza's change: style buttons for running and stopping the project */
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.15s;
+            background: rgba(88, 120, 255, 0.12);
+            color: rgba(150, 175, 255, 0.8);
+            border: 0.5px solid rgba(88, 120, 255, 0.2);
+        }
+
+        .btn-action:hover {
+            background: rgba(88, 120, 255, 0.22);
+            color: rgba(180, 200, 255, 1);
+        }
+
+        .btn-action:active {
+            background: rgba(88, 120, 255, 0.32);
+        }
     </style>
 </head>
 
@@ -82,9 +110,21 @@
             <h3>Project:</h3>
             <h3 id="projectName"></h3>
         </div>
+        <!-- fariza's change: added buttons to run and stop the project code -->
+        <div class="action-group">
+            <button id="runProjectBtn" class="btn-action" title="Launch Project" onclick="launchProject()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 4 20 12 6 20 6 4"></polygon>
+                </svg>
+            </button>
+            <button id="stopProcessBtn" class="btn-action" title="Kill Process" onclick="killTerminal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="5" y="5" width="14" height="14"></rect>
+                </svg>
+            </button>
+        </div>
         <button id="settingsBtn" class="settings-button" title="Project Settings">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="18" height="18" viewBox="0 0 24 24"
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" stroke-width="2"
                  stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -99,8 +139,7 @@
             <div class="modal-header">
                 <h2>Project Settings</h2>
                 <button id="closeSettingsBtn" class="close-button">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         width="18" height="18" viewBox="0 0 24 24"
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2"
                          stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -111,13 +150,11 @@
             <div class="modal-content">
                 <div class="settings-section">
                     <label class="settings-label">Project Name</label>
-                    <input type="text" id="projectNameInput" class="settings-input"
-                           placeholder="Enter project name" />
+                    <input type="text" id="projectNameInput" class="settings-input" placeholder="Enter project name" />
                 </div>
                 <div class="settings-section">
                     <label class="settings-label">Description</label>
-                    <textarea id="projectDescInput" class="settings-input"
-                              placeholder="Enter project description" rows="4"></textarea>
+                    <textarea id="projectDescInput" class="settings-input" placeholder="Enter project description" rows="4"></textarea>
                 </div>
                 <div class="settings-section">
                     <label class="settings-label">Visibility</label>
@@ -135,7 +172,7 @@
         </div>
     </div>
 
-    <!-- fariza's change: Rename Modal for Electron compatibility (replaces window.prompt) -->
+    <!-- Rename Modal -->
     <div id="renameModal" class="modal-overlay">
         <div class="settings-modal" style="max-width: 400px;">
             <div class="modal-header">
@@ -160,7 +197,7 @@
         </div>
     </div>
 
-    <!-- fariza's change: Delete Confirmation Modal for Electron compatibility (replaces window.confirm) -->
+    <!-- Delete Modal -->
     <div id="deleteModal" class="modal-overlay">
         <div class="settings-modal" style="max-width: 400px;">
             <div class="modal-header">
@@ -187,7 +224,7 @@
         </div>
     </div>
 
-    <!-- fariza's change: Password Modal for Electron compatibility (replaces window.prompt) -->
+    <!-- Password Modal -->
     <div id="passwordModal" class="modal-overlay">
         <div class="settings-modal" style="max-width: 400px;">
             <div class="modal-header">
@@ -320,8 +357,7 @@
                                 "
                                 onmouseover="this.style.background='rgba(229,83,75,0.15)';this.style.color='#e5534b';"
                                 onmouseout="this.style.background='none';this.style.color='#cccccc';">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 width="16" height="16" viewBox="0 0 24 24"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="1.8"
                                  stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -351,25 +387,15 @@
     </div>
 
 <script>
-    // a variable that holds the current directories object (important for quickly checking for changes
-    // in the file tree)
     var fileTreeObj = {}
-
-    // a varaible that holds id ids and passwords of all of the open tabs (important for preventing from
-    //having 2 copies of the same tab open at once, and from stoping it from asking for the password every
-    // time you switch back to a tab with a file you already have open). the key is the id and the value is
-    // the password. This isn't insecure because it'll still only show you the file if the password stored
-    // here is correct, and this will only contain passwords that the user has provided
     var openTabs = {}
 
-    // --- Helper function to get CSRF token from cookies ---
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -383,7 +409,6 @@
     const Host = window.location.protocol === 'file:' ? 'http://3.145.186.153:8000' : '';
 
     async function getfileTypesDictionary() {
-        console.log("the json data should be:")
         const result = await fetch("../Capstone/static/fileTypes.json");
         const jsonData = await result.json();
         return jsonData;
@@ -416,7 +441,6 @@
         result.json().then((data) => {
             var files = data.files;
             var sorted = sortDirectories(files);
-            console.log(sorted);
             fileTreeObj = sorted["/"];
             populateFileTree(sorted["/"]);
         });
@@ -429,16 +453,12 @@
         result.json().then((data) => {
             var files = data.files;
             var sorted = sortDirectories(files);
-            // only actaully update the html if a change has been detected
             if (JSON.stringify(sorted["/"]) === JSON.stringify(fileTreeObj)) { } else {
-                console.log("directories changed:");
-                console.log(sorted);
                 fileTreeObj = sorted["/"];
                 refreshDirectory(sorted["/"]);
             }
         });
     }
-    // check for changes in the file tree every 5 seconds
     setInterval(async () => {
         await checkDirectoriesForChange();
     }, 5000)
@@ -451,11 +471,9 @@
 
     function identifyType(filename) {
         fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
-        // get the file type by the file extension
         if (FileTypes.hasOwnProperty(fileExtension)) {
             return FileTypes[fileExtension];
-        // the first and easies edge case: no file extension, name is exactly "Dockerfile"
-        } else if (filename.substr(filename.lastIndexOf('/') + 1 ) === "Dockerfile" ) {
+        } else if (filename.substr(filename.lastIndexOf('/') + 1) === "Dockerfile") {
             return FileTypes["dockerfile"]
         } else {
             return FileTypes["unknown"];
@@ -513,12 +531,9 @@
 
                 html = html + "<div class='file-item lvl" + levels + "' data-file-id='" + files[step].id + "' data-is-locked='" + isLocked + "', data-lang='" + language + "', data-name='" + name + "'>";
 
-                // ── File icon with lock badge in the bottom-right corner ──
-                // Inspired by the Windows/macOS file-with-badge pattern:
-                // the lock is a small circle overlaid on the icon, not inline text.
                 var fileIcon = `
                 <span class="file-icon" style="position:relative;display:inline-flex;flex-shrink:0;margin-right:2px;">
-                        <img width = "18", height = "18" src = ` + iconLink + `>
+                        <img width="18" height="18" src=` + iconLink + `>
                 `
                 if (isLocked) {
                     fileIcon = fileIcon + `
@@ -543,7 +558,6 @@
                 }
                 fileIcon = fileIcon + "</span>";
 
-                // ── Rename Icon (fariza's change: match the request for renaming option) ──
                 const renameIcon = `
                     <span class="rename-icon" title="Rename file" onclick="event.stopPropagation(); renameFile('${files[step].id}', '${step}')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -552,7 +566,6 @@
                         </svg>
                     </span>`;
 
-                // ── Delete Icon (fariza's change: match the request for deletion option) ──
                 const deleteIcon = `
                     <span class="delete-icon" title="Delete file" onclick="event.stopPropagation(); deleteFile('${files[step].id}', '${step}')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -607,9 +620,82 @@
     }
 
     let _terminalSocket = null;
+
     function killTerminal() {
         if (_terminalSocket && _terminalSocket.readyState === WebSocket.OPEN) {
             _terminalSocket.send(JSON.stringify({ type: "kill" }));
+        }
+    }
+
+    // fariza's change: function to build and run the code of the open file in the terminal
+    function launchProject() {
+        const activeTab = document.querySelector(".tab.active");
+        if (!activeTab) {
+            alert("Please open a file to run!");
+            return;
+        }
+
+        let fileName = activeTab.querySelector(".tab-name").textContent;
+        const fileTypeObj = identifyType(fileName);
+        const language = fileTypeObj ? fileTypeObj.language : "unknown";
+
+        let command = "";
+
+        switch (language.toLowerCase()) {
+            case "python":
+                command = `python3 ${fileName}\r`;
+                break;
+            case "javascript":
+            case "js":
+            case "nodejs":
+                command = `node ${fileName}\r`;
+                break;
+            case "java":
+                const className = fileName.replace(".java", "");
+                command = `javac ${fileName} && java ${className}\r`;
+                break;
+            case "c++":
+            case "cpp":
+                command = `g++ ${fileName} -o a.out && ./a.out\r`;
+                break;
+            case "c":
+                command = `gcc ${fileName} -o a.out && ./a.out\r`;
+                break;
+            case "ruby":
+                command = `ruby ${fileName}\r`;
+                break;
+            case "bash":
+            case "shell":
+                command = `bash ${fileName}\r`;
+                break;
+            case "go":
+            case "golang":
+                command = `go run ${fileName}\r`;
+                break;
+            case "rust":
+                command = `rustc ${fileName} && ./${fileName.replace('.rs', '')}\r`;
+                break;
+            case "php":
+                command = `php ${fileName}\r`;
+                break;
+            case "c#":
+            case "csharp":
+                command = `mcs ${fileName} && mono ${fileName.replace('.cs', '.exe')}\r`;
+                break;
+            default:
+                command = `echo "Cannot automatically run ${fileName} (Language: ${language})."\r`;
+                break;
+        }
+
+        if (_terminalSocket && _terminalSocket.readyState === WebSocket.OPEN) {
+            const terminalContainer = document.querySelector(".terminal-content");
+            if (terminalContainer) terminalContainer.scrollIntoView();
+            _terminalSocket.send("\x03");
+            setTimeout(() => {
+                _terminalSocket.send(command);
+            }, 100);
+        } else {
+            alert("Terminal is not connected.");
         }
     }
 
@@ -640,37 +726,24 @@
         const socket = new WebSocket(wsUrl);
         _terminalSocket = socket;
 
-        socket.onopen = () => {
-            console.log("Terminal WebSocket connected.");
-        };
-
-        socket.onmessage = (event) => {
-            term.write(event.data);
-        };
-
-        socket.onclose = () => {
-            term.write("\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n");
-        };
+        socket.onopen = () => { console.log("Terminal WebSocket connected."); };
+        socket.onmessage = (event) => { term.write(event.data); };
+        socket.onclose = () => { term.write("\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n"); };
 
         term.onData((data) => {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(data);
-            }
+            if (socket.readyState === WebSocket.OPEN) socket.send(data);
         });
 
         window.addEventListener("resize", () => {
             fitAddon.fit();
             if (socket.readyState === WebSocket.OPEN) {
-                socket.send(
-                    JSON.stringify({ type: "resize", cols: term.cols, rows: term.rows })
-                );
+                socket.send(JSON.stringify({ type: "resize", cols: term.cols, rows: term.rows }));
             }
         });
     }
 
     initializeTerminal();
 
-    // Event delegation for file tree clicks
     document.getElementById("file-tree").addEventListener("click", async function (e) {
         const item = e.target.closest(".file-item");
         if (!item || item.classList.contains("folder-item")) return;
@@ -681,10 +754,7 @@
         const fileId   = item.getAttribute("data-file-id");
         const isLocked = item.getAttribute("data-is-locked") === "true";
         const fileName = item.getAttribute("data-name");
-        const fileLang = item.getAttribute("data-lang");
         const filePath = item.querySelector(".file-name").textContent;
-
-        console.log("Opening file:", fileName, "Locked:", isLocked);
 
         if (isLocked) {
             currentPasswordFileId = fileId;
@@ -711,13 +781,10 @@
             if (statusItem) statusItem.textContent = "";
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             if (langItem) langItem.textContent = ""
-        } else if (wasActive){
+        } else if (wasActive) {
             tabBar.children[0].classList.add("active");
-
-
             name = tabBar.children[0].children[0].textContent;
             language = identifyType(name)["language"];
-
             const statusItem = document.querySelector(".status-left .status-item:first-child");
             if (statusItem) statusItem.textContent = name;
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
@@ -732,40 +799,28 @@
         id = e.getAttribute("data-id");
         name = e.children[0].textContent;
         language = identifyType(name)["language"];
-
         const statusItem = document.querySelector(".status-left .status-item:first-child");
         if (statusItem) statusItem.textContent = name;
         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
         language = language.charAt(0).toUpperCase() + language.slice(1);
         if (langItem) langItem.textContent = language;
-        
         fetchFileContent(id, name)
     };
 
-    /* ============================
-       Settings Modal
-    ============================ */
-    const settingsBtn      = document.getElementById("settingsBtn");
-    const settingsModal    = document.getElementById("settingsModal");
-    const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-    const cancelSettingsBtn= document.getElementById("cancelSettingsBtn");
-    const saveSettingsBtn  = document.getElementById("savSettingsBtn");
-    const projectNameInput = document.getElementById("projectNameInput");
+    /* Settings Modal */
+    const settingsBtn       = document.getElementById("settingsBtn");
+    const settingsModal     = document.getElementById("settingsModal");
+    const closeSettingsBtn  = document.getElementById("closeSettingsBtn");
+    const cancelSettingsBtn = document.getElementById("cancelSettingsBtn");
+    const saveSettingsBtn   = document.getElementById("savSettingsBtn");
+    const projectNameInput  = document.getElementById("projectNameInput");
 
-    settingsBtn.addEventListener("click", () => {
-        window.location.href = "/settings/";
-    });
+    settingsBtn.addEventListener("click", () => { window.location.href = "/settings/"; });
 
-    const closeModal = () => {
-        settingsModal.classList.remove("active");
-    };
-
+    const closeModal = () => { settingsModal.classList.remove("active"); };
     closeSettingsBtn.addEventListener("click", closeModal);
     cancelSettingsBtn.addEventListener("click", closeModal);
-
-    settingsModal.addEventListener("click", (e) => {
-        if (e.target === settingsModal) closeModal();
-    });
+    settingsModal.addEventListener("click", (e) => { if (e.target === settingsModal) closeModal(); });
 
     saveSettingsBtn.addEventListener("click", () => {
         const newProjectName = projectNameInput.value.trim();
@@ -776,23 +831,17 @@
         closeModal();
     });
 
-    /* ============================
-       Resizable Panels
-    ============================ */
+    /* Resizable Panels */
     let isResizing = false;
     let currentDivider = null;
-    let startX = 0;
-    let startY = 0;
-    let startSidebarWidth = 0;
-    let startTerminalHeight = 0;
+    let startX = 0, startY = 0, startSidebarWidth = 0, startTerminalHeight = 0;
 
     const verticalDivider   = document.getElementById("verticalDivider");
     const horizontalDivider = document.getElementById("horizontalDivider");
 
     if (verticalDivider) {
         verticalDivider.addEventListener("mousedown", (e) => {
-            isResizing = true;
-            currentDivider = "vertical";
+            isResizing = true; currentDivider = "vertical";
             startX = e.clientX;
             startSidebarWidth = document.getElementById("sidebar").offsetWidth;
             verticalDivider.classList.add("active");
@@ -804,8 +853,7 @@
 
     if (horizontalDivider) {
         horizontalDivider.addEventListener("mousedown", (e) => {
-            isResizing = true;
-            currentDivider = "horizontal";
+            isResizing = true; currentDivider = "horizontal";
             startY = e.clientY;
             startTerminalHeight = document.getElementById("terminalPanel").offsetHeight;
             horizontalDivider.classList.add("active");
@@ -817,29 +865,24 @@
 
     document.addEventListener("mousemove", (e) => {
         if (!isResizing) return;
-
-        const root         = document.documentElement;
-        const sidebar      = document.getElementById("sidebar");
-        const terminalPanel= document.getElementById("terminalPanel");
-        const editorLayout = document.querySelector(".editor-layout");
-        const workspace    = document.getElementById("workspace");
+        const root          = document.documentElement;
+        const sidebar       = document.getElementById("sidebar");
+        const terminalPanel = document.getElementById("terminalPanel");
+        const editorLayout  = document.querySelector(".editor-layout");
+        const workspace     = document.getElementById("workspace");
 
         if (currentDivider === "vertical" && sidebar) {
             const delta    = e.clientX - startX;
             const newWidth = startSidebarWidth + delta;
-            const minWidth = 150;
-            const maxWidth = editorLayout.offsetWidth - 300;
-            if (newWidth >= minWidth && newWidth <= maxWidth) {
+            const minWidth = 150, maxWidth = editorLayout.offsetWidth - 300;
+            if (newWidth >= minWidth && newWidth <= maxWidth)
                 root.style.setProperty("--sidebar-width", newWidth + "px");
-            }
         } else if (currentDivider === "horizontal" && terminalPanel && workspace) {
             const delta     = startY - e.clientY;
             const newHeight = startTerminalHeight + delta;
-            const minHeight = 80;
-            const maxHeight = workspace.offsetHeight - 80;
-            if (newHeight >= minHeight && newHeight <= maxHeight) {
+            const minHeight = 80, maxHeight = workspace.offsetHeight - 80;
+            if (newHeight >= minHeight && newHeight <= maxHeight)
                 root.style.setProperty("--terminal-height", newHeight + "px");
-            }
         }
     });
 
@@ -853,15 +896,10 @@
         currentDivider = null;
     });
 
-    /* ============================
-       Monaco Editor setup
-    ============================ */
-    require.config({
-        paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs" }
-    });
+    /* Monaco Editor */
+    require.config({ paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs" } });
 
     require(["vs/editor/editor.main"], function () {
-
         monaco.editor.defineTheme("cocodingTheme", {
             base: "vs-dark",
             inherit: true,
@@ -933,13 +971,9 @@
         });
     });
 
-    /* ============================
-       Custom Modals (fariza's change: replace native dialogs for Electron compatibility)
-    ============================ */
-    let currentRenameFileId   = null;
-    let currentRenameFileName = null;
-    let currentDeleteFileId   = null;
-    let currentDeleteFileName = null;
+    /* Custom Modals */
+    let currentRenameFileId = null, currentRenameFileName = null;
+    let currentDeleteFileId = null, currentDeleteFileName = null;
 
     const renameModal      = document.getElementById("renameModal");
     const newNameInput     = document.getElementById("newNameInput");
@@ -953,16 +987,12 @@
     const cancelDeleteBtn       = document.getElementById("cancelDeleteBtn");
     const closeDeleteBtn        = document.getElementById("closeDeleteBtn");
 
-    // helper to get CSRF token
     function getCSRFToken() {
         let csrftoken = '';
         const cookieParts = document.cookie.split(";");
         for (let i = 0; i < cookieParts.length; i++) {
             const part = cookieParts[i].trim();
-            if (part.startsWith('csrftoken=')) {
-                csrftoken = part.substring(10);
-                break;
-            }
+            if (part.startsWith('csrftoken=')) { csrftoken = part.substring(10); break; }
         }
         return csrftoken;
     }
@@ -975,28 +1005,21 @@
         newFolderModal.classList.remove("active");
     }
 
-    /* ============================
-       File Opening (fariza's change: modal-driven password entry)
-    ============================ */
+    /* Password Modal */
     const passwordModal      = document.getElementById("passwordModal");
     const filePasswordInput  = document.getElementById("filePasswordInput");
     const confirmPasswordBtn = document.getElementById("confirmPasswordBtn");
     const cancelPasswordBtn  = document.getElementById("cancelPasswordBtn");
     const closePasswordBtn   = document.getElementById("closePasswordBtn");
-    let currentPasswordFileId   = null;
-    let currentPasswordFileName = null;
+    let currentPasswordFileId = null, currentPasswordFileName = null;
 
     confirmPasswordBtn.addEventListener("click", () => {
         const password = filePasswordInput.value;
-        if (!password) {
-            alert("Password is required.");
-            return;
-        }
+        if (!password) { alert("Password is required."); return; }
         closeAllModals();
         currentPasswordFileName = currentPasswordFileName.substr(currentPasswordFileName.lastIndexOf('/') + 1);
         fetchFileContent(currentPasswordFileId, currentPasswordFileName, password);
     });
-
     cancelPasswordBtn.addEventListener("click", closeAllModals);
     closePasswordBtn.addEventListener("click", closeAllModals);
 
@@ -1005,25 +1028,21 @@
             if (openTabs.hasOwnProperty(fileId)) {
                 const response = await fetch(Host + "/files/content/", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCSRFToken()
-                    },
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                     body: JSON.stringify({ file_id: fileId, password: openTabs[fileId] })
                 });
-
                 const data = await response.json();
                 if (response.ok && data.success) {
                     if (window.setEditorContent) {
                         window.setEditorContent(data.content);
                         const statusItem = document.querySelector(".status-left .status-item:first-child");
                         if (statusItem) statusItem.textContent = fileName;
-                        language = identifyType(fileName)["language"]
+                        language = identifyType(fileName)["language"];
                         language = language.charAt(0).toUpperCase() + language.slice(1);
                         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
-                        if (langItem) langItem.textContent = language
+                        if (langItem) langItem.textContent = language;
                         tab = document.querySelector(".tab-bar").querySelector("[data-id='" + fileId + "']");
-                        if (tab.classList.contains("active") == false) {
+                        if (!tab.classList.contains("active")) {
                             document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
                             tab.classList.add("active");
                         }
@@ -1034,10 +1053,7 @@
             } else {
                 const response = await fetch(Host + "/files/content/", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCSRFToken()
-                    },
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                     body: JSON.stringify({ file_id: fileId, password: password })
                 });
 
@@ -1064,9 +1080,7 @@
         }
     }
 
-    /* ============================
-       File Renaming (fariza's change: modal-driven renaming)
-    ============================ */
+    /* File Renaming */
     function renameFile(fileId, currentName) {
         currentRenameFileId = fileId;
         currentRenameFileName = currentName;
@@ -1077,43 +1091,25 @@
 
     confirmRenameBtn.addEventListener("click", async () => {
         const newName = newNameInput.value.trim();
-        if (!newName || newName === currentRenameFileName) {
-            closeAllModals();
-            return;
-        }
-
+        if (!newName || newName === currentRenameFileName) { closeAllModals(); return; }
         try {
             const response = await fetch(Host + "/files/rename/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({
-                    file_id: currentRenameFileId,
-                    new_name: newName
-                })
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
+                body: JSON.stringify({ file_id: currentRenameFileId, new_name: newName })
             });
-
             const data = await response.json();
-            if (response.ok && data.success) {
-                getFileDirectories();
-                closeAllModals();
-            } else {
-                alert("Error: " + (data.error || "Failed to rename file"));
-            }
+            if (response.ok && data.success) { getFileDirectories(); closeAllModals(); }
+            else alert("Error: " + (data.error || "Failed to rename file"));
         } catch (error) {
             console.error("Rename error:", error);
             alert("An error occurred while renaming the file.");
         }
     });
-
     cancelRenameBtn.addEventListener("click", closeAllModals);
     closeRenameBtn.addEventListener("click", closeAllModals);
 
-    /* ============================
-       File Deletion (fariza's change: modal-driven deletion)
-    ============================ */
+    /* File Deletion */
     function deleteFile(fileId, fileName) {
         currentDeleteFileId = fileId;
         currentDeleteFileName = fileName;
@@ -1125,52 +1121,40 @@
         try {
             const response = await fetch(Host + "/files/delete-file/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({
-                    file_id: currentDeleteFileId
-                })
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
+                body: JSON.stringify({ file_id: currentDeleteFileId })
             });
-
             const data = await response.json();
             if (response.ok && data.success) {
                 getFileDirectories();
                 closeAllModals();
-                // Clear the editor if the deleted file was open
                 const statusItem = document.querySelector(".status-left .status-item:first-child");
                 if (statusItem && statusItem.textContent === currentDeleteFileName) {
                     if (window.setEditorContent) window.setEditorContent("");
                     statusItem.textContent = "No file open";
                 }
-            } else {
-                alert("Error: " + (data.error || "Failed to delete file"));
-            }
+            } else alert("Error: " + (data.error || "Failed to delete file"));
         } catch (error) {
             console.error("Delete error:", error);
             alert("An error occurred while deleting the file.");
         }
     });
-
     cancelDeleteBtn.addEventListener("click", closeAllModals);
     closeDeleteBtn.addEventListener("click", closeAllModals);
 
-    /* ============================
-       New File / Folder Modals (Electron-compatible)
-    ============================ */
-    const newFileBtn = document.getElementById("newFileBtn");
-    const newFolderBtn = document.getElementById("newFolderBtn");
-    const newFileModal = document.getElementById("newFileModal");
-    const newFolderModal = document.getElementById("newFolderModal");
-    const newFileNameInput = document.getElementById("newFileNameInput");
+    /* New File / Folder Modals */
+    const newFileBtn         = document.getElementById("newFileBtn");
+    const newFolderBtn       = document.getElementById("newFolderBtn");
+    const newFileModal       = document.getElementById("newFileModal");
+    const newFolderModal     = document.getElementById("newFolderModal");
+    const newFileNameInput   = document.getElementById("newFileNameInput");
     const newFolderNameInput = document.getElementById("newFolderNameInput");
-    const confirmNewFileBtn = document.getElementById("confirmNewFileBtn");
-    const cancelNewFileBtn = document.getElementById("cancelNewFileBtn");
-    const closeNewFileBtn = document.getElementById("closeNewFileBtn");
+    const confirmNewFileBtn  = document.getElementById("confirmNewFileBtn");
+    const cancelNewFileBtn   = document.getElementById("cancelNewFileBtn");
+    const closeNewFileBtn    = document.getElementById("closeNewFileBtn");
     const confirmNewFolderBtn = document.getElementById("confirmNewFolderBtn");
-    const cancelNewFolderBtn = document.getElementById("cancelNewFolderBtn");
-    const closeNewFolderBtn = document.getElementById("closeNewFolderBtn");
+    const cancelNewFolderBtn  = document.getElementById("cancelNewFolderBtn");
+    const closeNewFolderBtn   = document.getElementById("closeNewFolderBtn");
 
     newFileBtn.addEventListener("click", () => {
         newFileNameInput.value = "";
@@ -1180,33 +1164,22 @@
 
     confirmNewFileBtn.addEventListener("click", async () => {
         const fileName = newFileNameInput.value.trim();
-        if (!fileName) {
-            alert("File name cannot be empty.");
-            return;
-        }
+        if (!fileName) { alert("File name cannot be empty."); return; }
         closeAllModals();
-        
         try {
             const response = await fetch(Host + "/files/create/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                 body: JSON.stringify({ name: fileName })
             });
             const data = await response.json();
-            if (response.ok && data.success) {
-                getFileDirectories();
-            } else {
-                alert("Error: " + (data.error || "Failed to create file"));
-            }
+            if (response.ok && data.success) getFileDirectories();
+            else alert("Error: " + (data.error || "Failed to create file"));
         } catch (error) {
             console.error("Create file error:", error);
             alert("An error occurred while creating the file.");
         }
     });
-
     cancelNewFileBtn.addEventListener("click", closeAllModals);
     closeNewFileBtn.addEventListener("click", closeAllModals);
 
@@ -1218,33 +1191,22 @@
 
     confirmNewFolderBtn.addEventListener("click", async () => {
         const folderName = newFolderNameInput.value.trim();
-        if (!folderName) {
-            alert("Folder name cannot be empty.");
-            return;
-        }
+        if (!folderName) { alert("Folder name cannot be empty."); return; }
         closeAllModals();
-        
         try {
             const response = await fetch(Host + "/files/create-folder/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                 body: JSON.stringify({ name: folderName })
             });
             const data = await response.json();
-            if (response.ok && data.success) {
-                getFileDirectories();
-            } else {
-                alert("Error: " + (data.error || "Failed to create folder"));
-            }
+            if (response.ok && data.success) getFileDirectories();
+            else alert("Error: " + (data.error || "Failed to create folder"));
         } catch (error) {
             console.error("Create folder error:", error);
             alert("An error occurred while creating the folder.");
         }
     });
-
     cancelNewFolderBtn.addEventListener("click", closeAllModals);
     closeNewFolderBtn.addEventListener("click", closeAllModals);
 
