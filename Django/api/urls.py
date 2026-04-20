@@ -1,7 +1,9 @@
 from django.urls import path
 from . import views
+from .compiler_views import run_code
 
 urlpatterns = [
+    path("run-code/", run_code),
     path("projects/", views.projects),
     path("login/", views.login_api),
     path("signup/", views.signup_api),

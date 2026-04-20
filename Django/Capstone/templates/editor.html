@@ -628,7 +628,8 @@
     }
 
     // fariza's change: function to build and run the code of the open file in the terminal
-    function launchProject() {
+    // john's change: python and javascript are intercepted and run via AWS Lambda
+    async function launchProject() {
         const activeTab = document.querySelector(".tab.active");
         if (!activeTab) {
             alert("Please open a file to run!");
@@ -639,17 +640,35 @@
         const fileTypeObj = identifyType(fileName);
         const language = fileTypeObj ? fileTypeObj.language : "unknown";
 
+        // run python and javascript through Lambda instead of the local terminal
+        if (language.toLowerCase() === "python" || language.toLowerCase() === "javascript") {
+            const code  = window.getEditorContent ? window.getEditorContent() : "";
+            const write = window.writeToTerminal || (() => {});
+            write(`\r\n\x1b[36m▶ Running ${fileName} via Lambda...\x1b[0m\r\n`);
+            const btn = document.getElementById("runProjectBtn");
+            if (btn) btn.disabled = true;
+            try {
+                const response = await fetch(Host + "/api/run-code/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
+                    body: JSON.stringify({ code, language: language.toLowerCase() })
+                });
+                const result = await response.json();
+                if (result.stdout) write(result.stdout.replace(/\n/g, "\r\n"));
+                if (result.stderr) write(`\x1b[31m${result.stderr.replace(/\n/g, "\r\n")}\x1b[0m`);
+                const exitColor = result.returncode === 0 ? "\x1b[32m" : "\x1b[31m";
+                write(`\r\n${exitColor}[Process exited with code ${result.returncode}]\x1b[0m\r\n`);
+            } catch (err) {
+                write(`\r\n\x1b[31m[Network error] ${err.message}\x1b[0m\r\n`);
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+            return;
+        }
+
         let command = "";
 
         switch (language.toLowerCase()) {
-            case "python":
-                command = `python3 ${fileName}\r`;
-                break;
-            case "javascript":
-            case "js":
-            case "nodejs":
-                command = `node ${fileName}\r`;
-                break;
             case "java":
                 const className = fileName.replace(".java", "");
                 command = `javac ${fileName} && java ${className}\r`;
@@ -729,6 +748,8 @@
         socket.onopen = () => { console.log("Terminal WebSocket connected."); };
         socket.onmessage = (event) => { term.write(event.data); };
         socket.onclose = () => { term.write("\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n"); };
+
+        window.writeToTerminal = (text) => term.write(text);
 
         term.onData((data) => {
             if (socket.readyState === WebSocket.OPEN) socket.send(data);
