@@ -628,7 +628,7 @@
     }
 
     // fariza's change: function to build and run the code of the open file in the terminal
-    // john's change: python and javascript are intercepted and run via AWS Lambda
+    // john's change: python is intercepted and run via AWS Lambda
     async function launchProject() {
         const activeTab = document.querySelector(".tab.active");
         if (!activeTab) {
@@ -640,8 +640,8 @@
         const fileTypeObj = identifyType(fileName);
         const language = fileTypeObj ? fileTypeObj.language : "unknown";
 
-        // run python and javascript through Lambda instead of the local terminal
-        if (language.toLowerCase() === "python" || language.toLowerCase() === "javascript") {
+        // run python through Lambda instead of the local terminal
+        if (language.toLowerCase() === "python") {
             const code  = window.getEditorContent ? window.getEditorContent() : "";
             const write = window.writeToTerminal || (() => {});
             write(`\r\n\x1b[36m▶ Running ${fileName} via Lambda...\x1b[0m\r\n`);
