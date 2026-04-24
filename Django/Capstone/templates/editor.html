@@ -781,15 +781,19 @@
             if (statusItem) statusItem.textContent = "";
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             if (langItem) langItem.textContent = ""
+            window.setEditorContent("# Open a file to start coding\n");
+            window.setEditorLanguage("python");
         } else if (wasActive) {
             tabBar.children[0].classList.add("active");
             name = tabBar.children[0].children[0].textContent;
+            id = tabBar.children[0].getAttribute("data-id");
             language = identifyType(name)["language"];
             const statusItem = document.querySelector(".status-left .status-item:first-child");
             if (statusItem) statusItem.textContent = name;
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             language = language.charAt(0).toUpperCase() + language.slice(1);
             if (langItem) langItem.textContent = language;
+            fetchFileContent(id, name)
         }
     }
 
@@ -999,6 +1003,7 @@
                         const statusItem = document.querySelector(".status-left .status-item:first-child");
                         if (statusItem) statusItem.textContent = fileName;
                         language = identifyType(fileName)["language"];
+                        window.setEditorLanguage(language);
                         language = language.charAt(0).toUpperCase() + language.slice(1);
                         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
                         if (langItem) langItem.textContent = language;
@@ -1024,6 +1029,7 @@
                         const statusItem = document.querySelector(".status-left .status-item:first-child");
                         if (statusItem) statusItem.textContent = fileName;
                         language = identifyType(fileName)["language"];
+                        window.setEditorLanguage(language);
                         language = language.charAt(0).toUpperCase() + language.slice(1);
                         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
                         if (langItem) langItem.textContent = language;
