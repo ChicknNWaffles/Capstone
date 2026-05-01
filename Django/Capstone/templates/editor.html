@@ -93,12 +93,23 @@
         }
 
         .btn-action:hover {
-            background: rgba(88, 120, 255, 0.22);
-            color: rgba(180, 200, 255, 1);
+            border-color: rgba(255, 215, 0, 0.35);
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.05);
         }
 
         .btn-action:active {
             background: rgba(88, 120, 255, 0.32);
+        }
+
+        .nav-link-btn {
+            width: auto;
+            padding: 0 12px;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
         }
     </style>
 </head>
@@ -109,6 +120,25 @@
         <div class="top-bar-left">
             <h3>Project:</h3>
             <h3 id="projectName"></h3>
+        </div>
+        
+        <div class="nav-links" style="display: flex; gap: 12px; margin-left: 24px;">
+            <a href="/" class="btn-action nav-link-btn" title="Back to Homepage">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Home
+            </a>
+            <a href="/gitpage/" class="btn-action nav-link-btn" title="View Gitpage">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="18" r="3"></circle>
+                    <circle cx="6" cy="6" r="3"></circle>
+                    <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                    <line x1="6" y1="9" x2="6" y2="21"></line>
+                </svg>
+                Git Page
+            </a>
         </div>
         <!-- fariza's change: added buttons to run and stop the project code -->
         <div class="action-group">
