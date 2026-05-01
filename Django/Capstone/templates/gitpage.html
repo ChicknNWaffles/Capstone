@@ -1,908 +1,1137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Git Branch Visualization</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ── RESET & BASE ─────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Branch Visualization</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-:root {
-  --bg-deep:    #060914;
-  --bg-mid:     #0b1224;
-  --bg-panel:   rgba(10, 14, 30, 0.92);
-  --bg-card:    rgba(255,255,255,0.03);
-  --bg-card-hover: rgba(255,255,255,0.055);
-  --border:     rgba(255,215,0,0.12);
-  --border2:    rgba(255,255,255,0.07);
-  --gold:       #ffd700;
-  --gold-dim:   rgba(255,215,0,0.35);
-  --text:       rgba(230,235,255,0.9);
-  --muted:      #6b7a96;
-  --muted2:     #a09eb0;
-  --danger:     #ff4757;
-  --panel-w:    460px;
-  --mono:       'JetBrains Mono', monospace;
-  --sans:       'Outfit', sans-serif;
-  --transition: 0.38s cubic-bezier(0.25,0.8,0.25,1);
-}
+    :root {
+      --bg-deep: #060914;
+      --bg-mid: #0b1224;
+      --bg-panel: rgba(10, 14, 30, 0.92);
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-card-hover: rgba(255, 255, 255, 0.055);
+      --border: rgba(255, 215, 0, 0.12);
+      --border2: rgba(255, 255, 255, 0.07);
+      --gold: #ffd700;
+      --gold-dim: rgba(255, 215, 0, 0.35);
+      --text: rgba(230, 235, 255, 0.9);
+      --muted: #6b7a96;
+      --muted2: #a09eb0;
+      --danger: #ff4757;
+      --panel-w: 460px;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Outfit', sans-serif;
+      --transition: 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
 
-html, body {
-  width: 100vw; height: 100vh;
-  overflow: hidden;
-  font-family: var(--sans);
-  background: var(--bg-deep);
-  color: var(--text);
-}
+    html,
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: var(--sans);
+      background: var(--bg-deep);
+      color: var(--text);
+    }
 
-/* ── BACKGROUND ───────────────────────────────────────────────────────────── */
-.bg-gradients {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(ellipse 900px 500px at 12% 15%, rgba(88,120,255,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 700px 500px at 82% 25%, rgba(168,85,247,0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 500px 400px at 50% 80%, rgba(56,189,248,0.07) 0%, transparent 60%),
-    linear-gradient(180deg, #0b1224 0%, #060914 100%);
-}
+    /* ── BACKGROUND ───────────────────────────────────────────────────────────── */
+    .bg-gradients {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 900px 500px at 12% 15%, rgba(88, 120, 255, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 82% 25%, rgba(168, 85, 247, 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 500px 400px at 50% 80%, rgba(56, 189, 248, 0.07) 0%, transparent 60%),
+        linear-gradient(180deg, #0b1224 0%, #060914 100%);
+    }
 
-canvas#stars {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-}
+    canvas#stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
-.graph-area {
-  position: fixed;
-  top: 0; left: 0;
-  width: calc(100vw - var(--panel-w));
-  height: 100vh;
-  overflow-x: auto; overflow-y: hidden;
-  transition: width var(--transition);
-  z-index: 1;
-}
+    /* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+    .graph-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: calc(100vw - var(--panel-w));
+      height: 100vh;
+      overflow-x: auto;
+      overflow-y: hidden;
+      transition: width var(--transition);
+      z-index: 1;
+    }
 
-body.panel-collapsed .graph-area { width: 100vw; }
+    body.panel-collapsed .graph-area {
+      width: 100vw;
+    }
 
-.graph-area::-webkit-scrollbar { height: 6px; }
-.graph-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-.graph-area::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+    .graph-area::-webkit-scrollbar {
+      height: 6px;
+    }
 
-.graph-wrap {
-  position: relative;
-  height: 100%;
-  display: flex; align-items: center;
-  transform-origin: left center;
-  will-change: transform;
-}
+    .graph-area::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
 
-svg#connections {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  overflow: visible;
-  pointer-events: none; z-index: 1;
-}
+    .graph-area::-webkit-scrollbar-thumb {
+      background: var(--gold-dim);
+      border-radius: 3px;
+    }
 
-#nodes-layer {
-  position: absolute; inset: 0;
-  z-index: 2;
-}
+    .graph-wrap {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      transform-origin: left center;
+      will-change: transform;
+    }
 
-/* ── TOP NAV & TIME WINDOW ────────────────────────────────────────────────── */
-.top-nav {
-  position: fixed;
-  top: 22px; left: 24px;
-  z-index: 10;
-  display: flex; align-items: center; gap: 12px;
-}
+    svg#connections {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-.nav-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(10,14,30,0.88);
-  color: var(--muted2);
-  border: 1px solid var(--border2);
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-family: var(--sans); font-size: 12px; font-weight: 500;
-  text-decoration: none;
-  backdrop-filter: blur(12px);
-  transition: color 0.2s, border-color 0.2s, transform 0.2s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
+    #nodes-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
 
-.nav-btn:hover {
-  color: var(--gold);
-  border-color: var(--gold-dim);
-  transform: translateY(-1px);
-}
+    /* ── TOP NAV & TIME WINDOW ────────────────────────────────────────────────── */
+    .top-nav {
+      position: fixed;
+      top: 22px;
+      left: 24px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-.top-nav select {
-  appearance: none;
-  background: rgba(10,14,30,0.88);
-  color: var(--text);
-  border: 1px solid var(--border2);
-  padding: 7px 32px 7px 14px;
-  border-radius: 8px;
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer; outline: none;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.2s;
-}
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(10, 14, 30, 0.88);
+      color: var(--muted2);
+      border: 1px solid var(--border2);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      backdrop-filter: blur(12px);
+      transition: color 0.2s, border-color 0.2s, transform 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-.top-nav select:hover { border-color: var(--gold-dim); }
-.top-nav select option { background: #0d1530; }
+    .nav-btn:hover {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+      transform: translateY(-1px);
+    }
 
-.time-ctrl-arrow {
-  position: absolute; right: 10px; top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--muted); font-size: 9px;
-}
+    .top-nav select {
+      appearance: none;
+      background: rgba(10, 14, 30, 0.88);
+      color: var(--text);
+      border: 1px solid var(--border2);
+      padding: 7px 32px 7px 14px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.2s;
+    }
 
-/* ── COMMIT NODE ──────────────────────────────────────────────────────────── */
-.node {
-  position: absolute;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.8);
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 10;
-  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
-  will-change: transform;
-}
+    .top-nav select:hover {
+      border-color: var(--gold-dim);
+    }
 
-.node:hover {
-  transform: translate(-50%, -50%) scale(1.7);
-  z-index: 20;
-}
+    .top-nav select option {
+      background: #0d1530;
+    }
 
-/* ── TOOLTIP ──────────────────────────────────────────────────────────────── */
-#tooltip {
-  position: fixed;
-  background: rgba(8,11,24,0.97);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 15px;
-  min-width: 220px; max-width: 260px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-  z-index: 1000;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(8px) scale(0.97);
-  transition: opacity 0.18s, transform 0.18s;
-}
+    .time-ctrl-arrow {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+      font-size: 9px;
+    }
 
-#tooltip.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
+    /* ── COMMIT NODE ──────────────────────────────────────────────────────────── */
+    .node {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+      will-change: transform;
+    }
 
-.tt-hash {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gold);
-  margin-bottom: 5px;
-  letter-spacing: 0.04em;
-}
+    .node:hover {
+      transform: translate(-50%, -50%) scale(1.7);
+      z-index: 20;
+    }
 
-.tt-msg {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
+    /* ── TOOLTIP ──────────────────────────────────────────────────────────────── */
+    #tooltip {
+      position: fixed;
+      background: rgba(8, 11, 24, 0.97);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      min-width: 220px;
+      max-width: 260px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px) scale(0.97);
+      transition: opacity 0.18s, transform 0.18s;
+    }
 
-.tt-meta {
-  display: flex; align-items: center; gap: 8px;
-}
+    #tooltip.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
 
-.tt-dot {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 8px; font-weight: 600;
-}
+    .tt-hash {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--gold);
+      margin-bottom: 5px;
+      letter-spacing: 0.04em;
+    }
 
-.tt-info { font-family: var(--mono); font-size: 10px; color: var(--muted2); }
-.tt-date { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-left: auto; }
+    .tt-msg {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
 
-/* ── PANEL ────────────────────────────────────────────────────────────────── */
-#panel {
-  position: fixed;
-  top: 0; right: 0;
-  width: var(--panel-w);
-  height: 100vh;
-  background: var(--bg-panel);
-  backdrop-filter: blur(24px);
-  border-left: 1px solid var(--border);
-  box-shadow: -12px 0 40px rgba(0,0,0,0.5);
-  z-index: 100;
-  display: flex; flex-direction: column;
-  transition: transform var(--transition);
-}
+    .tt-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-body.panel-collapsed #panel { transform: translateX(100%); }
+    .tt-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+    }
 
-.panel-toggle {
-  position: absolute;
-  top: 50%; left: -30px;
-  transform: translateY(-50%);
-  width: 30px; height: 64px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-right: none;
-  border-radius: 10px 0 0 10px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--muted);
-  transition: color 0.2s, border-color 0.2s;
-  backdrop-filter: blur(12px);
-}
+    .tt-info {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted2);
+    }
 
-.panel-toggle:hover { color: var(--gold); border-color: var(--gold-dim); }
+    .tt-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: auto;
+    }
 
-.panel-toggle svg {
-  transition: transform var(--transition);
-}
+    /* ── PANEL ────────────────────────────────────────────────────────────────── */
+    #panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: var(--panel-w);
+      height: 100vh;
+      background: var(--bg-panel);
+      backdrop-filter: blur(24px);
+      border-left: 1px solid var(--border);
+      box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition);
+    }
 
-body.panel-collapsed .panel-toggle svg { transform: rotate(180deg); }
+    body.panel-collapsed #panel {
+      transform: translateX(100%);
+    }
 
-.panel-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 22px;
-}
+    .panel-toggle {
+      position: absolute;
+      top: 50%;
+      left: -30px;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 64px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: color 0.2s, border-color 0.2s;
+      backdrop-filter: blur(12px);
+    }
 
-.panel-scroll::-webkit-scrollbar { width: 4px; }
-.panel-scroll::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+    .panel-toggle:hover {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+    }
 
-/* search */
-.search-wrap { position: relative; margin-bottom: 22px; }
-.search-wrap input {
-  width: 100%;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 14px 10px 36px;
-  color: var(--text);
-  font-family: var(--sans); font-size: 13px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.search-wrap input:focus { border-color: var(--gold-dim); }
-.search-wrap input::placeholder { color: var(--muted); }
-.search-icon {
-  position: absolute; left: 12px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted); pointer-events: none;
-}
+    .panel-toggle svg {
+      transition: transform var(--transition);
+    }
 
-/* project title */
-.proj-title {
-  font-size: 24px; font-weight: 700;
-  color: var(--gold);
-  text-shadow: 0 0 20px rgba(255,215,0,0.25);
-  margin-bottom: 14px; line-height: 1.2;
-}
+    body.panel-collapsed .panel-toggle svg {
+      transform: rotate(180deg);
+    }
 
-/* meta card */
-.meta-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 13px 15px;
-  margin-bottom: 22px;
-  font-size: 12px;
-  color: var(--muted2);
-  line-height: 1.9;
-}
-.meta-card strong { color: var(--text); font-weight: 500; }
+    .panel-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 22px;
+    }
 
-/* section label */
-.s-label {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 12px; display: block;
-}
+    .panel-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
 
-/* collab item */
-.collab-item {
-  display: flex; align-items: center;
-  gap: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 11px 12px;
-  margin-bottom: 8px;
-  transition: background 0.15s, border-color 0.15s;
-}
+    .panel-scroll::-webkit-scrollbar-thumb {
+      background: var(--gold-dim);
+      border-radius: 2px;
+    }
 
-.collab-item:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border);
-}
+    /* search */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 22px;
+    }
 
-/* color trigger */
-.color-wrap { position: relative; flex-shrink: 0; }
+    .search-wrap input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px 10px 36px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
 
-.color-trigger {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.35);
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s;
-  flex-shrink: 0;
-}
-.color-trigger:hover { transform: scale(1.15); border-color: white; }
-.color-trigger.locked {
-  background: #2a2d3e !important;
-  border-color: #2a2d3e;
-  cursor: default; box-shadow: none;
-}
-.color-trigger.locked:hover { transform: none; }
+    .search-wrap input:focus {
+      border-color: var(--gold-dim);
+    }
 
-/* swatch popover */
-.swatch-popover {
-  position: absolute;
-  top: calc(100% + 8px); left: 0;
-  background: rgba(10,14,30,0.97);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 10px;
-  display: none;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  z-index: 200;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-  width: 138px;
-}
-.swatch-popover.open { display: grid; }
+    .search-wrap input::placeholder {
+      color: var(--muted);
+    }
 
-.swatch {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s, border-color 0.15s;
-  position: relative;
-}
-.swatch:hover { transform: scale(1.2); border-color: white; }
-.swatch.taken {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.swatch.taken:hover { transform: none; border-color: transparent; }
-.swatch.selected { border-color: white; }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
 
-/* collab avatar */
-.collab-av {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 11px; font-weight: 600;
-  flex-shrink: 0;
-  border: 2px solid transparent;
-}
+    /* project title */
+    .proj-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
 
-.collab-name {
-  font-size: 13px; font-weight: 500;
-  color: var(--text);
-  flex: 1; min-width: 0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+    /* meta card */
+    .meta-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 13px 15px;
+      margin-bottom: 22px;
+      font-size: 12px;
+      color: var(--muted2);
+      line-height: 1.9;
+    }
 
-/* role select */
-.role-select {
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 5px 8px;
-  border-radius: 6px;
-  font-family: var(--sans); font-size: 11px;
-  cursor: pointer; outline: none;
-  transition: border-color 0.2s;
-  flex-shrink: 0;
-}
-.role-select:hover { border-color: var(--gold-dim); }
-.role-select option { background: #0d1530; }
+    .meta-card strong {
+      color: var(--text);
+      font-weight: 500;
+    }
 
-/* remove btn */
-.rm-btn {
-  background: none; border: none;
-  color: var(--muted); cursor: pointer;
-  width: 28px; height: 28px;
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-.rm-btn:hover { background: rgba(255,71,87,0.12); color: var(--danger); }
+    /* section label */
+    .s-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
 
-/* add collab btn */
-.add-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 10px;
-  margin-top: 12px;
-  background: rgba(88, 120, 255, 0.12);
-  border: 1px solid rgba(88, 120, 255, 0.25);
-  color: #96afff; border-radius: 6px;
-  cursor: pointer; font-family: var(--sans); font-size: 13px; font-weight: 600;
-  transition: all 0.2s;
-}
-.add-btn:hover { 
-  background: rgba(255, 215, 0, 0.22); 
-  border-color: var(--gold); 
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
-}
+    /* collab item */
+    .collab-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin-bottom: 8px;
+      transition: background 0.15s, border-color 0.15s;
+    }
 
-/* ── MODAL ────────────────────────────────────────────────────────────────── */
-.modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(4px);
-  z-index: 500;
-  display: none; align-items: center; justify-content: center;
-}
-.modal-backdrop.open { display: flex; }
+    .collab-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border);
+    }
 
-.modal {
-  background: rgba(10,14,30,0.98);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 28px 26px;
-  width: 340px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-}
-.modal h3 {
-  font-size: 16px; font-weight: 600; color: var(--text);
-  margin-bottom: 16px;
-}
-.modal input {
-  width: 100%;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 10px 13px;
-  color: var(--text);
-  font-family: var(--sans); font-size: 13px;
-  outline: none; margin-bottom: 16px;
-  transition: border-color 0.2s;
-}
-.modal input:focus { border-color: var(--gold-dim); }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.modal-btn {
-  padding: 8px 18px; border-radius: 7px; border: none;
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: opacity 0.15s;
-}
-.modal-btn:hover { opacity: 0.85; }
-.modal-btn.cancel { background: rgba(255,255,255,0.07); color: var(--muted2); }
-.modal-btn.confirm { background: var(--gold); color: #000; }
+    /* color trigger */
+    .color-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
 
-/* confirm delete modal */
-.modal-msg { font-size: 13px; color: var(--muted2); margin-bottom: 18px; line-height: 1.5; }
-</style>
+    .color-trigger {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .color-trigger:hover {
+      transform: scale(1.15);
+      border-color: white;
+    }
+
+    .color-trigger.locked {
+      background: #2a2d3e !important;
+      border-color: #2a2d3e;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .color-trigger.locked:hover {
+      transform: none;
+    }
+
+    /* swatch popover */
+    .swatch-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: rgba(10, 14, 30, 0.97);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      z-index: 200;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+      width: 138px;
+    }
+
+    .swatch-popover.open {
+      display: grid;
+    }
+
+    .swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+      position: relative;
+    }
+
+    .swatch:hover {
+      transform: scale(1.2);
+      border-color: white;
+    }
+
+    .swatch.taken {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .swatch.taken:hover {
+      transform: none;
+      border-color: transparent;
+    }
+
+    .swatch.selected {
+      border-color: white;
+    }
+
+    /* collab avatar */
+    .collab-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+      border: 2px solid transparent;
+    }
+
+    .collab-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* role select */
+    .role-select {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-family: var(--sans);
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .role-select:hover {
+      border-color: var(--gold-dim);
+    }
+
+    .role-select option {
+      background: #0d1530;
+    }
+
+    /* remove btn */
+    .rm-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .rm-btn:hover {
+      background: rgba(255, 71, 87, 0.12);
+      color: var(--danger);
+    }
+
+    /* add collab btn */
+    .add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      background: rgba(88, 120, 255, 0.12);
+      border: 1px solid rgba(88, 120, 255, 0.25);
+      color: #96afff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .add-btn:hover {
+      background: rgba(255, 215, 0, 0.22);
+      border-color: var(--gold);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+    }
+
+    /* ── MODAL ────────────────────────────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: rgba(10, 14, 30, 0.98);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 26px;
+      width: 340px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .modal input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 10px 13px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .modal input:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 8px 18px;
+      border-radius: 7px;
+      border: none;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .modal-btn:hover {
+      opacity: 0.85;
+    }
+
+    .modal-btn.cancel {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--muted2);
+    }
+
+    .modal-btn.confirm {
+      background: var(--gold);
+      color: #000;
+    }
+
+    /* confirm delete modal */
+    .modal-msg {
+      font-size: 13px;
+      color: var(--muted2);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="bg-gradients"></div>
-<canvas id="stars"></canvas>
+  <div class="bg-gradients"></div>
+  <canvas id="stars"></canvas>
 
-<!-- Graph area -->
-<div class="graph-area" id="graphArea">
-  <div class="top-nav">
-    <a href="/" class="nav-btn" title="Back to Homepage">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+  <!-- Graph area -->
+  <div class="graph-area" id="graphArea">
+    <div class="top-nav">
+      <a href="/" class="nav-btn" title="Back to Homepage">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Home
+      </a>
+      <a href="/editor/" class="nav-btn" title="Back to Editor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        Editor
+      </a>
+
+      <div style="position:relative; margin-left: 6px;">
+        <select id="timeSelect">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 3 months</option>
+          <option value="0">All time</option>
+        </select>
+        <span class="time-ctrl-arrow">▼</span>
+      </div>
+    </div>
+    <div class="graph-wrap" id="graphWrap">
+      <svg id="connections">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="paths-layer"></g>
       </svg>
-      Home
-    </a>
-    <a href="/editor/" class="nav-btn" title="Back to Editor">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="16 18 22 12 16 6"></polyline>
-        <polyline points="8 6 2 12 8 18"></polyline>
+      <div id="nodes-layer"></div>
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip">
+    <div class="tt-hash" id="tt-hash"></div>
+    <div class="tt-msg" id="tt-msg"></div>
+    <div class="tt-meta">
+      <div class="tt-dot" id="tt-dot"></div>
+      <span class="tt-info" id="tt-info"></span>
+      <span class="tt-date" id="tt-date"></span>
+    </div>
+  </div>
+
+  <!-- Side Panel -->
+  <div id="panel">
+    <button class="panel-toggle" id="panelToggle" title="Toggle panel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="13 17 18 12 13 7"></polyline>
+        <polyline points="6 17 11 12 6 7"></polyline>
       </svg>
-      Editor
-    </a>
+    </button>
 
-    <div style="position:relative; margin-left: 6px;">
-      <select id="timeSelect">
-        <option value="7">Last 7 days</option>
-        <option value="30" selected>Last 30 days</option>
-        <option value="90">Last 3 months</option>
-        <option value="0">All time</option>
-      </select>
-      <span class="time-ctrl-arrow">▼</span>
+    <div class="panel-scroll">
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="text" placeholder="Search collaborators…" id="userSearch">
+      </div>
+
+      <div class="proj-title">Capstone Project</div>
+
+      <div class="meta-card">
+        <div>Created by: <strong>Fariza A.</strong></div>
+        <div>Date: <strong>2026-01-10</strong></div>
+        <div>Last updated: <strong>Just now</strong></div>
+      </div>
+
+      <span class="s-label">Project Collaborators</span>
+      <div id="collabList"></div>
     </div>
   </div>
-  <div class="graph-wrap" id="graphWrap">
-    <svg id="connections"></svg>
-    <div id="nodes-layer"></div>
-  </div>
-</div>
 
-<!-- Tooltip -->
-<div id="tooltip">
-  <div class="tt-hash" id="tt-hash"></div>
-  <div class="tt-msg"  id="tt-msg"></div>
-  <div class="tt-meta">
-    <div class="tt-dot" id="tt-dot"></div>
-    <span class="tt-info" id="tt-info"></span>
-    <span class="tt-date" id="tt-date"></span>
-  </div>
-</div>
-
-<!-- Side Panel -->
-<div id="panel">
-  <button class="panel-toggle" id="panelToggle" title="Toggle panel">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="13 17 18 12 13 7"></polyline>
-      <polyline points="6 17 11 12 6 7"></polyline>
-    </svg>
-  </button>
-
-  <div class="panel-scroll">
-    <div class="search-wrap">
-      <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" placeholder="Search collaborators…" id="userSearch">
-    </div>
-
-    <div class="proj-title">Capstone Project</div>
-
-    <div class="meta-card">
-      <div>Created by: <strong>Fariza A.</strong></div>
-      <div>Date: <strong>2026-01-10</strong></div>
-      <div>Last updated: <strong>Just now</strong></div>
-    </div>
-
-    <span class="s-label">Project Collaborators</span>
-    <div id="collabList"></div>
-  </div>
-</div>
-
-<!-- Add Collaborator Modal -->
-<div class="modal-backdrop" id="addModal">
-  <div class="modal">
-    <h3>Add Collaborator</h3>
-    <input type="text" id="newUserName" placeholder="Full name…" maxlength="40">
-    <div class="modal-actions">
-      <button class="modal-btn cancel" id="addCancel">Cancel</button>
-      <button class="modal-btn confirm" id="addConfirm">Add</button>
+  <!-- Add Collaborator Modal -->
+  <div class="modal-backdrop" id="addModal">
+    <div class="modal">
+      <h3>Add Collaborator</h3>
+      <input type="text" id="newUserName" placeholder="Full name…" maxlength="40">
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="addCancel">Cancel</button>
+        <button class="modal-btn confirm" id="addConfirm">Add</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Remove Confirm Modal -->
-<div class="modal-backdrop" id="removeModal">
-  <div class="modal">
-    <h3>Remove Collaborator</h3>
-    <div class="modal-msg" id="removeMsg"></div>
-    <div class="modal-actions">
-      <button class="modal-btn cancel" id="removeCancel">Cancel</button>
-      <button class="modal-btn confirm" style="background:var(--danger);color:#fff" id="removeConfirm">Remove</button>
+  <!-- Remove Confirm Modal -->
+  <div class="modal-backdrop" id="removeModal">
+    <div class="modal">
+      <h3>Remove Collaborator</h3>
+      <div class="modal-msg" id="removeMsg"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="removeCancel">Cancel</button>
+        <button class="modal-btn confirm" style="background:var(--danger);color:#fff" id="removeConfirm">Remove</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-// spacing between commits and lanes
-const COL_W    = 92;
-const LANE_H   = 58;
-const PAD_X    = 70;
-const NODE_R   = 8;
+  <script>
+    // spacing between commits and lanes
+    const COL_W = 92;
+    const LANE_H = 58;
+    const PAD_X = 70;
+    const NODE_R = 8;
 
-const PALETTE = [
-  '#ff4757','#ff6b81','#ff7f50','#ffa502',
-  '#eccc68','#7bed9f','#2ed573','#1dd1a1',
-  '#70a1ff','#1e90ff','#5352ed','#3742fa',
-  '#9b59b6','#a55eea','#ff9ff3','#f368e0',
-];
+    const PALETTE = [
+      '#ff4757', '#ff6b81', '#ff7f50', '#ffa502',
+      '#eccc68', '#7bed9f', '#2ed573', '#1dd1a1',
+      '#70a1ff', '#1e90ff', '#5352ed', '#3742fa',
+      '#9b59b6', '#a55eea', '#ff9ff3', '#f368e0',
+    ];
 
-// all the collaborators and their info
-let users = {
-  fariza: { name:'Fariza A.', color:'#ff4757', role:'admin'  },
-  elora:  { name:'Elora B.',  color:'#2ed573', role:'editor' },
-  john:   { name:'John G.',   color:'#1e90ff', role:'editor' },
-  caleb:  { name:'Caleb C.',  color:'#ffa502', role:'viewer' },
-};
+    // all the collaborators and their info
+    let users = {
+      fariza: { name: 'Fariza A.', color: '#ff4757', role: 'admin' },
+      elora: { name: 'Elora B.', color: '#2ed573', role: 'editor' },
+      john: { name: 'John G.', color: '#1e90ff', role: 'editor' },
+      caleb: { name: 'Caleb C.', color: '#ffa502', role: 'viewer' },
+    };
 
-const commits = [
-  { id:1,  branch:'main',             msg:'initial commit',       hash:'a1b2c3d', user:'john',   ts: new Date('2026-04-01T09:00:00'), parents:[]      },
-  { id:2,  branch:'main',             msg:'updated the UI',       hash:'f4e5d6c', user:'elora',  ts: new Date('2026-04-10T14:15:00'), parents:[1]     },
-  { id:4,  branch:'feature/auth',     msg:'added auth scaffold',  hash:'j9k0l1m', user:'john',   ts: new Date('2026-04-14T11:20:00'), parents:[2]     },
-  { id:6,  branch:'editorpage/ui',    msg:'added collaborators',  hash:'s5t6u7v', user:'caleb',  ts: new Date('2026-04-15T18:30:00'), parents:[2]     },
-  { id:5,  branch:'feature/auth',     msg:'fixed the buttons',    hash:'n2p3q4r', user:'elora',  ts: new Date('2026-04-17T16:50:00'), parents:[4]     },
-  { id:3,  branch:'main',             msg:'merge pull request #4',hash:'8f7g6h5', user:'fariza', ts: new Date('2026-04-20T09:45:00'), parents:[2]     },
-  { id:7,  branch:'main',             msg:'merge features',       hash:'w8x9y0z', user:'fariza', ts: new Date('2026-04-23T10:00:00'), parents:[3,5,6] },
-  { id:8,  branch:'feature/new-login',msg:'wip login logic',      hash:'x1y2z3a', user:'elora',  ts: new Date('2026-04-24T09:00:00'), parents:[7]     },
-  { id:9,  branch:'hotfix/typo',      msg:'fix typo in header',   hash:'a9b8c7d', user:'john',   ts: new Date('2026-04-25T11:00:00'), parents:[7]     },
-  { id:10, branch:'feature/new-login',msg:'login styles',         hash:'d6e5f4g', user:'elora',  ts: new Date('2026-04-29T14:00:00'), parents:[8]     },
-];
+    const commits = [
+      { id: 1, branch: 'main', msg: 'initial commit', hash: 'a1b2c3d', user: 'john', ts: new Date('2026-04-01T09:00:00'), parents: [] },
+      { id: 2, branch: 'main', msg: 'updated the UI', hash: 'f4e5d6c', user: 'elora', ts: new Date('2026-04-10T14:15:00'), parents: [1] },
+      { id: 4, branch: 'feature/auth', msg: 'added auth scaffold', hash: 'j9k0l1m', user: 'john', ts: new Date('2026-04-14T11:20:00'), parents: [2] },
+      { id: 6, branch: 'editorpage/ui', msg: 'added collaborators', hash: 's5t6u7v', user: 'caleb', ts: new Date('2026-04-15T18:30:00'), parents: [2] },
+      { id: 5, branch: 'feature/auth', msg: 'fixed the buttons', hash: 'n2p3q4r', user: 'elora', ts: new Date('2026-04-17T16:50:00'), parents: [4] },
+      { id: 3, branch: 'main', msg: 'merge pull request #4', hash: '8f7g6h5', user: 'fariza', ts: new Date('2026-04-20T09:45:00'), parents: [2] },
+      { id: 7, branch: 'main', msg: 'merge features', hash: 'w8x9y0z', user: 'fariza', ts: new Date('2026-04-23T10:00:00'), parents: [3, 5, 6] },
+      { id: 8, branch: 'feature/new-login', msg: 'wip login logic', hash: 'x1y2z3a', user: 'elora', ts: new Date('2026-04-24T09:00:00'), parents: [7] },
+      { id: 9, branch: 'hotfix/typo', msg: 'fix typo in header', hash: 'a9b8c7d', user: 'john', ts: new Date('2026-04-25T11:00:00'), parents: [7] },
+      { id: 10, branch: 'feature/new-login', msg: 'login styles', hash: 'd6e5f4g', user: 'elora', ts: new Date('2026-04-29T14:00:00'), parents: [8] },
+    ];
 
-let pendingRemoveId = null;
-let timeWindow = 30; // days, 0 = all
+    let pendingRemoveId = null;
+    let timeWindow = 30; // days, 0 = all
 
-// draws the twinkling stars in the background
-(function initStars() {
-  const canvas = document.getElementById('stars');
-  const ctx    = canvas.getContext('2d');
-  let stars    = [];
+    // draws the twinkling stars in the background
+    (function initStars() {
+      const canvas = document.getElementById('stars');
+      const ctx = canvas.getContext('2d');
+      let stars = [];
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = Array.from({ length: 160 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.2 + 0.1,
-      a: Math.random() * 0.35 + 0.05,
-      speed: Math.random() * 0.25 + 0.05,
-      phase: Math.random() * Math.PI * 2,
-    }));
-  }
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = Array.from({ length: 160 }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2 + 0.1,
+          a: Math.random() * 0.35 + 0.05,
+          speed: Math.random() * 0.25 + 0.05,
+          phase: Math.random() * Math.PI * 2,
+        }));
+      }
 
-  function draw(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      const a = s.a * (0.6 + 0.4 * Math.sin(t * 0.001 * s.speed + s.phase));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200,210,255,${a})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
+      let rafId;
 
-  resize();
-  window.addEventListener('resize', resize);
-  requestAnimationFrame(draw);
-})();
-
-// everything that draws the git graph
-function getFilteredCommits() {
-  if (!timeWindow) return [...commits];
-  const maxTs  = Math.max(...commits.map(c => c.ts.getTime()));
-  const cutoff = maxTs - timeWindow * 86400000;
-  return commits.filter(c => c.ts.getTime() >= cutoff);
-}
-
-function assignLanes(filtered) {
-  // only look at commits in the current time window
-  const filteredIds = new Set(filtered.map(c => c.id));
-
-  // figure out which commits ended up on main (either directly or via merge)
-  const mainIds = new Set(filtered.filter(c => c.branch === 'main').map(c => c.id));
-  const merged  = new Set(mainIds);
-
-  // walk backwards through merges to mark their parents as merged too
-  const sortedAsc = [...filtered].sort((a,b) => a.ts - b.ts);
-  sortedAsc.forEach(c => {
-    if (merged.has(c.id)) {
-      c.parents.filter(p => filteredIds.has(p)).forEach(p => merged.add(p));
-    }
-  });
-
-  // track the last commit of each branch so we know when to free its lane
-  const lastPerBranch = {};
-  filtered.forEach(c => {
-    if (!merged.has(c.id)) lastPerBranch[c.branch] = c.id;
-  });
-
-  // assign each branch a vertical slot, reusing slots when branches finish
-  const branchLane = {};
-  const laneOwner  = {}; // which branch owns which slot right now
-
-  function nextLane() {
-    let l = 1;
-    while (Object.values(laneOwner).includes(l)) l++;
-    return l;
-  }
-
-  sortedAsc.forEach(c => {
-    if (merged.has(c.id)) {
-      c._lane = 0; // main always stays on lane 0
-      // when a branch merges in, free up its slot
-      if (c.parents.length > 1) {
-        c.parents.filter(p => filteredIds.has(p)).forEach(pId => {
-          const parent = filtered.find(f => f.id === pId);
-          if (parent && parent.branch !== 'main') {
-            const lane = branchLane[parent.branch];
-            if (lane) { delete laneOwner[lane]; delete branchLane[parent.branch]; }
-          }
+      function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+          const a = s.a * (0.6 + 0.4 * Math.sin(t * 0.001 * s.speed + s.phase));
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,210,255,${a})`;
+          ctx.fill();
         });
+        rafId = requestAnimationFrame(draw);
       }
-    } else {
-      if (branchLane[c.branch] === undefined) {
-        const lane = nextLane();
-        branchLane[c.branch] = lane;
-        laneOwner[lane] = c.branch;
-      }
-      c._lane = branchLane[c.branch];
-      // free the slot once we hit the last commit on this branch
-      if (lastPerBranch[c.branch] === c.id) {
-        delete laneOwner[branchLane[c.branch]];
-        delete branchLane[c.branch];
-      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      rafId = requestAnimationFrame(draw);
+      window.addEventListener('pagehide', () => cancelAnimationFrame(rafId));
+    })();
+
+    // everything that draws the git graph
+    function getFilteredCommits() {
+      if (!timeWindow) return [...commits];
+      const maxTs = Math.max(...commits.map(c => c.ts.getTime()));
+      const cutoff = maxTs - timeWindow * 86400000;
+      return commits.filter(c => c.ts.getTime() >= cutoff);
     }
-  });
 
-  return filtered;
-}
+    function assignLanes(filtered) {
+      // only look at commits in the current time window
+      const filteredIds = new Set(filtered.map(c => c.id));
 
-function computePositions(filtered) {
-  const sorted = [...filtered].sort((a, b) => a.ts - b.ts);
-  const midY   = window.innerHeight / 2;
-  sorted.forEach((c, i) => {
-    c._x = PAD_X + i * COL_W;
-    c._y = midY - c._lane * LANE_H;
-  });
-  return sorted;
-}
+      // figure out which commits ended up on main (either directly or via merge)
+      const mainIds = new Set(filtered.filter(c => c.branch === 'main').map(c => c.id));
+      const merged = new Set(mainIds);
 
-function buildPath(x1, y1, x2, y2) {
-  // smooth curve between two points, always goes left to right
-  const dx  = x2 - x1;
-  const cp1x = x1 + dx * 0.55;
-  const cp2x = x2 - dx * 0.45;
-  return `M ${x1} ${y1} C ${cp1x} ${y1} ${cp2x} ${y2} ${x2} ${y2}`;
-}
+      // walk backwards through merges to mark their parents as merged too
+      const sortedAsc = [...filtered].sort((a, b) => a.ts - b.ts);
+      sortedAsc.forEach(c => {
+        if (merged.has(c.id)) {
+          c.parents.filter(p => filteredIds.has(p)).forEach(p => merged.add(p));
+        }
+      });
 
-function renderGraph() {
-  const filtered = getFilteredCommits();
-  const placed   = computePositions(assignLanes(filtered));
-  const idMap    = Object.fromEntries(placed.map(c => [c.id, c]));
+      // track the last commit of each branch so we know when to free its lane
+      const lastPerBranch = {};
+      filtered.forEach(c => {
+        if (!merged.has(c.id)) lastPerBranch[c.branch] = c.id;
+      });
 
-  const totalW   = PAD_X + placed.length * COL_W + PAD_X;
-  const wrap     = document.getElementById('graphWrap');
-  const area     = document.getElementById('graphArea');
-  wrap.style.width = `${totalW}px`;
+      // assign each branch a vertical slot, reusing slots when branches finish
+      const branchLane = {};
+      const laneOwner = {}; // which branch owns which slot right now
 
-  // zoom to fit if the graph is smaller than the screen
-  const areaW    = area.clientWidth;
-  const scale    = totalW < areaW ? Math.min(areaW / totalW, 1.4) : 1;
-  wrap.style.transform = `scale(${scale})`;
-  wrap.style.transformOrigin = 'left center';
+      function nextLane() {
+        let l = 1;
+        while (Object.values(laneOwner).includes(l)) l++;
+        return l;
+      }
 
-  // draw lines between connected commits
-  let svgPaths = '';
-  placed.forEach(c => {
-    const userColor = users[c.user]?.color || '#ffd700';
-    c.parents.forEach(pId => {
-      const p = idMap[pId];
-      if (!p) return;
-      const d = buildPath(p._x, p._y, c._x, c._y);
-      svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="6" fill="none" opacity="0.18" filter="url(#glow)"/>`; // outer glow
-      svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="2" fill="none" opacity="0.75"/>`; // main line
-      svgPaths += `<path d="${d}" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none" stroke-dasharray="1 18" stroke-linecap="round"/>`; // sparkle dots
-    });
-  });
+      sortedAsc.forEach(c => {
+        if (merged.has(c.id)) {
+          c._lane = 0; // main always stays on lane 0
+          // when a branch merges in, free up its slot
+          if (c.parents.length > 1) {
+            c.parents.filter(p => filteredIds.has(p)).forEach(pId => {
+              const parent = filtered.find(f => f.id === pId);
+              if (parent && parent.branch !== 'main') {
+                const lane = branchLane[parent.branch];
+                if (lane) { delete laneOwner[lane]; delete branchLane[parent.branch]; }
+              }
+            });
+          }
+        } else {
+          if (branchLane[c.branch] === undefined) {
+            const lane = nextLane();
+            branchLane[c.branch] = lane;
+            laneOwner[lane] = c.branch;
+          }
+          c._lane = branchLane[c.branch];
+          // free the slot once we hit the last commit on this branch
+          if (lastPerBranch[c.branch] === c.id) {
+            delete laneOwner[branchLane[c.branch]];
+            delete branchLane[c.branch];
+          }
+        }
+      });
 
-  // Re-set svgEl with connector lines included is handled in the label block below
+      return filtered;
+    }
 
-  // Nodes
-  let nodesHtml = '';
-  placed.forEach(c => {
-    const color = users[c.user]?.color || '#ffd700';
-    nodesHtml += `
+    function computePositions(filtered) {
+      const sorted = [...filtered].sort((a, b) => a.ts - b.ts);
+      const midY = window.innerHeight / 2;
+      sorted.forEach((c, i) => {
+        c._x = PAD_X + i * COL_W;
+        c._y = midY - c._lane * LANE_H;
+      });
+      return sorted;
+    }
+
+    function buildPath(x1, y1, x2, y2) {
+      // smooth curve between two points, always goes left to right
+      const dx = x2 - x1;
+      const cp1x = x1 + dx * 0.55;
+      const cp2x = x2 - dx * 0.45;
+      return `M ${x1} ${y1} C ${cp1x} ${y1} ${cp2x} ${y2} ${x2} ${y2}`;
+    }
+
+    function renderGraph() {
+      const filtered = getFilteredCommits();
+      const placed = computePositions(assignLanes(filtered));
+      const idMap = Object.fromEntries(placed.map(c => [c.id, c]));
+
+      const totalW = PAD_X + placed.length * COL_W + PAD_X;
+      const wrap = document.getElementById('graphWrap');
+      const area = document.getElementById('graphArea');
+      wrap.style.width = `${totalW}px`;
+
+      // zoom to fit if the graph is smaller than the screen
+      const areaW = area.clientWidth;
+      const scale = totalW < areaW ? Math.min(areaW / totalW, 1.4) : 1;
+      wrap.style.transform = `scale(${scale})`;
+      wrap.style.transformOrigin = 'left center';
+
+      // draw lines between connected commits
+      let svgPaths = '';
+      placed.forEach(c => {
+        const userColor = users[c.user]?.color || '#ffd700';
+        c.parents.forEach(pId => {
+          const p = idMap[pId];
+          if (!p) return;
+          const d = buildPath(p._x, p._y, c._x, c._y);
+          svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="6" fill="none" opacity="0.18" filter="url(#glow)"/>`; // outer glow
+          svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="2" fill="none" opacity="0.75"/>`; // main line
+          svgPaths += `<path d="${d}" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none" stroke-dasharray="1 18" stroke-linecap="round"/>`; // sparkle dots
+        });
+      });
+
+      // Re-set svgEl with connector lines included is handled in the label block below
+
+      // Nodes
+      let nodesHtml = '';
+      placed.forEach(c => {
+        const color = users[c.user]?.color || '#ffd700';
+        nodesHtml += `
       <div class="node"
         data-id="${c.id}"
         style="left:${c._x}px;top:${c._y}px;background:${color};box-shadow:0 0 14px ${color};"
       ></div>
     `;
-  });
+      });
 
 
-  // Re-set svgEl with connector lines included
-  document.getElementById('connections').innerHTML = `
-    <defs>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    ${svgPaths}
-  `;
+      document.getElementById('paths-layer').innerHTML = svgPaths;
 
-  document.getElementById('nodes-layer').innerHTML = nodesHtml;
+      document.getElementById('nodes-layer').innerHTML = nodesHtml;
 
-  // Attach node events
-  document.querySelectorAll('.node').forEach(el => {
-    el.addEventListener('mouseenter', e => {
-      const c = placed.find(c => c.id === +el.dataset.id);
-      if (c) showTooltip(e, c);
-    });
-    el.addEventListener('mousemove', moveTooltip);
-    el.addEventListener('mouseleave', hideTooltip);
-  });
-}
+      // Attach node events
+      document.querySelectorAll('.node').forEach(el => {
+        el.addEventListener('mouseenter', e => {
+          const c = placed.find(c => c.id === +el.dataset.id);
+          if (c) showTooltip(e, c);
+        });
+        el.addEventListener('mousemove', moveTooltip);
+        el.addEventListener('mouseleave', hideTooltip);
+      });
+    }
 
-// tooltip — shows commit info on hover
-const tooltip = document.getElementById('tooltip');
+    // tooltip — shows commit info on hover
+    const tooltip = document.getElementById('tooltip');
 
-function showTooltip(e, c) {
-  const u     = users[c.user] || {};
-  const color = u.color || '#888';
-  const initials = (u.name || c.user).split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    function showTooltip(e, c) {
+      const u = users[c.user] || {};
+      const color = u.color || '#888';
+      const initials = (u.name || c.user).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
-  document.getElementById('tt-hash').textContent = '#' + c.hash;
-  document.getElementById('tt-msg').textContent  = c.msg;
+      document.getElementById('tt-hash').textContent = '#' + c.hash;
+      document.getElementById('tt-msg').textContent = c.msg;
 
-  const dot = document.getElementById('tt-dot');
-  dot.textContent      = initials;
-  dot.style.background = color + '22';
-  dot.style.color      = color;
-  dot.style.border     = `1px solid ${color}55`;
+      const dot = document.getElementById('tt-dot');
+      dot.textContent = initials;
+      dot.style.background = color + '22';
+      dot.style.color = color;
+      dot.style.border = `1px solid ${color}55`;
 
-  document.getElementById('tt-info').textContent = u.name || c.user;
-  document.getElementById('tt-date').textContent = c.ts.toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      document.getElementById('tt-info').textContent = u.name || c.user;
+      document.getElementById('tt-date').textContent = c.ts.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-  moveTooltip(e);
-  tooltip.classList.add('show');
-}
+      moveTooltip(e);
+      tooltip.classList.add('show');
+    }
 
-function moveTooltip(e) {
-  const x = Math.min(e.clientX + 16, window.innerWidth  - 270);
-  const y = Math.min(e.clientY + 16, window.innerHeight - 120);
-  tooltip.style.left = x + 'px';
-  tooltip.style.top  = y + 'px';
-}
+    function moveTooltip(e) {
+      const x = Math.min(e.clientX + 16, window.innerWidth - 270);
+      const y = Math.min(e.clientY + 16, window.innerHeight - 120);
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
 
-function hideTooltip() { tooltip.classList.remove('show'); }
+    function hideTooltip() { tooltip.classList.remove('show'); }
 
-// renders the collaborator list in the sidebar
-function takenColors() {
-  return new Set(Object.values(users).map(u => u.color));
-}
+    // renders the collaborator list in the sidebar
+    function takenColors() {
+      return new Set(Object.values(users).map(u => u.color));
+    }
 
-function renderCollabs() {
-  const query = document.getElementById('userSearch').value.toLowerCase();
-  const taken = takenColors();
-  let html = '';
+    function renderCollabs() {
+      const query = document.getElementById('userSearch').value.toLowerCase();
+      const taken = takenColors();
+      let html = '';
 
-  Object.entries(users).forEach(([uid, u]) => {
-    if (query && !u.name.toLowerCase().includes(query)) return;
-    const isViewer   = u.role === 'viewer';
-    const initials   = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const colorStyle = `background:${u.color};box-shadow:0 0 10px ${u.color}66`;
+      Object.entries(users).forEach(([uid, u]) => {
+        if (query && !u.name.toLowerCase().includes(query)) return;
+        const isViewer = u.role === 'viewer';
+        const initials = u.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const colorStyle = `background:${u.color};box-shadow:0 0 10px ${u.color}66`;
 
-    // build the color swatches, grey out any colors already taken
-    let swatchHtml = PALETTE.map(c => {
-      const isTaken    = taken.has(c) && c !== u.color;
-      const isSelected = c === u.color;
-      return `<div class="swatch ${isTaken?'taken':''} ${isSelected?'selected':''}"
+        // build the color swatches, grey out any colors already taken
+        let swatchHtml = PALETTE.map(c => {
+          const isTaken = taken.has(c) && c !== u.color;
+          const isSelected = c === u.color;
+          return `<div class="swatch ${isTaken ? 'taken' : ''} ${isSelected ? 'selected' : ''}"
         style="background:${c}"
         ${!isTaken ? `onclick="pickColor('${uid}','${c}')"` : ''}
-        title="${isTaken?'Taken':''}"></div>`;
-    }).join('');
+        title="${isTaken ? 'Taken' : ''}"></div>`;
+        }).join('');
 
-    const pickerHtml = isViewer
-      ? `<div class="color-trigger locked" title="Viewers cannot have a color"></div>`
-      : `<div class="color-trigger" style="${colorStyle}" onclick="togglePicker(event,'${uid}')" title="Change color"></div>
+        const pickerHtml = isViewer
+          ? `<div class="color-trigger locked" title="Viewers cannot have a color"></div>`
+          : `<div class="color-trigger" style="${colorStyle}" onclick="togglePicker(event,'${uid}')" title="Change color"></div>
          <div class="swatch-popover" id="pop-${uid}">${swatchHtml}</div>`;
 
-    html += `
+        html += `
       <div class="collab-item">
         <div class="color-wrap">
           ${pickerHtml}
         </div>
-        <div class="collab-av" style="background:${isViewer?'#2a2d3e':u.color+'22'};color:${isViewer?'#555':u.color};border-color:${isViewer?'#2a2d3e':u.color+'44'}">${initials}</div>
+        <div class="collab-av" style="background:${isViewer ? '#2a2d3e' : u.color + '22'};color:${isViewer ? '#555' : u.color};border-color:${isViewer ? '#2a2d3e' : u.color + '44'}">${initials}</div>
         <span class="collab-name">${u.name}</span>
         <select class="role-select" onchange="changeRole('${uid}',this.value)">
-          <option value="admin"  ${u.role==='admin' ?'selected':''}>Admin</option>
-          <option value="editor" ${u.role==='editor'?'selected':''}>Editor</option>
-          <option value="viewer" ${u.role==='viewer'?'selected':''}>Viewer</option>
+          <option value="admin"  ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+          <option value="editor" ${u.role === 'editor' ? 'selected' : ''}>Editor</option>
+          <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
         </select>
         <button class="rm-btn" onclick="confirmRemove('${uid}')" title="Remove">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -911,9 +1140,9 @@ function renderCollabs() {
         </button>
       </div>
     `;
-  });
+      });
 
-  html += `
+      html += `
     <button class="add-btn" onclick="openAddModal()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -922,125 +1151,134 @@ function renderCollabs() {
     </button>
   `;
 
-  document.getElementById('collabList').innerHTML = html;
-}
+      document.getElementById('collabList').innerHTML = html;
+    }
 
-// color picker open/close
-function togglePicker(e, uid) {
-  e.stopPropagation();
-  const pop = document.getElementById(`pop-${uid}`);
-  const wasOpen = pop.classList.contains('open');
-  closeAllPickers();
-  if (!wasOpen) pop.classList.add('open');
-}
+    // color picker open/close
+    function togglePicker(e, uid) {
+      e.stopPropagation();
+      const pop = document.getElementById(`pop-${uid}`);
+      const wasOpen = pop.classList.contains('open');
+      closeAllPickers();
+      if (!wasOpen) pop.classList.add('open');
+    }
 
-function closeAllPickers() {
-  document.querySelectorAll('.swatch-popover.open').forEach(p => p.classList.remove('open'));
-}
+    function closeAllPickers() {
+      document.querySelectorAll('.swatch-popover.open').forEach(p => p.classList.remove('open'));
+    }
 
-function pickColor(uid, color) {
-  users[uid].color = color;
-  closeAllPickers();
-  renderCollabs();
-  renderGraph();
-}
+    function pickColor(uid, color) {
+      users[uid].color = color;
+      closeAllPickers();
+      renderCollabs();
+      renderGraph();
+    }
 
-document.addEventListener('click', e => {
-  if (!e.target.closest('.color-wrap')) closeAllPickers();
-});
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.color-wrap')) closeAllPickers();
+    });
 
-// update a user's role and re-render
-function changeRole(uid, role) {
-  users[uid].role = role;
-  // viewers don't get a color since they can't commit
-  if (role === 'viewer') users[uid].color = '#2a2d3e';
-  renderCollabs();
-  renderGraph();
-}
+    // update a user's role and re-render
+    function changeRole(uid, role) {
+      users[uid].role = role;
+      // viewers don't get a color since they can't commit
+      if (role === 'viewer') users[uid].color = '#2a2d3e';
+      renderCollabs();
+      renderGraph();
+    }
 
-// add and remove collaborator modals
-function openAddModal() {
-  document.getElementById('newUserName').value = '';
-  document.getElementById('addModal').classList.add('open');
-  setTimeout(() => document.getElementById('newUserName').focus(), 50);
-}
+    // add and remove collaborator modals
+    function openAddModal() {
+      document.getElementById('newUserName').value = '';
+      document.getElementById('addModal').classList.add('open');
+      setTimeout(() => document.getElementById('newUserName').focus(), 50);
+    }
 
-function closeAddModal() {
-  document.getElementById('addModal').classList.remove('open');
-}
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('open');
+    }
 
-function confirmAddUser() {
-  const name = document.getElementById('newUserName').value.trim();
-  if (!name) return;
-  const uid = name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
-  const taken = takenColors();
-  const free  = PALETTE.find(c => !taken.has(c)) || PALETTE[0];
-  users[uid] = { name, role:'editor', color: free };
-  closeAddModal();
-  renderCollabs();
-  renderGraph();
-}
+    function confirmAddUser() {
+      const name = document.getElementById('newUserName').value.trim();
+      if (!name) return;
+      const uid = name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
+      const taken = takenColors();
+      const free = PALETTE.find(c => !taken.has(c)) || PALETTE[0];
+      users[uid] = { name, role: 'editor', color: free };
+      closeAddModal();
+      renderCollabs();
+      renderGraph();
+    }
 
-function confirmRemove(uid) {
-  pendingRemoveId = uid;
-  document.getElementById('removeMsg').textContent =
-    `Are you sure you want to remove ${users[uid].name} from this project?`;
-  document.getElementById('removeModal').classList.add('open');
-}
+    function confirmRemove(uid) {
+      pendingRemoveId = uid;
+      document.getElementById('removeMsg').textContent =
+        `Are you sure you want to remove ${users[uid].name} from this project?`;
+      document.getElementById('removeModal').classList.add('open');
+    }
 
-function closeRemoveModal() {
-  document.getElementById('removeModal').classList.remove('open');
-  pendingRemoveId = null;
-}
-
-function executeRemove() {
-  if (pendingRemoveId) {
-    delete users[pendingRemoveId];
-    pendingRemoveId = null;
-  }
-  closeRemoveModal();
-  renderCollabs();
-  renderGraph();
-}
-
-// wire up modal buttons
-document.getElementById('addCancel').onclick    = closeAddModal;
-document.getElementById('addConfirm').onclick   = confirmAddUser;
-document.getElementById('removeCancel').onclick  = closeRemoveModal;
-document.getElementById('removeConfirm').onclick = executeRemove;
-document.getElementById('newUserName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') confirmAddUser();
-  if (e.key === 'Escape') closeAddModal();
-});
-
-// close modals when clicking outside them
-['addModal','removeModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target === e.currentTarget) {
-      e.currentTarget.classList.remove('open');
+    function closeRemoveModal() {
+      document.getElementById('removeModal').classList.remove('open');
       pendingRemoveId = null;
     }
-  });
-});
 
-// panel toggle and time window filter
-document.getElementById('panelToggle').addEventListener('click', () => {
-  document.body.classList.toggle('panel-collapsed');
-  setTimeout(renderGraph, 420);
-});
+    function executeRemove() {
+      if (pendingRemoveId) {
+        delete users[pendingRemoveId];
+        pendingRemoveId = null;
+      }
+      closeRemoveModal();
+      renderCollabs();
+      renderGraph();
+    }
 
-document.getElementById('timeSelect').addEventListener('change', e => {
-  timeWindow = +e.target.value;
-  renderGraph();
-});
+    // wire up modal buttons
+    document.getElementById('addCancel').onclick = closeAddModal;
+    document.getElementById('addConfirm').onclick = confirmAddUser;
+    document.getElementById('removeCancel').onclick = closeRemoveModal;
+    document.getElementById('removeConfirm').onclick = executeRemove;
+    document.getElementById('newUserName').addEventListener('keydown', e => {
+      if (e.key === 'Enter') confirmAddUser();
+      if (e.key === 'Escape') closeAddModal();
+    });
 
-document.getElementById('userSearch').addEventListener('input', renderCollabs);
+    // close modals when clicking outside them
+    ['addModal', 'removeModal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', e => {
+        if (e.target === e.currentTarget) {
+          e.currentTarget.classList.remove('open');
+          pendingRemoveId = null;
+        }
+      });
+    });
 
-window.addEventListener('resize', renderGraph);
+    // panel toggle and time window filter
+    document.getElementById('panelToggle').addEventListener('click', () => {
+      document.body.classList.toggle('panel-collapsed');
+      setTimeout(renderGraph, 420);
+    });
 
-// kick everything off
-renderCollabs();
-renderGraph();
-</script>
+    document.getElementById('timeSelect').addEventListener('change', e => {
+      timeWindow = +e.target.value;
+      renderGraph();
+    });
+
+    document.getElementById('userSearch').addEventListener('input', renderCollabs);
+
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    }
+    window.addEventListener('resize', debounce(renderGraph, 150));
+
+    function getCsrfToken() {
+      return document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1] ?? '';
+    }
+
+    // kick everything off
+    renderCollabs();
+    renderGraph();
+  </script>
 </body>
+
 </html>
