@@ -416,7 +416,6 @@
         </div>
     </div>
 
-</body>
 <script>
     var fileTreeObj = {}
     var openTabs = {}
@@ -436,7 +435,20 @@
         return cookieValue;
     }
 
-    const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
+    const Host = window.location.protocol === 'file:' ? 'http://3.145.186.153:8000' : '';
+
+    async function getCurUserInfo(){
+        let name = "";
+        let id = "";
+        try{
+          const res  = await fetch("/api/myCreds/", { credentials: "include" });
+          const data = await res.json();
+          if (data.authenticated) name = data.username || "";
+          if (data.authenticated) id = data.id || "";
+
+        } catch(e){}
+        return [id, name];
+    }
 
     async function getfileTypesDictionary() {
         const result = await fetch("../Capstone/static/fileTypes.json");
@@ -658,7 +670,8 @@
     }
 
     // fariza's change: function to build and run the code of the open file in the terminal
-    function launchProject() {
+    // john's change: python is intercepted and run via AWS Lambda
+    async function launchProject() {
         const activeTab = document.querySelector(".tab.active");
         if (!activeTab) {
             alert("Please open a file to run!");
@@ -669,17 +682,35 @@
         const fileTypeObj = identifyType(fileName);
         const language = fileTypeObj ? fileTypeObj.language : "unknown";
 
+        // run python through Lambda instead of the local terminal
+        if (language.toLowerCase() === "python") {
+            const code  = window.getEditorContent ? window.getEditorContent() : "";
+            const write = window.writeToTerminal || (() => {});
+            write(`\r\n\x1b[36m▶ Running ${fileName} via Lambda...\x1b[0m\r\n`);
+            const btn = document.getElementById("runProjectBtn");
+            if (btn) btn.disabled = true;
+            try {
+                const response = await fetch(Host + "/api/run-code/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
+                    body: JSON.stringify({ code, language: language.toLowerCase() })
+                });
+                const result = await response.json();
+                if (result.stdout) write(result.stdout.replace(/\n/g, "\r\n"));
+                if (result.stderr) write(`\x1b[31m${result.stderr.replace(/\n/g, "\r\n")}\x1b[0m`);
+                const exitColor = result.returncode === 0 ? "\x1b[32m" : "\x1b[31m";
+                write(`\r\n${exitColor}[Process exited with code ${result.returncode}]\x1b[0m\r\n`);
+            } catch (err) {
+                write(`\r\n\x1b[31m[Network error] ${err.message}\x1b[0m\r\n`);
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+            return;
+        }
+
         let command = "";
 
         switch (language.toLowerCase()) {
-            case "python":
-                command = `python3 ${fileName}\r`;
-                break;
-            case "javascript":
-            case "js":
-            case "nodejs":
-                command = `node ${fileName}\r`;
-                break;
             case "java":
                 const className = fileName.replace(".java", "");
                 command = `javac ${fileName} && java ${className}\r`;
@@ -759,6 +790,8 @@
         socket.onopen = () => { console.log("Terminal WebSocket connected."); };
         socket.onmessage = (event) => { term.write(event.data); };
         socket.onclose = () => { term.write("\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n"); };
+
+        window.writeToTerminal = (text) => term.write(text);
 
         term.onData((data) => {
             if (socket.readyState === WebSocket.OPEN) socket.send(data);
@@ -961,9 +994,48 @@
             scrollBeyondLastLine: false,
         });
 
-        window.setEditorLanguage = (lang) => { monaco.editor.setModelLanguage(editor.getModel(), lang); };
-        window.getEditorContent  = () => editor.getValue();
-        window.setEditorContent  = (content) => editor.setValue(content);
+        window.setEditorLanguage = (lang) => {
+            monaco.editor.setModelLanguage(editor.getModel(), lang);
+        };
+
+        window.getEditorContent = () => editor.getValue();
+
+        window.setEditorContent = (content) => editor.setValue(content);
+
+        // --- Collaborative editing via WebSocket ---
+        let _editorFileId = null;
+        let _saveTimer = null;
+        let _isRemoteUpdate = false;
+
+        window.setCurrentEditorFile = (fileId) => {
+            _editorFileId = fileId;
+        };
+
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const editorSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/editor/`);
+
+        editorSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "content_change" && String(data.file_id) === String(_editorFileId)) {
+                _isRemoteUpdate = true;
+                editor.setValue(data.content);
+                _isRemoteUpdate = false;
+            }
+        };
+
+        editor.onDidChangeModelContent(() => {
+            if (_isRemoteUpdate || !_editorFileId) return;
+            clearTimeout(_saveTimer);
+            _saveTimer = setTimeout(() => {
+                if (editorSocket.readyState === WebSocket.OPEN) {
+                    editorSocket.send(JSON.stringify({
+                        type: "content_change",
+                        file_id: _editorFileId,
+                        content: editor.getValue(),
+                    }));
+                }
+            }, 2000);
+        });
     });
 
     /* Custom Modals */
@@ -1163,7 +1235,7 @@
         if (!fileName) { alert("File name cannot be empty."); return; }
         closeAllModals();
         try {
-            const response = await fetch(Host + "/files/create-file/", {
+            const response = await fetch(Host + "/files/create/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                 body: JSON.stringify({ name: fileName })
@@ -1207,4 +1279,5 @@
     closeNewFolderBtn.addEventListener("click", closeAllModals);
 
 </script>
+</body>
 </html>

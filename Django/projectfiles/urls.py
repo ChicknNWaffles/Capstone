@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.getAllProjectFiles.as_view(), name='GetAllProjectFiles'),
     path('get/', views.getProjectFiles.as_view(), name='GetProjectFiles'),
     path('create/', views.CreateFiles.as_view(), name='CreateFiles'),
+    path('create-folder/', views.CreateFolder.as_view(), name='CreateFolder'),
     # fariza's change: route to turn file lock on or off
     path('lock/toggle/', views.ToggleFileLock.as_view(), name='ToggleFileLock'),
     # fariza's change: route to check if the password is correct

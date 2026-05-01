@@ -323,3 +323,96 @@ cd() {
 
         s.bashrc_path = None
         s.workspace_dir = None
+
+
+class EditorConsumer(AsyncWebsocketConsumer):
+    """
+    WebSocket consumer for collaborative file editing.
+
+    All users with the same project open join a Channels group
+    (editor_{project_id}). When one user edits, the change is
+    broadcast to all others in the group AND saved to S3.
+    """
+
+    async def connect(self):
+        # Accept all connections immediately — group join happens on first message
+        self.group_name = None
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        if self.group_name:
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def receive(self, text_data=None, bytes_data=None):
+        if not text_data:
+            return
+        try:
+            data = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
+
+        if data.get("type") == "content_change":
+            file_id = data.get("file_id")
+            content = data.get("content", "")
+
+            # Look up the project from the file so we don't rely on session timing
+            project_id = await asyncio.get_event_loop().run_in_executor(
+                None, self._get_project_id, file_id
+            )
+            if not project_id:
+                return
+
+            # Join the project group if not already in it
+            new_group = f"editor_{project_id}"
+            if self.group_name != new_group:
+                if self.group_name:
+                    await self.channel_layer.group_discard(self.group_name, self.channel_name)
+                self.group_name = new_group
+                await self.channel_layer.group_add(self.group_name, self.channel_name)
+
+            # Save to S3 in a background thread (non-blocking)
+            await asyncio.get_event_loop().run_in_executor(
+                None, self._save_to_s3, file_id, content
+            )
+
+            # Broadcast to all other collaborators in the project
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    "type": "editor.update",
+                    "file_id": file_id,
+                    "content": content,
+                    "sender_channel": self.channel_name,
+                },
+            )
+
+    def _get_project_id(self, file_id):
+        from projectfiles.models import ProjectFile
+        try:
+            return ProjectFile.objects.get(id=file_id).project_id
+        except Exception:
+            return None
+
+    def _save_to_s3(self, file_id, content):
+        from projectfiles.models import ProjectFile
+        from api.file_service import file_service
+        try:
+            file_obj = ProjectFile.objects.get(id=file_id)
+            file_service.create_file(
+                file_obj.project.id,
+                file_obj.branch.name,
+                file_obj.name,
+                content,
+            )
+        except Exception as e:
+            print(f"[EditorConsumer] S3 save error: {e}")
+
+    async def editor_update(self, event):
+        """Called by group_send — forward to WebSocket unless we are the sender."""
+        if event.get("sender_channel") == self.channel_name:
+            return
+        await self.send(text_data=json.dumps({
+            "type": "content_change",
+            "file_id": event["file_id"],
+            "content": event["content"],
+        }))

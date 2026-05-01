@@ -30,7 +30,6 @@ class getAllProjectFiles(View):
         # Project.objects.filter(id__lt = 7)
         for files in projectFiles:
             file_path = "" + str(files.project.file_path) + "/" + str(files.branch.name) + "/" + str(files.name)
-
             
             html += f"<h1>{files.name}</h1>"
             html += f"<p>{file_path}</p>"
@@ -64,24 +63,73 @@ class getProjectFiles(APIView):
     
 class CreateFiles(APIView):
 
-    serializer_class = serializers.ProjectSerializer
-    
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid()
-        data = serializer.validated_data
+        name = request.data.get("name", "").strip()
+        if not name:
+            return Response({"success": False, "error": "File name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        file = models.ProjectFile(
-            name=data.get("name"),
-        )
+        project_id = request.session.get("curProj")
+        branch_id = request.session.get("curCom")
+
+        if not project_id or not branch_id:
+            return Response({"success": False, "error": "No project or branch selected"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            from project.models import Project
+            from projectbranch.models import Branch
+            project = Project.objects.get(id=project_id)
+            branch = Branch.objects.get(id=branch_id)
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+        if models.ProjectFile.objects.filter(project=project, branch=branch, name=name).exists():
+            return Response({"success": False, "error": "A file with that name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        file = models.ProjectFile(project=project, branch=branch, name=name)
         file.save()
 
-        response = {
-            "success": True,
-            "name": file.name,
-        }
+        try:
+            file_service.create_file(project.id, branch.name, name)
+        except Exception as e:
+            print(f"Warning: Could not create S3 file: {e}")
 
-        return Response(response)
+        return Response({"success": True, "id": file.id, "name": file.name})
+
+
+class CreateFolder(APIView):
+
+    def post(self, request):
+        name = request.data.get("name", "").strip()
+        if not name:
+            return Response({"success": False, "error": "Folder name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        project_id = request.session.get("curProj")
+        branch_id = request.session.get("curCom")
+
+        if not project_id or not branch_id:
+            return Response({"success": False, "error": "No project or branch selected"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            from project.models import Project
+            from projectbranch.models import Branch
+            project = Project.objects.get(id=project_id)
+            branch = Branch.objects.get(id=branch_id)
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+        folder_entry_name = name + "/"
+        if models.ProjectFile.objects.filter(project=project, branch=branch, name=folder_entry_name).exists():
+            return Response({"success": False, "error": "A folder with that name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        folder = models.ProjectFile(project=project, branch=branch, name=folder_entry_name)
+        folder.save()
+
+        try:
+            file_service.create_file(project.id, branch.name, folder_entry_name, "")
+        except Exception as e:
+            print(f"Warning: Could not create S3 folder: {e}")
+
+        return Response({"success": True, "id": folder.id, "name": name})
 
 
 # ============================================
@@ -154,25 +202,18 @@ class ReadFileContent(APIView):
             if not password or not check_password(password, file_obj.password_hash):
                 return Response({"success": False, "error": "This file is locked. Please enter the correct password."}, status=status.HTTP_403_FORBIDDEN)
         
-        # fariza's change: find where the file is stored on the computer
-        file_path = str(file_obj.project.file_path) + "/" + str(file_obj.branch.name) + "/" + str(file_obj.name)
-        
-        try:
-            # fariza's change: open and read the text from the file
-            if os.path.exists(file_path):
-                with open(file_path, 'r') as f:
-                    content = f.read()
-            else:
-                # fariza's change: if file doesn't exist on disk yet, show a friendly message
-                content = f"# This is the content of {file_obj.name}\n# (File created in database but not yet on disk)"
-                
-            return Response({
-                "success": True, 
-                "content": content,
-                "name": file_obj.name
-            })
-        except Exception as e:
-            return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Read file content from S3
+        result = file_service.read_file(file_obj.project.id, file_obj.branch.name, file_obj.name)
+        if result["success"]:
+            content = result["content"]
+        else:
+            content = ""
+
+        return Response({
+            "success": True,
+            "content": content,
+            "name": file_obj.name
+        })
 
 
 # fariza's change: class to delete a file from database and disk
@@ -188,14 +229,13 @@ class DeleteFile(APIView):
         except models.ProjectFile.DoesNotExist:
             return Response({"success": False, "error": "File not found in database"}, status=status.HTTP_404_NOT_FOUND)
             
-        # path on disk where the file is stored
-        file_path = f"{file_obj.project.file_path}/{file_obj.branch.name}/{file_obj.name}"
-        
+        project_id = file_obj.project.id
+        branch_name = file_obj.branch.name
+        filename = file_obj.name
+
         try:
-            # fariza's change: delete from the computer's disk if it exists
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            
+            file_service.delete_file_in_project(project_id, branch_name, filename)
+
             # fariza's change: delete from database permanently
             file_obj.delete()
             

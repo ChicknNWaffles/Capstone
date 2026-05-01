@@ -1,16 +1,5 @@
 """
 File Service for AWS S3 Operations
-
-Handles all file operations with S3:
-- Upload files (with encryption)
-- Download files (via pre-signed URLs)
-- Delete files
-- List files in a project folder
-
-Security Features:
-- Server-side encryption (AES-256) for storage
-- HTTPS for all transfers (encryption in transit)
-- Pre-signed URLs for secure, temporary access
 """
 
 import boto3
@@ -27,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class S3FileService:
-    """Service class for S3 file operations"""
     
     def __init__(self):
         """Initialize S3 client with credentials"""
@@ -41,28 +29,14 @@ class S3FileService:
         self.bucket_name = s3_config.AWS_STORAGE_BUCKET_NAME
     
     def _generate_file_key(self, project_id: int, filename: str) -> str:
-        """
-        Generate a unique S3 key (path) for the file
-        Format: projects/{project_id}/{timestamp}_{uuid}_{filename}
-        """
+        """Generate a unique S3 key (path) for the file"""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         unique_id = str(uuid.uuid4())[:8]
         safe_filename = filename.replace(' ', '_')
         return f"projects/{project_id}/{timestamp}_{unique_id}_{safe_filename}"
     
     def upload_file(self, file_obj, filename: str, project_id: int, user_id: int) -> dict:
-        """
-        Upload a file to S3 with encryption
-        
-        Args:
-            file_obj: File-like object (from request.FILES)
-            filename: Original filename
-            project_id: ID of the project this file belongs to
-            user_id: ID of the user uploading the file
-            
-        Returns:
-            dict with file_key, filename, size, content_type, upload_time
-        """
+        """Upload a file to S3 with encryption"""
         try:
             # Generate unique key for S3
             file_key = self._generate_file_key(project_id, filename)
@@ -114,16 +88,7 @@ class S3FileService:
             }
     
     def get_download_url(self, file_key: str, expiry_seconds: int = None) -> dict:
-        """
-        Generate a pre-signed URL for secure file download
-        
-        Args:
-            file_key: S3 key of the file
-            expiry_seconds: URL expiration time (default from config)
-            
-        Returns:
-            dict with download_url and expiry time
-        """
+        """Generate a pre-signed URL for secure file download"""
         try:
             expiry = expiry_seconds or s3_config.AWS_PRESIGNED_URL_EXPIRY
             
@@ -150,15 +115,7 @@ class S3FileService:
             }
     
     def delete_file(self, file_key: str) -> dict:
-        """
-        Delete a file from S3
-        
-        Args:
-            file_key: S3 key of the file to delete
-            
-        Returns:
-            dict with success status
-        """
+        """Delete a file from S3"""
         try:
             self.s3_client.delete_object(
                 Bucket=self.bucket_name,
@@ -203,16 +160,79 @@ class S3FileService:
             logger.error(f"Error creating branch folder: {e}")
             return {'success': False, 'error': str(e)}
 
+    def create_file(self, project_id: int, branch_name: str, filename: str, content: str = "") -> dict:
+        """Create a file in S3 at projects/{project_id}/{branch_name}/{filename}"""
+        try:
+            key = f"projects/{project_id}/{branch_name}/{filename}"
+            self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=key,
+                Body=content.encode("utf-8"),
+                ContentType="text/plain",
+                ServerSideEncryption="AES256",
+            )
+            logger.info(f"File created: {key}")
+            return {"success": True, "file_key": key}
+        except ClientError as e:
+            logger.error(f"Error creating file: {e}")
+            return {"success": False, "error": str(e)}
+
+    def read_file(self, project_id: int, branch_name: str, filename: str) -> dict:
+        """Read file content from S3 at projects/{project_id}/{branch_name}/{filename}"""
+        try:
+            key = f"projects/{project_id}/{branch_name}/{filename}"
+            response = self.s3_client.get_object(Bucket=self.bucket_name, Key=key)
+            content = response["Body"].read().decode("utf-8")
+            return {"success": True, "content": content, "file_key": key}
+        except ClientError as e:
+            logger.error(f"Error reading file: {e}")
+            return {"success": False, "error": str(e)}
+
+    def delete_file_in_project(self, project_id: int, branch_name: str, filename: str) -> dict:
+        """Delete a specific file from S3 at projects/{project_id}/{branch_name}/{filename}"""
+        key = f"projects/{project_id}/{branch_name}/{filename}"
+        return self.delete_file(key)
+
+    def rename_file(self, project_id: int, branch_name: str, old_name: str, new_name: str) -> dict:
+        """Rename a file in S3 by copying to new key then deleting old key"""
+        try:
+            old_key = f"projects/{project_id}/{branch_name}/{old_name}"
+            new_key = f"projects/{project_id}/{branch_name}/{new_name}"
+            self.s3_client.copy_object(
+                Bucket=self.bucket_name,
+                CopySource={"Bucket": self.bucket_name, "Key": old_key},
+                Key=new_key,
+                ServerSideEncryption="AES256",
+            )
+            self.s3_client.delete_object(Bucket=self.bucket_name, Key=old_key)
+            logger.info(f"File renamed: {old_key} -> {new_key}")
+            return {"success": True, "old_key": old_key, "new_key": new_key}
+        except ClientError as e:
+            logger.error(f"Error renaming file: {e}")
+            return {"success": False, "error": str(e)}
+
+    def delete_project_folder(self, project_id: int) -> dict:
+        """Delete all objects in a project's S3 folder"""
+        try:
+            prefix = f"projects/{project_id}/"
+            response = self.s3_client.list_objects_v2(
+                Bucket=self.bucket_name,
+                Prefix=prefix
+            )
+            objects = [{'Key': obj['Key']} for obj in response.get('Contents', [])]
+            if objects:
+                self.s3_client.delete_objects(
+                    Bucket=self.bucket_name,
+                    Delete={'Objects': objects}
+                )
+            logger.info(f"Project folder deleted: {prefix}")
+            return {'success': True}
+        except ClientError as e:
+            logger.error(f"Error deleting project folder: {e}")
+            return {'success': False, 'error': str(e)}
+
     def list_files(self, project_id: int) -> dict:
-        """
-        List all files for a specific project
-        
-        Args:
-            project_id: ID of the project
-            
-        Returns:
-            dict with list of files and their metadata
-        """
+        """List all files for a specific project"""
         try:
             prefix = f"projects/{project_id}/"
             

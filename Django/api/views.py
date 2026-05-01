@@ -75,6 +75,13 @@ def me(request):
         return Response({"authenticated": True, "username": request.user.username})
     return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
+# checks the session to get the user's id and their username
+@api_view(["GET"])
+def myCreds(request):
+    if request.user.is_authenticated:
+        return Response({"authenticated": True, "id": request.user.id, "username": request.user.username})
+    return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
 # fariza's change: gets the name and details of the current project
 @api_view(["GET"])
 def getProjName(request):
@@ -121,10 +128,9 @@ def setCurProj(request):
 @permission_classes([permissions.AllowAny])  # allow any logged-in user to call this
 def setCurBranch(request):
     proj = request.session.get("curProj")
-    main = Branch.objects.filter(project__id=proj).filter(isMain=True).first()
+    main = Branch.objects.filter(project__id=proj, name="main").first()
     if main is None:
-        from project.models import Project
-        main = Branch.objects.create(project_id=proj, name="main", isMain=True)
+        main = Branch.objects.create(project_id=proj, name="main")
     print(main)
     branch = Branch.objects.get(id = request.data.get("com") or main.id)
     request. session["curCom"] = branch.id
