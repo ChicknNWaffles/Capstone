@@ -75,6 +75,13 @@ def me(request):
         return Response({"authenticated": True, "username": request.user.username})
     return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
+# checks the session to get the user's id and their username
+@api_view(["GET"])
+def myCreds(request):
+    if request.user.is_authenticated:
+        return Response({"authenticated": True, "id": request.user.id, "username": request.user.username})
+    return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
 # fariza's change: gets the name and details of the current project
 @api_view(["GET"])
 def getProjName(request):

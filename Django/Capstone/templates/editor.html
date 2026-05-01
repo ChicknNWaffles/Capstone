@@ -408,6 +408,19 @@
 
     const Host = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
 
+    async function getCurUserInfo(){
+        let name = "";
+        let id = "";
+        try{
+          const res  = await fetch("/api/myCreds/", { credentials: "include" });
+          const data = await res.json();
+          if (data.authenticated) name = data.username || "";
+          if (data.authenticated) id = data.id || "";
+
+        } catch(e){}
+        return [id, name];
+    }
+
     async function getfileTypesDictionary() {
         const result = await fetch("../Capstone/static/fileTypes.json");
         const jsonData = await result.json();
