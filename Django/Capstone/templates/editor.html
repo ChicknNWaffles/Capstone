@@ -93,12 +93,23 @@
         }
 
         .btn-action:hover {
-            background: rgba(88, 120, 255, 0.22);
-            color: rgba(180, 200, 255, 1);
+            border-color: rgba(255, 215, 0, 0.35);
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.05);
         }
 
         .btn-action:active {
             background: rgba(88, 120, 255, 0.32);
+        }
+
+        .nav-link-btn {
+            width: auto;
+            padding: 0 12px;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
         }
     </style>
 </head>
@@ -109,6 +120,25 @@
         <div class="top-bar-left">
             <h3>Project:</h3>
             <h3 id="projectName"></h3>
+        </div>
+        
+        <div class="nav-links" style="display: flex; gap: 12px; margin-left: 24px;">
+            <a href="/" class="btn-action nav-link-btn" title="Back to Homepage">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Home
+            </a>
+            <a href="/gitpage/" class="btn-action nav-link-btn" title="View Gitpage">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="18" r="3"></circle>
+                    <circle cx="6" cy="6" r="3"></circle>
+                    <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                    <line x1="6" y1="9" x2="6" y2="21"></line>
+                </svg>
+                Git Page
+            </a>
         </div>
         <!-- fariza's change: added buttons to run and stop the project code -->
         <div class="action-group">
@@ -405,8 +435,20 @@
         return cookieValue;
     }
 
-    // --- Original Host variable (Electron compatibility) ---
     const Host = window.location.protocol === 'file:' ? 'http://3.145.186.153:8000' : '';
+
+    async function getCurUserInfo(){
+        let name = "";
+        let id = "";
+        try{
+          const res  = await fetch("/api/myCreds/", { credentials: "include" });
+          const data = await res.json();
+          if (data.authenticated) name = data.username || "";
+          if (data.authenticated) id = data.id || "";
+
+        } catch(e){}
+        return [id, name];
+    }
 
     async function getfileTypesDictionary() {
         const result = await fetch("../Capstone/static/fileTypes.json");
@@ -802,15 +844,19 @@
             if (statusItem) statusItem.textContent = "";
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             if (langItem) langItem.textContent = ""
+            window.setEditorContent("# Open a file to start coding\n");
+            window.setEditorLanguage("python");
         } else if (wasActive) {
             tabBar.children[0].classList.add("active");
             name = tabBar.children[0].children[0].textContent;
+            id = tabBar.children[0].getAttribute("data-id");
             language = identifyType(name)["language"];
             const statusItem = document.querySelector(".status-left .status-item:first-child");
             if (statusItem) statusItem.textContent = name;
             const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
             language = language.charAt(0).toUpperCase() + language.slice(1);
             if (langItem) langItem.textContent = language;
+            fetchFileContent(id, name)
         }
     }
 
@@ -1059,6 +1105,7 @@
                         const statusItem = document.querySelector(".status-left .status-item:first-child");
                         if (statusItem) statusItem.textContent = fileName;
                         language = identifyType(fileName)["language"];
+                        window.setEditorLanguage(language);
                         language = language.charAt(0).toUpperCase() + language.slice(1);
                         const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
                         if (langItem) langItem.textContent = language;
@@ -1077,23 +1124,23 @@
                     headers: { "Content-Type": "application/json", "X-CSRFToken": getCSRFToken() },
                     body: JSON.stringify({ file_id: fileId, password: password })
                 });
-
-            const data = await response.json();
-            if (response.ok && data.success) {
-                if (window.setCurrentEditorFile) window.setCurrentEditorFile(fileId);
-                if (window.setEditorContent) {
-                    window.setEditorContent(data.content);
-                    const statusItem = document.querySelector(".status-left .status-item:first-child");
-                    if (statusItem) statusItem.textContent = fileName;
-                    language = identifyType(fileName)["language"]
-                    language = language.charAt(0).toUpperCase() + language.slice(1);
-                    const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
-                    if (langItem) langItem.textContent = language
-                    generateTabHTML(fileId, fileName);
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    if (window.setEditorContent) {
+                        window.setEditorContent(data.content);
+                        const statusItem = document.querySelector(".status-left .status-item:first-child");
+                        if (statusItem) statusItem.textContent = fileName;
+                        language = identifyType(fileName)["language"];
+                        window.setEditorLanguage(language);
+                        language = language.charAt(0).toUpperCase() + language.slice(1);
+                        const langItem = document.querySelector(".status-left .status-item:nth-child(2)");
+                        if (langItem) langItem.textContent = language;
+                        generateTabHTML(fileId, fileName);
+                        openTabs[fileId] = password;
+                    }
+                } else {
+                    alert("Access Denied: " + (data.error || "Incorrect password or system error."));
                 }
-            } else {
-                alert("Access Denied: " + (data.error || "Incorrect password or system error."));
-            }
             }
         } catch (err) {
             console.error("File loading error:", err);
