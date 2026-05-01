@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 LAMBDA_FUNCTION_NAME = 'code-executor'
-SUPPORTED_LANGUAGES = ['python']
+SUPPORTED_LANGUAGES = ['python', 'java', 'cpp', 'csharp']
 
 
 @api_view(['POST'])
