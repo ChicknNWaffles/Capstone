@@ -19,6 +19,8 @@
         --text-primary: rgba(230, 235, 255, 0.88);
         --text-muted: rgba(230, 235, 255, 0.4);
         --border: rgba(255, 255, 255, 0.07);
+        --gold: #ffd700;
+        --gold-dim: rgba(255, 215, 0, 0.35);
       }
 
       body {
@@ -75,7 +77,11 @@
         transition: all 0.15s;
       }
 
-      .avatar:hover { background: rgba(88, 120, 255, 0.32); }
+      .avatar:hover { 
+        background: rgba(255, 215, 0, 0.1); 
+        border-color: var(--gold-dim);
+        color: var(--gold);
+      }
 
       .dropdown-menu {
         position: absolute;
@@ -110,7 +116,10 @@
         transition: background 0.12s, color 0.12s;
       }
 
-      .menu-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+      .menu-item:hover { 
+        background: rgba(255, 215, 0, 0.08); 
+        color: var(--gold); 
+      }
       .menu-item.danger { color: rgba(255,100,100,0.8); }
       .menu-item.danger:hover { background: rgba(255,100,100,0.08); color: #ff6b6b; }
 
@@ -176,8 +185,8 @@
 
       .search-input:focus {
         background: rgba(255,255,255,0.07);
-        border-color: rgba(88,120,255,0.35);
-        box-shadow: 0 0 0 3px rgba(88,120,255,0.08);
+        border-color: var(--gold-dim);
+        box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
       }
 
       .search-icon {
@@ -244,20 +253,21 @@
       .btn-create-first {
         margin-top: 6px;
         padding: 8px 20px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        background: rgba(88,120,255,0.15);
-        border: 1px solid rgba(88,120,255,0.28);
-        color: rgba(255,255,255,0.75);
-        border-radius: 7px;
+        background: rgba(88, 120, 255, 0.15);
+        border: 1px solid rgba(88, 120, 255, 0.28);
+        color: #96afff;
+        border-radius: 6px;
         cursor: pointer;
-        font-family: inherit;
-        transition: all 0.15s;
+        font-family: 'Outfit', sans-serif;
+        transition: all 0.2s;
       }
 
       .btn-create-first:hover {
-        background: rgba(88,120,255,0.25);
-        color: white;
+        background: rgba(255, 215, 0, 0.15);
+        border-color: var(--gold-dim);
+        color: var(--gold);
         transform: translateY(-1px);
       }
 
@@ -289,8 +299,8 @@
 
       .card:hover {
         transform: translateY(-2px);
-        border-color: rgba(255,255,255,0.12);
-        background: rgba(22, 32, 68, 0.5);
+        border-color: var(--gold-dim);
+        background: rgba(22, 32, 68, 0.6);
       }
 
       .card-row {
@@ -391,10 +401,10 @@
         padding: 9px 18px;
         font-size: 0.8rem;
         font-weight: 600;
-        background: rgba(88,120,255,0.2);
-        border: 1px solid rgba(88,120,255,0.35);
-        color: white;
-        border-radius: 8px;
+        background: rgba(88, 120, 255, 0.2);
+        border: 1px solid rgba(88, 120, 255, 0.35);
+        color: #96afff;
+        border-radius: 6px;
         cursor: pointer;
         font-family: inherit;
         transition: all 0.15s;

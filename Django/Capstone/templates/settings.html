@@ -19,7 +19,10 @@
             --success-accent: #4ade80;
             --card-bg: rgba(18, 25, 55, 0.4);
             --item-bg: rgba(255, 255, 255, 0.03);
+            --item-bg: rgba(255, 255, 255, 0.03);
             --item-hover: rgba(255, 255, 255, 0.06);
+            --gold: #ffd700;
+            --gold-dim: rgba(255, 215, 0, 0.35);
         }
 
         /* Reset body — style.css sets overflow:hidden for the editor page */
@@ -90,11 +93,11 @@
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 12px;
+            background: rgba(88, 120, 255, 0.1);
+            border: 1px solid rgba(88, 120, 255, 0.2);
+            color: #96afff;
+            padding: 8px 18px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
@@ -106,10 +109,11 @@
         }
 
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary-accent);
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--gold-dim);
+            color: var(--gold);
             transform: translateX(-4px);
-            box-shadow: 0 0 20px rgba(88, 120, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
         }
 
         /* ─── Two-column grid ─── */
@@ -176,9 +180,9 @@
 
         .form-control:focus {
             outline: none;
-            border-color: var(--primary-accent);
+            border-color: var(--gold-dim);
             background: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 0 0 3px rgba(88, 120, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
         }
 
         .form-control::placeholder {
@@ -190,14 +194,14 @@
         }
 
         .primary-submit {
-            background: var(--primary-accent);
-            color: #fff;
-            border: none;
-            padding: 13px;
-            border-radius: 10px;
+            background: rgba(88, 120, 255, 0.12);
+            border: 1px solid rgba(88, 120, 255, 0.25);
+            color: #96afff;
+            padding: 10px;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.2s;
             margin-top: auto;
             font-family: inherit;
             font-size: 0.9rem;
@@ -205,9 +209,11 @@
         }
 
         .primary-submit:hover {
-            filter: brightness(1.1);
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(88, 120, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
         }
 
         /* ─── File list
@@ -293,7 +299,7 @@
         .action-button {
             min-width: 148px;
             padding: 8px 14px;
-            border-radius: 10px;
+            border-radius: 6px;
             font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
@@ -308,9 +314,9 @@
         }
 
         .btn-set-lock {
-            background: rgba(255, 255, 255, 0.07);
-            color: rgba(255, 255, 255, 0.85);
-            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(88, 120, 255, 0.1);
+            color: #96afff;
+            border-color: rgba(88, 120, 255, 0.25);
         }
 
         .btn-set-lock:hover {
@@ -362,11 +368,11 @@
         }
 
         .filter-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.6);
+            background: rgba(88, 120, 255, 0.08);
+            border: 1px solid rgba(88, 120, 255, 0.2);
+            color: rgba(150, 175, 255, 0.7);
             padding: 6px 14px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 0.78rem;
             font-weight: 500;
             cursor: pointer;
@@ -374,8 +380,9 @@
         }
 
         .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
+            background: rgba(255, 215, 0, 0.08);
+            border-color: var(--gold-dim);
+            color: var(--gold);
         }
 
         .filter-btn.active {

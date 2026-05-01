@@ -277,6 +277,7 @@ class ProjectBranches(APIView):
         branch = Branch(
             project=project,
             name=data.get("name"),
+            filepath = f"{project.file_path}/{data.get("name")}",
         )
         branch.save()
         

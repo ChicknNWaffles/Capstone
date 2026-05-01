@@ -8,6 +8,7 @@ urlpatterns = [
     path("login/", views.login_api),
     path("signup/", views.signup_api),
     path("me/", views.me),
+    path("myCreds/", views.myCreds),
 
     path("getProjName", views.getProjName),
     path("getComName", views.getComName),
