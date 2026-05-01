@@ -18,6 +18,10 @@ from projectbranch.serializers import ProjectBranchSerializer
 
 from api.file_service import file_service
 
+import git
+
+from project.git_services import ProjectGitService
+
 
 # Create your views here.
 class getProjects(View):
@@ -104,12 +108,13 @@ class CreateProject(APIView):
             visibility=visibility,
             file_path="",
             owner=user,
-            repo_link=repoLink,
+            repo_link="",
         )
         project.save()
 
         # Set S3 path and create the folder in the bucket
-        project.file_path = f"projects/{project.id}/"
+        project.file_path = f"projects/{project.id}repo/"
+        project.repo_link = f"{project.file_path}"
         project.save()
         # fariza's change: wrapped S3 call in try/except so it doesn't crash when running locally without AWS
         try:
@@ -188,6 +193,7 @@ class DeleteProject(APIView):
     def get(self, request):
         pass
 
+# adding collaborator view
 class ProjectCollaboratorsListCreate(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CollaboratorSerializer
@@ -275,6 +281,7 @@ class ProjectBranches(APIView):
             name=data.get("name"),
             filepath = f"{project.file_path}/{data.get("name")}",
         )
+        ProjectGitService.create_branch(branch.name)
         branch.save()
         
         response = {
