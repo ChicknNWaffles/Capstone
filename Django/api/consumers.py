@@ -2,6 +2,7 @@ import json
 import asyncio
 import subprocess
 import os
+import select
 import struct
 import tempfile
 import shutil
@@ -16,6 +17,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 # Global session store: maps session_key -> TerminalSession
 _sessions: dict = {}
+
+# fariza's change: keeps track of pending S3 saves so we can cancel and reschedule them instead of saving on every keystroke
+_pending_saves: dict = {}
 
 
 class TerminalSession:
@@ -60,9 +64,20 @@ class TerminalConsumer(AsyncWebsocketConsumer):
     # ------------------------------------------------------------------ #
 
     async def connect(self):
+        # fariza's change: accept first so the WebSocket handshake completes, then kick out anyone who isn't logged in
         await self.accept()
 
-        session_key = self.scope["session"].session_key or "anonymous"
+        if not self.scope["user"].is_authenticated:
+            await self.send(text_data="\r\n\x1b[31m[Access denied: please log in]\x1b[0m\r\n")
+            await self.close()
+            return
+
+        # fariza's change: clean up dead sessions every time someone connects so memory doesn't pile up forever
+        dead = [k for k, s in list(_sessions.items()) if not s.is_alive()]
+        for k in dead:
+            del _sessions[k]
+
+        session_key = self.scope["session"].session_key
 
         if session_key in _sessions and _sessions[session_key].is_alive():
             # Reattach to the existing session
@@ -219,11 +234,19 @@ cd() {
             await self._read_unix()
 
     async def _read_unix(self):
+        # fariza's change: instead of waking up every 10ms to check for output (wasteful),
+        # we use select.select in a thread — it blocks until data is actually ready,
+        # which is more reliable than add_reader for PTY file descriptors on macOS
         loop = asyncio.get_event_loop()
         while self.session.fd is not None:
+            fd = self.session.fd
             try:
-                await asyncio.sleep(0.01)
-                output = os.read(self.session.fd, 4096)
+                readable = await loop.run_in_executor(
+                    None, lambda: select.select([fd], [], [], 0.5)[0]
+                )
+                if not readable or self.session.fd is None:
+                    continue
+                output = os.read(fd, 4096)
                 if output:
                     self.session.buffer += output
                     if len(self.session.buffer) > 65536:
@@ -235,7 +258,6 @@ cd() {
             except BlockingIOError:
                 pass
             except OSError:
-                # Process exited
                 if self.session.consumer:
                     await self.session.consumer.send(
                         text_data="\r\n\x1b[31m[Process exited]\x1b[0m\r\n"
@@ -351,6 +373,18 @@ class EditorConsumer(AsyncWebsocketConsumer):
         except json.JSONDecodeError:
             return
 
+        # fariza's change: when someone creates, renames, or deletes a file, tell everyone else in the project to refresh their file tree
+        if data.get("type") == "file_tree_changed":
+            if self.group_name:
+                await self.channel_layer.group_send(
+                    self.group_name,
+                    {
+                        "type": "file.tree.changed",
+                        "sender_channel": self.channel_name,
+                    }
+                )
+            return
+
         if data.get("type") == "content_change":
             file_id = data.get("file_id")
             content = data.get("content", "")
@@ -370,10 +404,19 @@ class EditorConsumer(AsyncWebsocketConsumer):
                 self.group_name = new_group
                 await self.channel_layer.group_add(self.group_name, self.channel_name)
 
-            # Save to S3 in a background thread (non-blocking)
-            await asyncio.get_event_loop().run_in_executor(
-                None, self._save_to_s3, file_id, content
-            )
+            # fariza's change: don't save to S3 on every single message — wait 3 seconds after the last change before saving,
+            # so if the user keeps typing we only save once they pause instead of hammering S3 constantly
+            if file_id in _pending_saves:
+                _pending_saves[file_id].cancel()
+
+            async def _delayed_save(fid, fcontent):
+                await asyncio.sleep(3)
+                await asyncio.get_event_loop().run_in_executor(
+                    None, self._save_to_s3, fid, fcontent
+                )
+                _pending_saves.pop(fid, None)
+
+            _pending_saves[file_id] = asyncio.create_task(_delayed_save(file_id, content))
 
             # Broadcast to all other collaborators in the project
             await self.channel_layer.group_send(
@@ -416,3 +459,9 @@ class EditorConsumer(AsyncWebsocketConsumer):
             "file_id": event["file_id"],
             "content": event["content"],
         }))
+
+    # fariza's change: receives the file tree broadcast and forwards it to this user's browser so they refresh their sidebar
+    async def file_tree_changed(self, event):
+        if event.get("sender_channel") == self.channel_name:
+            return
+        await self.send(text_data=json.dumps({"type": "file_tree_changed"}))

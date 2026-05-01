@@ -501,9 +501,6 @@
             }
         });
     }
-    setInterval(async () => {
-        await checkDirectoriesForChange();
-    }, 5000)
 
     function refreshDirectory(files) {
         tree = document.getElementById("file-tree");
@@ -751,6 +748,9 @@
         if (_terminalSocket && _terminalSocket.readyState === WebSocket.OPEN) {
             const terminalContainer = document.querySelector(".terminal-content");
             if (terminalContainer) terminalContainer.scrollIntoView();
+            // fariza's change: lock the run button so the user can't accidentally start the same program twice at the same time
+            const btn = document.getElementById("runProjectBtn");
+            if (btn) btn.disabled = true;
             _terminalSocket.send("\x03");
             setTimeout(() => {
                 _terminalSocket.send(command);
@@ -760,6 +760,7 @@
         }
     }
 
+    // fariza's change: set up the terminal — creates an xterm.js terminal, connects it to the server over WebSocket, and handles resizing
     function initializeTerminal() {
         const terminalContainer = document.querySelector(".terminal-content");
         if (!terminalContainer) return;
@@ -788,7 +789,14 @@
         _terminalSocket = socket;
 
         socket.onopen = () => { console.log("Terminal WebSocket connected."); };
-        socket.onmessage = (event) => { term.write(event.data); };
+        // fariza's change: re-enable the run button once the terminal says the process finished
+        socket.onmessage = (event) => {
+            term.write(event.data);
+            if (event.data.includes('[Process exited]')) {
+                const btn = document.getElementById("runProjectBtn");
+                if (btn) btn.disabled = false;
+            }
+        };
         socket.onclose = () => { term.write("\r\n\x1b[31m[Disconnected from Terminal]\x1b[0m\r\n"); };
 
         window.writeToTerminal = (text) => term.write(text);
@@ -797,12 +805,20 @@
             if (socket.readyState === WebSocket.OPEN) socket.send(data);
         });
 
-        window.addEventListener("resize", () => {
-            fitAddon.fit();
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "resize", cols: term.cols, rows: term.rows }));
-            }
-        });
+        // fariza's change: resize the terminal view immediately but wait until the user stops dragging before sending the resize to the server
+        const _sendResize = (() => {
+            let t;
+            return () => {
+                fitAddon.fit();
+                clearTimeout(t);
+                t = setTimeout(() => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: "resize", cols: term.cols, rows: term.rows }));
+                    }
+                }, 150);
+            };
+        })();
+        window.addEventListener("resize", _sendResize);
     }
 
     initializeTerminal();
@@ -831,6 +847,7 @@
         fetchFileContent(fileId, fileName);
     });
 
+    // fariza's change: close a tab — if it was the active one, switch focus to the next tab and update the language highlight so the editor doesn't go blank
     function closeBtn(e, t) {
         e.stopPropagation();
         tab = t.parentNode;
@@ -860,6 +877,7 @@
         }
     }
 
+    // fariza's change: when the user clicks a tab, load that file's content and switch the syntax highlighting to match the file's language
     function tabClick(e) {
         document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
         e.classList.add("active");
@@ -1013,13 +1031,18 @@
 
         const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
         const editorSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/editor/`);
+        // fariza's change: expose the editor socket globally so file operation handlers outside this callback can send notifications through it
+        window.editorSocket = editorSocket;
 
+        // fariza's change: also listen for file tree change notifications so the sidebar updates automatically when a collaborator adds or deletes a file
         editorSocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === "content_change" && String(data.file_id) === String(_editorFileId)) {
                 _isRemoteUpdate = true;
                 editor.setValue(data.content);
                 _isRemoteUpdate = false;
+            } else if (data.type === "file_tree_changed") {
+                getFileDirectories();
             }
         };
 
@@ -1090,6 +1113,7 @@
     cancelPasswordBtn.addEventListener("click", closeAllModals);
     closePasswordBtn.addEventListener("click", closeAllModals);
 
+    // fariza's change: fetch a file's content from the server, show it in the editor, and update the language highlight and status bar
     async function fetchFileContent(fileId, fileName, password = null) {
         try {
             if (openTabs.hasOwnProperty(fileId)) {
@@ -1149,6 +1173,7 @@
     }
 
     /* File Renaming */
+    // fariza's change: open the rename modal pre-filled with the current filename
     function renameFile(fileId, currentName) {
         currentRenameFileId = fileId;
         currentRenameFileName = currentName;
@@ -1167,8 +1192,13 @@
                 body: JSON.stringify({ file_id: currentRenameFileId, new_name: newName })
             });
             const data = await response.json();
-            if (response.ok && data.success) { getFileDirectories(); closeAllModals(); }
-            else alert("Error: " + (data.error || "Failed to rename file"));
+            if (response.ok && data.success) {
+                getFileDirectories();
+                closeAllModals();
+                // fariza's change: tell everyone else in the project that a file was renamed so their sidebar refreshes too
+                if (window.editorSocket && window.editorSocket.readyState === WebSocket.OPEN)
+                    window.editorSocket.send(JSON.stringify({ type: "file_tree_changed" }));
+            } else alert("Error: " + (data.error || "Failed to rename file"));
         } catch (error) {
             console.error("Rename error:", error);
             alert("An error occurred while renaming the file.");
@@ -1178,6 +1208,7 @@
     closeRenameBtn.addEventListener("click", closeAllModals);
 
     /* File Deletion */
+    // fariza's change: open the delete confirmation modal and remember which file the user wants to delete
     function deleteFile(fileId, fileName) {
         currentDeleteFileId = fileId;
         currentDeleteFileName = fileName;
@@ -1196,6 +1227,9 @@
             if (response.ok && data.success) {
                 getFileDirectories();
                 closeAllModals();
+                // fariza's change: tell everyone else in the project that a file was deleted so their sidebar refreshes too
+                if (window.editorSocket && window.editorSocket.readyState === WebSocket.OPEN)
+                    window.editorSocket.send(JSON.stringify({ type: "file_tree_changed" }));
                 const statusItem = document.querySelector(".status-left .status-item:first-child");
                 if (statusItem && statusItem.textContent === currentDeleteFileName) {
                     if (window.setEditorContent) window.setEditorContent("");
@@ -1241,8 +1275,12 @@
                 body: JSON.stringify({ name: fileName })
             });
             const data = await response.json();
-            if (response.ok && data.success) getFileDirectories();
-            else alert("Error: " + (data.error || "Failed to create file"));
+            if (response.ok && data.success) {
+                getFileDirectories();
+                // fariza's change: tell everyone else in the project that a new file was created so their sidebar refreshes too
+                if (window.editorSocket && window.editorSocket.readyState === WebSocket.OPEN)
+                    window.editorSocket.send(JSON.stringify({ type: "file_tree_changed" }));
+            } else alert("Error: " + (data.error || "Failed to create file"));
         } catch (error) {
             console.error("Create file error:", error);
             alert("An error occurred while creating the file.");
@@ -1268,8 +1306,12 @@
                 body: JSON.stringify({ name: folderName })
             });
             const data = await response.json();
-            if (response.ok && data.success) getFileDirectories();
-            else alert("Error: " + (data.error || "Failed to create folder"));
+            if (response.ok && data.success) {
+                getFileDirectories();
+                // fariza's change: tell everyone else in the project that a new folder was created so their sidebar refreshes too
+                if (window.editorSocket && window.editorSocket.readyState === WebSocket.OPEN)
+                    window.editorSocket.send(JSON.stringify({ type: "file_tree_changed" }));
+            } else alert("Error: " + (data.error || "Failed to create folder"));
         } catch (error) {
             console.error("Create folder error:", error);
             alert("An error occurred while creating the folder.");

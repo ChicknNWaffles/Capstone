@@ -1,3 +1,4 @@
+<!-- fariza's change: full homepage redesign — shows the user's projects as cards, lets them search, create new projects, and delete or rename existing ones -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -677,7 +678,7 @@
         activePortalDrop = drop;
       }
 
-      /* Welcome + avatar */
+      // fariza's change: fetch the logged-in user's name and show a personalised greeting like "Good morning, Fariza!" with their initials in the avatar
       (async function initGreeting() {
         let name = "";
         try {
@@ -696,7 +697,7 @@
         sessionStorage.setItem("currentUserName", name);
       })();
 
-      /* Fetch */
+      // fariza's change: load all the user's projects from the server and display them as cards
       async function loadProjects() {
         try {
           const res  = await fetch("/project/getUserProjects");
@@ -799,7 +800,7 @@
         return null;
       }
 
-      /* Redirect */
+      // fariza's change: when the user clicks a project card, set that project as the active one on the server then go to the editor
       async function redirect(id) {
         const csrf = getCookie("csrftoken");
         try {

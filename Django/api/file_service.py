@@ -148,6 +148,7 @@ class S3FileService:
             logger.error(f"Error creating project folder: {e}")
             return {'success': False, 'error': str(e)}
 
+    # fariza's change: create a folder in S3 for a branch so files have somewhere to live when a new branch is created
     def create_branch_folder(self, project_id: int, branch_name: str) -> dict:
         """Create an empty folder in S3 for a branch: projects/{project_id}/{branch_name}/"""
         try:
@@ -160,6 +161,7 @@ class S3FileService:
             logger.error(f"Error creating branch folder: {e}")
             return {'success': False, 'error': str(e)}
 
+    # fariza's change: create or overwrite a file in S3 — this is called every time the editor auto-saves
     def create_file(self, project_id: int, branch_name: str, filename: str, content: str = "") -> dict:
         """Create a file in S3 at projects/{project_id}/{branch_name}/{filename}"""
         try:
@@ -177,6 +179,7 @@ class S3FileService:
             logger.error(f"Error creating file: {e}")
             return {"success": False, "error": str(e)}
 
+    # fariza's change: read a file's content from S3 so the editor can display it when the user clicks on a file
     def read_file(self, project_id: int, branch_name: str, filename: str) -> dict:
         """Read file content from S3 at projects/{project_id}/{branch_name}/{filename}"""
         try:
@@ -188,11 +191,13 @@ class S3FileService:
             logger.error(f"Error reading file: {e}")
             return {"success": False, "error": str(e)}
 
+    # fariza's change: delete a specific file from S3 when the user clicks the trash icon in the sidebar
     def delete_file_in_project(self, project_id: int, branch_name: str, filename: str) -> dict:
         """Delete a specific file from S3 at projects/{project_id}/{branch_name}/{filename}"""
         key = f"projects/{project_id}/{branch_name}/{filename}"
         return self.delete_file(key)
 
+    # fariza's change: rename a file in S3 — S3 doesn't support renaming directly so we copy the file to the new name then delete the old one
     def rename_file(self, project_id: int, branch_name: str, old_name: str, new_name: str) -> dict:
         """Rename a file in S3 by copying to new key then deleting old key"""
         try:
@@ -211,6 +216,7 @@ class S3FileService:
             logger.error(f"Error renaming file: {e}")
             return {"success": False, "error": str(e)}
 
+    # fariza's change: delete everything in a project's S3 folder when the user deletes the whole project
     def delete_project_folder(self, project_id: int) -> dict:
         """Delete all objects in a project's S3 folder"""
         try:

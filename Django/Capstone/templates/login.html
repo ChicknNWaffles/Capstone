@@ -1,4 +1,5 @@
 {% load static %}
+<!-- fariza's change: full login page redesign — clean underline-style inputs, show/hide password toggle, inline error messages, and a loading spinner on the button while the request is in flight -->
 
 <!doctype html>
 <html lang="en">
@@ -249,6 +250,7 @@
     const iconEye    = document.getElementById("iconEye");
     const iconEyeOff = document.getElementById("iconEyeOff");
 
+    // fariza's change: eye icon toggles the password field between hidden and visible
     toggleBtn.addEventListener("click", () => {
       const hidden = passwordEl.type === "password";
       passwordEl.type          = hidden ? "text"  : "password";
@@ -271,6 +273,7 @@
 
     [usernameEl, passwordEl].forEach(el => el.addEventListener("input", clearError));
 
+    // fariza's change: handle login form — validate inputs, show a spinner while waiting for the server, show an error message if it fails
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearError();

@@ -1,4 +1,5 @@
 {% load static %}
+<!-- fariza's change: full signup page redesign — underline inputs, show/hide password toggles, a live password strength bar, field-by-field validation, and inline error/success messages -->
 
 <!doctype html>
 <html lang="en">
@@ -328,6 +329,7 @@
     makeToggle("togglePassword", passwordEl, "iconEye",  "iconEyeOff");
     makeToggle("toggleConfirm",  confirmEl,  "iconEye2", "iconEyeOff2");
 
+    // fariza's change: score the password from 0-4 based on length, uppercase, numbers, and special characters
     function getStrength(pw) {
       let s = 0;
       if (pw.length >= 8)          s++;
@@ -367,6 +369,7 @@
     function markError(...els) { els.forEach(el => el.classList.add("error")); }
     function isValidEmail(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
+    // fariza's change: validate everything before sending — checks that all fields are filled, email looks valid, password is strong enough, and both passwords match
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearMsg();
