@@ -44,6 +44,10 @@ def settingsPage(request):
     template = loader.get_template("settings.html")
     return HttpResponse(template.render())
 
+def gitPage(request):
+    template = loader.get_template("gitpage.html")
+    return HttpResponse(template.render())
+
 
 urlpatterns = [
     # render pages
@@ -53,6 +57,7 @@ urlpatterns = [
     path("editor/", editorPage),
     # fariza's change: setting up the url path for the settings page
     path("settings/", settingsPage),
+    path("gitpage/", gitPage),
 
     # admin pages
     path('admin/', admin.site.urls),
