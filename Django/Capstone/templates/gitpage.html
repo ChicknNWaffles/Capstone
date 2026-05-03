@@ -9,7 +9,6 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
-    /* ── RESET & BASE ─────────────────────────────────────────────────────────── */
     *,
     *::before,
     *::after {
@@ -38,8 +37,7 @@
       --transition: 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    html,
-    body {
+    html, body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
@@ -48,7 +46,6 @@
       color: var(--text);
     }
 
-    /* ── BACKGROUND ───────────────────────────────────────────────────────────── */
     .bg-gradients {
       position: fixed;
       inset: 0;
@@ -68,7 +65,6 @@
       z-index: 0;
     }
 
-    /* ── LAYOUT ───────────────────────────────────────────────────────────────── */
     .graph-area {
       position: fixed;
       top: 0;
@@ -123,11 +119,10 @@
       z-index: 2;
     }
 
-    /* ── TOP NAV & TIME WINDOW ────────────────────────────────────────────────── */
     .top-nav {
       position: fixed;
       top: 22px;
-      left: 24px;
+      left: 196px;
       z-index: 10;
       display: flex;
       align-items: center;
@@ -191,11 +186,10 @@
       font-size: 9px;
     }
 
-    /* ── COMMIT NODE ──────────────────────────────────────────────────────────── */
     .node {
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       border: 2px solid rgba(255, 255, 255, 0.8);
       transform: translate(-50%, -50%);
@@ -210,7 +204,51 @@
       z-index: 20;
     }
 
-    /* ── TOOLTIP ──────────────────────────────────────────────────────────────── */
+    /* author avatar badge sitting on top-right of node */
+    .node-wrap {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .node-wrap:hover .node {
+      transform: scale(1.7);
+    }
+
+    .node-wrap .node {
+      position: relative;
+      transform: none;
+      left: auto;
+      top: auto;
+      width: 18px;
+      height: 18px;
+    }
+
+    .author-badge {
+      position: absolute;
+      top: -10px;
+      right: -12px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 4px;
+      border: 1.5px solid;
+      background: rgba(6, 9, 20, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      pointer-events: none;
+      z-index: 15;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+    }
+
     #tooltip {
       position: fixed;
       background: rgba(8, 11, 24, 0.97);
@@ -239,6 +277,22 @@
       color: var(--gold);
       margin-bottom: 5px;
       letter-spacing: 0.04em;
+    }
+
+    .tt-branch {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-bottom: 6px;
+    }
+
+    .tt-branch-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .tt-msg {
@@ -281,7 +335,6 @@
       margin-left: auto;
     }
 
-    /* ── PANEL ────────────────────────────────────────────────────────────────── */
     #panel {
       position: fixed;
       top: 0;
@@ -350,7 +403,6 @@
       border-radius: 2px;
     }
 
-    /* search */
     .search-wrap {
       position: relative;
       margin-bottom: 22px;
@@ -386,7 +438,6 @@
       pointer-events: none;
     }
 
-    /* project title */
     .proj-title {
       font-size: 24px;
       font-weight: 700;
@@ -396,7 +447,6 @@
       line-height: 1.2;
     }
 
-    /* meta card */
     .meta-card {
       background: var(--bg-card);
       border: 1px solid var(--border2);
@@ -413,7 +463,6 @@
       font-weight: 500;
     }
 
-    /* section label */
     .s-label {
       font-size: 10px;
       font-weight: 600;
@@ -424,7 +473,6 @@
       display: block;
     }
 
-    /* collab item */
     .collab-item {
       display: flex;
       align-items: center;
@@ -442,7 +490,6 @@
       border-color: var(--border);
     }
 
-    /* color trigger */
     .color-wrap {
       position: relative;
       flex-shrink: 0;
@@ -474,7 +521,6 @@
       transform: none;
     }
 
-    /* swatch popover */
     .swatch-popover {
       position: absolute;
       top: calc(100% + 8px);
@@ -503,7 +549,6 @@
       cursor: pointer;
       border: 2px solid transparent;
       transition: transform 0.15s, border-color 0.15s;
-      position: relative;
     }
 
     .swatch:hover {
@@ -525,7 +570,6 @@
       border-color: white;
     }
 
-    /* collab avatar */
     .collab-av {
       width: 34px;
       height: 34px;
@@ -551,7 +595,6 @@
       text-overflow: ellipsis;
     }
 
-    /* role select */
     .role-select {
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
@@ -574,7 +617,6 @@
       background: #0d1530;
     }
 
-    /* remove btn */
     .rm-btn {
       background: none;
       border: none;
@@ -595,7 +637,6 @@
       color: var(--danger);
     }
 
-    /* add collab btn */
     .add-btn {
       display: flex;
       align-items: center;
@@ -623,7 +664,6 @@
       box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
     }
 
-    /* ── MODAL ────────────────────────────────────────────────────────────────── */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -704,12 +744,46 @@
       color: #000;
     }
 
-    /* confirm delete modal */
     .modal-msg {
       font-size: 13px;
       color: var(--muted2);
       margin-bottom: 18px;
       line-height: 1.5;
+    }
+
+    /* ── BRANCH LANE LABELS ──────────────────────────────────────────────────── */
+    #lane-labels {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 185px;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9;
+      background: linear-gradient(to right, rgba(6, 9, 20, 0.96) 78%, transparent 100%);
+      border-right: 1px solid rgba(255, 215, 0, 0.1);
+    }
+
+    .lane-tag {
+      position: absolute;
+      right: 14px;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .lane-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor;
     }
   </style>
 </head>
@@ -718,8 +792,8 @@
 
   <div class="bg-gradients"></div>
   <canvas id="stars"></canvas>
+  <div id="lane-labels"></div>
 
-  <!-- Graph area -->
   <div class="graph-area" id="graphArea">
     <div class="top-nav">
       <a href="/" class="nav-btn" title="Back to Homepage">
@@ -738,7 +812,6 @@
         </svg>
         Editor
       </a>
-
       <div style="position:relative; margin-left: 6px;">
         <select id="timeSelect">
           <option value="7">Last 7 days</option>
@@ -763,9 +836,9 @@
     </div>
   </div>
 
-  <!-- Tooltip -->
   <div id="tooltip">
     <div class="tt-hash" id="tt-hash"></div>
+    <div class="tt-branch" id="tt-branch"></div>
     <div class="tt-msg" id="tt-msg"></div>
     <div class="tt-meta">
       <div class="tt-dot" id="tt-dot"></div>
@@ -774,7 +847,6 @@
     </div>
   </div>
 
-  <!-- Side Panel -->
   <div id="panel">
     <button class="panel-toggle" id="panelToggle" title="Toggle panel">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -783,7 +855,6 @@
         <polyline points="6 17 11 12 6 7"></polyline>
       </svg>
     </button>
-
     <div class="panel-scroll">
       <div class="search-wrap">
         <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -793,21 +864,17 @@
         </svg>
         <input type="text" placeholder="Search collaborators…" id="userSearch">
       </div>
-
       <div class="proj-title">Capstone Project</div>
-
       <div class="meta-card">
         <div>Created by: <strong>Fariza A.</strong></div>
         <div>Date: <strong>2026-01-10</strong></div>
         <div>Last updated: <strong>Just now</strong></div>
       </div>
-
       <span class="s-label">Project Collaborators</span>
       <div id="collabList"></div>
     </div>
   </div>
 
-  <!-- Add Collaborator Modal -->
   <div class="modal-backdrop" id="addModal">
     <div class="modal">
       <h3>Add Collaborator</h3>
@@ -819,7 +886,6 @@
     </div>
   </div>
 
-  <!-- Remove Confirm Modal -->
   <div class="modal-backdrop" id="removeModal">
     <div class="modal">
       <h3>Remove Collaborator</h3>
@@ -832,11 +898,26 @@
   </div>
 
   <script>
-    // spacing between commits and lanes
     const COL_W = 92;
     const LANE_H = 58;
-    const PAD_X = 70;
+    const PAD_X = 210;
     const NODE_R = 8;
+    const MIN_LABEL_GAP = 24;
+
+    // Branch colors — kept entirely outside the user PALETTE so they never clash
+    const BRANCH_COLORS = {
+      'main':       '#ffd700',  // gold (app accent)
+      'developer':  '#00cec9',  // teal
+      'fariza-new': '#e17055',  // terra cotta
+      'production': '#e84393',  // magenta
+    };
+    const BRANCH_COLOR_FALLBACKS = ['#fdcb6e', '#d63031', '#48dbfb', '#e84393', '#badc58'];
+    function getBranchColor(branch) {
+      if (BRANCH_COLORS[branch]) return BRANCH_COLORS[branch];
+      let h = 0;
+      for (let i = 0; i < branch.length; i++) h = (h * 31 + branch.charCodeAt(i)) & 0xffffffff;
+      return BRANCH_COLOR_FALLBACKS[Math.abs(h) % BRANCH_COLOR_FALLBACKS.length];
+    }
 
     const PALETTE = [
       '#ff4757', '#ff6b81', '#ff7f50', '#ffa502',
@@ -845,31 +926,30 @@
       '#9b59b6', '#a55eea', '#ff9ff3', '#f368e0',
     ];
 
-    // all the collaborators and their info
     let users = {
       fariza: { name: 'Fariza A.', color: '#ff4757', role: 'admin' },
-      elora: { name: 'Elora B.', color: '#2ed573', role: 'editor' },
-      john: { name: 'John G.', color: '#1e90ff', role: 'editor' },
-      caleb: { name: 'Caleb C.', color: '#ffa502', role: 'viewer' },
+      elora:  { name: 'Elora B.',  color: '#2ed573', role: 'editor' },
+      john:   { name: 'John G.',   color: '#1e90ff', role: 'editor' },
+      caleb:  { name: 'Caleb C.',  color: '#ffa502', role: 'viewer' },
     };
 
-    const commits = [
-      { id: 1, branch: 'main', msg: 'initial commit', hash: 'a1b2c3d', user: 'john', ts: new Date('2026-04-01T09:00:00'), parents: [] },
-      { id: 2, branch: 'main', msg: 'updated the UI', hash: 'f4e5d6c', user: 'elora', ts: new Date('2026-04-10T14:15:00'), parents: [1] },
-      { id: 4, branch: 'feature/auth', msg: 'added auth scaffold', hash: 'j9k0l1m', user: 'john', ts: new Date('2026-04-14T11:20:00'), parents: [2] },
-      { id: 6, branch: 'editorpage/ui', msg: 'added collaborators', hash: 's5t6u7v', user: 'caleb', ts: new Date('2026-04-15T18:30:00'), parents: [2] },
-      { id: 5, branch: 'feature/auth', msg: 'fixed the buttons', hash: 'n2p3q4r', user: 'elora', ts: new Date('2026-04-17T16:50:00'), parents: [4] },
-      { id: 3, branch: 'main', msg: 'merge pull request #4', hash: '8f7g6h5', user: 'fariza', ts: new Date('2026-04-20T09:45:00'), parents: [2] },
-      { id: 7, branch: 'main', msg: 'merge features', hash: 'w8x9y0z', user: 'fariza', ts: new Date('2026-04-23T10:00:00'), parents: [3, 5, 6] },
-      { id: 8, branch: 'feature/new-login', msg: 'wip login logic', hash: 'x1y2z3a', user: 'elora', ts: new Date('2026-04-24T09:00:00'), parents: [7] },
-      { id: 9, branch: 'hotfix/typo', msg: 'fix typo in header', hash: 'a9b8c7d', user: 'john', ts: new Date('2026-04-25T11:00:00'), parents: [7] },
-      { id: 10, branch: 'feature/new-login', msg: 'login styles', hash: 'd6e5f4g', user: 'elora', ts: new Date('2026-04-29T14:00:00'), parents: [8] },
+   const commits = [
+      { id: 1,  branch: 'main',        msg: 'initial commit',        hash: 'a1b2c3d', user: 'john',   ts: new Date('2026-04-01T09:00:00'), parents: [] },
+      { id: 2,  branch: 'main',        msg: 'updated the UI',        hash: 'f4e5d6c', user: 'elora',  ts: new Date('2026-04-10T14:15:00'), parents: [1] },
+      { id: 4,  branch: 'developer',   msg: 'added auth scaffold',   hash: 'j9k0l1m', user: 'john',   ts: new Date('2026-04-14T11:20:00'), parents: [2] },
+      { id: 6,  branch: 'fariza-new',  msg: 'added collaborators',   hash: 's5t6u7v', user: 'caleb',  ts: new Date('2026-04-15T18:30:00'), parents: [2] },
+      { id: 5,  branch: 'developer',   msg: 'fixed the buttons',     hash: 'n2p3q4r', user: 'elora',  ts: new Date('2026-04-17T16:50:00'), parents: [4] },
+      { id: 3,  branch: 'main',        msg: 'merge pull request #4', hash: '8f7g6h5', user: 'fariza', ts: new Date('2026-04-20T09:45:00'), parents: [2] },
+      { id: 7,  branch: 'main',        msg: 'merge features',        hash: 'w8x9y0z', user: 'fariza', ts: new Date('2026-04-23T10:00:00'), parents: [3, 5, 6] },
+      { id: 8,  branch: 'production',  msg: 'wip login logic',       hash: 'x1y2z3a', user: 'elora',  ts: new Date('2026-04-24T09:00:00'), parents: [7] },
+      { id: 9,  branch: 'fariza-new',  msg: 'fix typo in header',    hash: 'a9b8c7d', user: 'john',   ts: new Date('2026-04-25T11:00:00'), parents: [7] },
+      { id: 10, branch: 'production',  msg: 'login styles',          hash: 'd6e5f4g', user: 'elora',  ts: new Date('2026-04-29T14:00:00'), parents: [8] },
     ];
 
     let pendingRemoveId = null;
-    let timeWindow = 30; // days, 0 = all
+    let timeWindow = 30;
 
-    // draws the twinkling stars in the background
+    // ── STARS ─────────────────────────────────────────────────────────────────
     (function initStars() {
       const canvas = document.getElementById('stars');
       const ctx = canvas.getContext('2d');
@@ -889,7 +969,6 @@
       }
 
       let rafId;
-
       function draw(t) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         stars.forEach(s => {
@@ -908,7 +987,7 @@
       window.addEventListener('pagehide', () => cancelAnimationFrame(rafId));
     })();
 
-    // everything that draws the git graph
+    // ── GRAPH ─────────────────────────────────────────────────────────────────
     function getFilteredCommits() {
       if (!timeWindow) return [...commits];
       const maxTs = Math.max(...commits.map(c => c.ts.getTime()));
@@ -917,14 +996,10 @@
     }
 
     function assignLanes(filtered) {
-      // only look at commits in the current time window
       const filteredIds = new Set(filtered.map(c => c.id));
-
-      // figure out which commits ended up on main (either directly or via merge)
       const mainIds = new Set(filtered.filter(c => c.branch === 'main').map(c => c.id));
       const merged = new Set(mainIds);
 
-      // walk backwards through merges to mark their parents as merged too
       const sortedAsc = [...filtered].sort((a, b) => a.ts - b.ts);
       sortedAsc.forEach(c => {
         if (merged.has(c.id)) {
@@ -932,15 +1007,13 @@
         }
       });
 
-      // track the last commit of each branch so we know when to free its lane
       const lastPerBranch = {};
       filtered.forEach(c => {
         if (!merged.has(c.id)) lastPerBranch[c.branch] = c.id;
       });
 
-      // assign each branch a vertical slot, reusing slots when branches finish
       const branchLane = {};
-      const laneOwner = {}; // which branch owns which slot right now
+      const laneOwner = {};
 
       function nextLane() {
         let l = 1;
@@ -950,8 +1023,7 @@
 
       sortedAsc.forEach(c => {
         if (merged.has(c.id)) {
-          c._lane = 0; // main always stays on lane 0
-          // when a branch merges in, free up its slot
+          c._lane = 0;
           if (c.parents.length > 1) {
             c.parents.filter(p => filteredIds.has(p)).forEach(pId => {
               const parent = filtered.find(f => f.id === pId);
@@ -968,7 +1040,6 @@
             laneOwner[lane] = c.branch;
           }
           c._lane = branchLane[c.branch];
-          // free the slot once we hit the last commit on this branch
           if (lastPerBranch[c.branch] === c.id) {
             delete laneOwner[branchLane[c.branch]];
             delete branchLane[c.branch];
@@ -990,7 +1061,6 @@
     }
 
     function buildPath(x1, y1, x2, y2) {
-      // smooth curve between two points, always goes left to right
       const dx = x2 - x1;
       const cp1x = x1 + dx * 0.55;
       const cp2x = x2 - dx * 0.45;
@@ -1007,47 +1077,100 @@
       const area = document.getElementById('graphArea');
       wrap.style.width = `${totalW}px`;
 
-      // zoom to fit if the graph is smaller than the screen
       const areaW = area.clientWidth;
       const scale = totalW < areaW ? Math.min(areaW / totalW, 1.4) : 1;
       wrap.style.transform = `scale(${scale})`;
       wrap.style.transformOrigin = 'left center';
 
-      // draw lines between connected commits
+      // Draw connector paths — color by BRANCH
       let svgPaths = '';
       placed.forEach(c => {
-        const userColor = users[c.user]?.color || '#ffd700';
+        const branchColor = getBranchColor(c.branch);
         c.parents.forEach(pId => {
           const p = idMap[pId];
           if (!p) return;
+          // use the child's branch color for the connecting path
+          const pathColor = getBranchColor(c.branch);
           const d = buildPath(p._x, p._y, c._x, c._y);
-          svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="6" fill="none" opacity="0.18" filter="url(#glow)"/>`; // outer glow
-          svgPaths += `<path d="${d}" stroke="${userColor}" stroke-width="2" fill="none" opacity="0.75"/>`; // main line
-          svgPaths += `<path d="${d}" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none" stroke-dasharray="1 18" stroke-linecap="round"/>`; // sparkle dots
+          svgPaths += `<path d="${d}" stroke="${pathColor}" stroke-width="6" fill="none" opacity="0.18" filter="url(#glow)"/>`;
+          svgPaths += `<path d="${d}" stroke="${pathColor}" stroke-width="2" fill="none" opacity="0.75"/>`;
+          svgPaths += `<path d="${d}" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" fill="none" stroke-dasharray="1 18" stroke-linecap="round"/>`;
         });
       });
 
-      // Re-set svgEl with connector lines included is handled in the label block below
+      // Screen Y accounts for the CSS scale transform (origin: left center = left 50vh)
+      const midY = window.innerHeight / 2;
+      const toScreenY = svgY => Math.round(midY + (svgY - midY) * scale);
 
-      // Nodes
-      let nodesHtml = '';
+      // Build per-branch info — track both SVG Y (for guide lines) and screen Y (for labels)
+      const branchInfo = {};
       placed.forEach(c => {
-        const color = users[c.user]?.color || '#ffd700';
-        nodesHtml += `
-      <div class="node"
-        data-id="${c.id}"
-        style="left:${c._x}px;top:${c._y}px;background:${color};box-shadow:0 0 14px ${color};"
-      ></div>
-    `;
+        const color = getBranchColor(c.branch);
+        if (!branchInfo[c.branch] || c._x > branchInfo[c.branch].x) {
+          branchInfo[c.branch] = { svgY: c._y, screenY: toScreenY(c._y), x: c._x, color };
+        }
       });
 
+      // Faint horizontal guide lines — drawn in SVG space
+      let guideLines = '';
+      Object.values(branchInfo).forEach(({ svgY, color }) => {
+        guideLines += `<line x1="185" y1="${svgY}" x2="${totalW}" y2="${svgY}" stroke="${color}" stroke-width="1" stroke-dasharray="3 18" opacity="0.12"/>`;
+      });
+      svgPaths = guideLines + svgPaths;
+
+      // Draw nodes — branch color + author badge
+      let nodesHtml = '';
+      placed.forEach(c => {
+        const branchColor = getBranchColor(c.branch);
+        const u = users[c.user] || {};
+        const authorColor = u.color || '#888';
+        const initials = (u.name || c.user).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        nodesHtml += `
+          <div class="node-wrap" data-id="${c.id}" style="left:${c._x}px;top:${c._y}px;">
+            <div class="node" style="background:${branchColor};box-shadow:0 0 14px ${branchColor};width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.8);cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);"></div>
+            <div class="author-badge" style="border-color:${authorColor};color:${authorColor};" title="${u.name || c.user}">${initials}</div>
+          </div>`;
+      });
+
+      // ── COLLISION-RESOLVED BRANCH LABELS ────────────────────────────────────
+      // Sort by screen Y, then push apart any that overlap
+      const labelEntries = Object.entries(branchInfo)
+        .map(([branch, { screenY, color }]) => ({ branch, y: screenY, naturalY: screenY, color }))
+        .sort((a, b) => a.y - b.y);
+
+      // Forward pass: push down labels that are too close to the one above
+      for (let i = 1; i < labelEntries.length; i++) {
+        const prev = labelEntries[i - 1];
+        const curr = labelEntries[i];
+        if (curr.y - prev.y < MIN_LABEL_GAP) {
+          curr.y = prev.y + MIN_LABEL_GAP;
+        }
+      }
+
+      // Backward pass: if we pushed things down too far, pull them back up
+      for (let i = labelEntries.length - 2; i >= 0; i--) {
+        const curr = labelEntries[i];
+        const next = labelEntries[i + 1];
+        if (next.y - curr.y < MIN_LABEL_GAP) {
+          curr.y = next.y - MIN_LABEL_GAP;
+        }
+      }
+
+      let labelsHtml = '';
+      labelEntries.forEach(({ branch, y, color }) => {
+        labelsHtml += `
+          <div class="lane-tag" style="top:${y}px;color:${color};">
+            <span class="lane-dot" style="background:${color};"></span>
+            ${branch}
+          </div>`;
+      });
+      document.getElementById('lane-labels').innerHTML = labelsHtml;
 
       document.getElementById('paths-layer').innerHTML = svgPaths;
-
       document.getElementById('nodes-layer').innerHTML = nodesHtml;
 
-      // Attach node events
-      document.querySelectorAll('.node').forEach(el => {
+      // Attach node hover events
+      document.querySelectorAll('.node-wrap').forEach(el => {
         el.addEventListener('mouseenter', e => {
           const c = placed.find(c => c.id === +el.dataset.id);
           if (c) showTooltip(e, c);
@@ -1057,25 +1180,30 @@
       });
     }
 
-    // tooltip — shows commit info on hover
+    // ── TOOLTIP ───────────────────────────────────────────────────────────────
     const tooltip = document.getElementById('tooltip');
 
     function showTooltip(e, c) {
       const u = users[c.user] || {};
-      const color = u.color || '#888';
+      const authorColor = u.color || '#888';
+      const branchColor = getBranchColor(c.branch);
       const initials = (u.name || c.user).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
       document.getElementById('tt-hash').textContent = '#' + c.hash;
+      document.getElementById('tt-branch').innerHTML =
+        `<span class="tt-branch-dot" style="background:${branchColor};"></span><span style="color:${branchColor};">${c.branch}</span>`;
       document.getElementById('tt-msg').textContent = c.msg;
 
       const dot = document.getElementById('tt-dot');
       dot.textContent = initials;
-      dot.style.background = color + '22';
-      dot.style.color = color;
-      dot.style.border = `1px solid ${color}55`;
+      dot.style.background = authorColor + '22';
+      dot.style.color = authorColor;
+      dot.style.border = `1px solid ${authorColor}55`;
 
       document.getElementById('tt-info').textContent = u.name || c.user;
-      document.getElementById('tt-date').textContent = c.ts.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      document.getElementById('tt-date').textContent = c.ts.toLocaleString([], {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
 
       moveTooltip(e);
       tooltip.classList.add('show');
@@ -1090,7 +1218,7 @@
 
     function hideTooltip() { tooltip.classList.remove('show'); }
 
-    // renders the collaborator list in the sidebar
+    // ── COLLABS ───────────────────────────────────────────────────────────────
     function takenColors() {
       return new Set(Object.values(users).map(u => u.color));
     }
@@ -1106,55 +1234,49 @@
         const initials = u.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         const colorStyle = `background:${u.color};box-shadow:0 0 10px ${u.color}66`;
 
-        // build the color swatches, grey out any colors already taken
         let swatchHtml = PALETTE.map(c => {
           const isTaken = taken.has(c) && c !== u.color;
           const isSelected = c === u.color;
           return `<div class="swatch ${isTaken ? 'taken' : ''} ${isSelected ? 'selected' : ''}"
-        style="background:${c}"
-        ${!isTaken ? `onclick="pickColor('${uid}','${c}')"` : ''}
-        title="${isTaken ? 'Taken' : ''}"></div>`;
+            style="background:${c}"
+            ${!isTaken ? `onclick="pickColor('${uid}','${c}')"` : ''}
+            title="${isTaken ? 'Taken' : ''}"></div>`;
         }).join('');
 
         const pickerHtml = isViewer
           ? `<div class="color-trigger locked" title="Viewers cannot have a color"></div>`
           : `<div class="color-trigger" style="${colorStyle}" onclick="togglePicker(event,'${uid}')" title="Change color"></div>
-         <div class="swatch-popover" id="pop-${uid}">${swatchHtml}</div>`;
+             <div class="swatch-popover" id="pop-${uid}">${swatchHtml}</div>`;
 
         html += `
-      <div class="collab-item">
-        <div class="color-wrap">
-          ${pickerHtml}
-        </div>
-        <div class="collab-av" style="background:${isViewer ? '#2a2d3e' : u.color + '22'};color:${isViewer ? '#555' : u.color};border-color:${isViewer ? '#2a2d3e' : u.color + '44'}">${initials}</div>
-        <span class="collab-name">${u.name}</span>
-        <select class="role-select" onchange="changeRole('${uid}',this.value)">
-          <option value="admin"  ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-          <option value="editor" ${u.role === 'editor' ? 'selected' : ''}>Editor</option>
-          <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
-        </select>
-        <button class="rm-btn" onclick="confirmRemove('${uid}')" title="Remove">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-    `;
+          <div class="collab-item">
+            <div class="color-wrap">${pickerHtml}</div>
+            <div class="collab-av" style="background:${isViewer ? '#2a2d3e' : u.color + '22'};color:${isViewer ? '#555' : u.color};border-color:${isViewer ? '#2a2d3e' : u.color + '44'}">${initials}</div>
+            <span class="collab-name">${u.name}</span>
+            <select class="role-select" onchange="changeRole('${uid}',this.value)">
+              <option value="admin"  ${u.role === 'admin'  ? 'selected' : ''}>Admin</option>
+              <option value="editor" ${u.role === 'editor' ? 'selected' : ''}>Editor</option>
+              <option value="viewer" ${u.role === 'viewer' ? 'selected' : ''}>Viewer</option>
+            </select>
+            <button class="rm-btn" onclick="confirmRemove('${uid}')" title="Remove">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>`;
       });
 
       html += `
-    <button class="add-btn" onclick="openAddModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Add Collaborator
-    </button>
-  `;
+        <button class="add-btn" onclick="openAddModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Collaborator
+        </button>`;
 
       document.getElementById('collabList').innerHTML = html;
     }
 
-    // color picker open/close
     function togglePicker(e, uid) {
       e.stopPropagation();
       const pop = document.getElementById(`pop-${uid}`);
@@ -1178,16 +1300,13 @@
       if (!e.target.closest('.color-wrap')) closeAllPickers();
     });
 
-    // update a user's role and re-render
     function changeRole(uid, role) {
       users[uid].role = role;
-      // viewers don't get a color since they can't commit
       if (role === 'viewer') users[uid].color = '#2a2d3e';
       renderCollabs();
       renderGraph();
     }
 
-    // add and remove collaborator modals
     function openAddModal() {
       document.getElementById('newUserName').value = '';
       document.getElementById('addModal').classList.add('open');
@@ -1223,16 +1342,12 @@
     }
 
     function executeRemove() {
-      if (pendingRemoveId) {
-        delete users[pendingRemoveId];
-        pendingRemoveId = null;
-      }
+      if (pendingRemoveId) { delete users[pendingRemoveId]; pendingRemoveId = null; }
       closeRemoveModal();
       renderCollabs();
       renderGraph();
     }
 
-    // wire up modal buttons
     document.getElementById('addCancel').onclick = closeAddModal;
     document.getElementById('addConfirm').onclick = confirmAddUser;
     document.getElementById('removeCancel').onclick = closeRemoveModal;
@@ -1242,7 +1357,6 @@
       if (e.key === 'Escape') closeAddModal();
     });
 
-    // close modals when clicking outside them
     ['addModal', 'removeModal'].forEach(id => {
       document.getElementById(id).addEventListener('click', e => {
         if (e.target === e.currentTarget) {
@@ -1252,7 +1366,6 @@
       });
     });
 
-    // panel toggle and time window filter
     document.getElementById('panelToggle').addEventListener('click', () => {
       document.body.classList.toggle('panel-collapsed');
       setTimeout(renderGraph, 420);
@@ -1271,14 +1384,8 @@
     }
     window.addEventListener('resize', debounce(renderGraph, 150));
 
-    function getCsrfToken() {
-      return document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1] ?? '';
-    }
-
-    // kick everything off
     renderCollabs();
     renderGraph();
   </script>
 </body>
-
 </html>
