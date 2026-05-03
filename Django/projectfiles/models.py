@@ -10,7 +10,7 @@ class ProjectFile(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=255, default="")
-    # file_path = models.CharField(max_length=255, default="")
+    file_path = models.CharField(max_length=255, default="")
 
     # fariza's change: added field to track if the file is locked with a password
     is_locked = models.BooleanField(default=False)
